@@ -1,0 +1,3 @@
+rootProject.name = 'bbaemin'
+include 'bbaemin-api'
+
