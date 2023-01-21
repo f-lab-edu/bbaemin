@@ -47,7 +47,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Object createCategory() {
+    public Object createCategory(CategoryDto categoryDTO) {
         return "{\n" +
                 "\"code\": 200, \n" +
                 "\"data\": [\n" +
