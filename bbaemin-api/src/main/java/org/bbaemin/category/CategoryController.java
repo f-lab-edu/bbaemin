@@ -1,108 +1,57 @@
 package org.bbaemin.category;
 
+import org.bbaemin.category.request.CreateCategoryRequest;
+import org.bbaemin.category.response.CategoryResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/v1/category")
 public class CategoryController {
 
     @GetMapping
-    public Object listCategory() {
-        return "{\n" +
-                "\"code\": 200, \n" +
-                "\"data\": [\n" +
-                "{\n " +
-                "\"idx\": 1, \n" +
-                "\"categoryName\": \"상품\", \n" +
-                "\"categoryDesc\": \"상품\", \n" +
-                "\"parentId\": null, \n" +
-                "\"createdBy\": \"master\", \n" +
-                "\"createdAt\": \"2023-01-01, \"" +
-                "\"modifiedBy\": null, \n" +
-                "\"modifiedAt\": null \n" +
-                "}\n" +
-                "],\n" +
-                "\"length\": 1 \n" +
-                "}";
+    public List<CategoryResponse> listCategory() {
+        return List.of(CategoryResponse.builder()
+                .categoryCode("100")
+                .categoryName("돼지고기")
+                .categoryDescription("돼지고기")
+                .parentCategory("육류")
+                .build());
     }
 
     @GetMapping("/{idx}")
-    public Object getCategory(@PathVariable Long idx) {
-        return "{\n" +
-                "\"code\": 200, \n" +
-                "\"data\": [\n" +
-                "{\n " +
-                "\"idx\": 1, \n" +
-                "\"categoryName\": \"상품\", \n" +
-                "\"categoryDesc\": \"상품\", \n" +
-                "\"parentId\": null, \n" +
-                "\"createdBy\": \"master\", \n" +
-                "\"createdAt\": \"2023-01-01, \"" +
-                "\"modifiedBy\": null, \n" +
-                "\"modifiedAt\": null \n" +
-                "}\n" +
-                "],\n" +
-                "\"length\": 1 \n" +
-                "}";
+    public CategoryResponse getCategory(@PathVariable Long idx) {
+        return CategoryResponse.builder()
+                .categoryCode("100")
+                .categoryName("돼지고기")
+                .categoryDescription("돼지고기")
+                .parentCategory("육류")
+                .build();
     }
 
     @PostMapping
-    public Object createCategory(CategoryDto categoryDTO) {
-        return "{\n" +
-                "\"code\": 200, \n" +
-                "\"data\": [\n" +
-                "{\n " +
-                "\"idx\": 1, \n" +
-                "\"categoryName\": \"상품\", \n" +
-                "\"categoryDesc\": \"상품\", \n" +
-                "\"parentId\": null, \n" +
-                "\"createdBy\": \"master\", \n" +
-                "\"createdAt\": \"2023-01-01, \"" +
-                "\"modifiedBy\": null, \n" +
-                "\"modifiedAt\": null \n" +
-                "}\n" +
-                "],\n" +
-                "\"length\": 1 \n" +
-                "}";
+    public CategoryResponse createCategory(@RequestBody CreateCategoryRequest createCategoryRequest) {
+        return CategoryResponse.builder()
+                .categoryCode("100")
+                .categoryName("돼지고기")
+                .categoryDescription("돼지고기")
+                .parentCategory("육류")
+                .build();
     }
 
     @PutMapping("/{idx}")
-    public Object updateCategory(@PathVariable Long idx) {
-        return "{\n" +
-                "\"code\": 200, \n" +
-                "\"data\": [\n" +
-                "{\n " +
-                "\"idx\": 1, \n" +
-                "\"categoryName\": \"상품\", \n" +
-                "\"categoryDesc\": \"상품\", \n" +
-                "\"parentId\": null, \n" +
-                "\"createdBy\": \"master\", \n" +
-                "\"createdAt\": \"2023-01-01, \"" +
-                "\"modifiedBy\": null, \n" +
-                "\"modifiedAt\": null \n" +
-                "}\n" +
-                "],\n" +
-                "\"length\": 1 \n" +
-                "}";
+    public CategoryResponse updateCategory(@PathVariable Long idx) {
+        return CategoryResponse.builder()
+                .categoryCode("100")
+                .categoryName("소고기")
+                .categoryDescription("소고기")
+                .parentCategory("육류")
+                .build();
     }
 
     @DeleteMapping("/{idx}")
-    public Object deleteCategory(@PathVariable Long idx) {
-        return "{\n" +
-                "\"code\": 200, \n" +
-                "\"data\": [\n" +
-                "{\n " +
-                "\"idx\": 1, \n" +
-                "\"categoryName\": \"상품\", \n" +
-                "\"categoryDesc\": \"상품\", \n" +
-                "\"parentId\": null, \n" +
-                "\"createdBy\": \"master\", \n" +
-                "\"createdAt\": \"2023-01-01, \"" +
-                "\"modifiedBy\": null, \n" +
-                "\"modifiedAt\": null \n" +
-                "}\n" +
-                "],\n" +
-                "\"length\": 1 \n" +
-                "}";
+    public Long deleteCategory(@PathVariable Long idx) {
+        return idx;
     }
 }
