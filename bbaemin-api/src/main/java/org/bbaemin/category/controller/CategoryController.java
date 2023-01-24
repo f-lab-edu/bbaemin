@@ -1,7 +1,7 @@
-package org.bbaemin.category;
+package org.bbaemin.category.controller;
 
-import org.bbaemin.category.request.CreateCategoryRequest;
-import org.bbaemin.category.response.CategoryResponse;
+import org.bbaemin.category.controller.request.CreateCategoryRequest;
+import org.bbaemin.category.controller.response.CategoryResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class CategoryController {
                 .code("100")
                 .name("돼지고기")
                 .description("돼지고기")
-                .parentCategory("육류")
+                .parent("육류")
                 .build());
     }
 
@@ -26,7 +26,7 @@ public class CategoryController {
                 .code("100")
                 .name("돼지고기")
                 .description("돼지고기")
-                .parentCategory("육류")
+                .parent("육류")
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class CategoryController {
                 .code("100")
                 .name("돼지고기")
                 .description("돼지고기")
-                .parentCategory("육류")
+                .parent("육류")
                 .build();
     }
 
@@ -46,7 +46,7 @@ public class CategoryController {
                 .code("100")
                 .name("소고기")
                 .description("소고기")
-                .parentCategory("육류")
+                .parent("육류")
                 .build();
     }
 

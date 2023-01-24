@@ -1,4 +1,4 @@
-package org.bbaemin.category.request;
+package org.bbaemin.category.controller.request;
 
 public class CreateCategoryRequest {
 

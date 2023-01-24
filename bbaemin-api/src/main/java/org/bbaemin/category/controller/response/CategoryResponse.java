@@ -1,4 +1,4 @@
-package org.bbaemin.category.response;
+package org.bbaemin.category.controller.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,5 +11,5 @@ public class CategoryResponse {
     private String name;
     private String description;
 
-    private String parentCategory;
+    private String parent;
 }
