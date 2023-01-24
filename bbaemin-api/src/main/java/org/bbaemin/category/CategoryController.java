@@ -13,9 +13,9 @@ public class CategoryController {
     @GetMapping
     public List<CategoryResponse> listCategory() {
         return List.of(CategoryResponse.builder()
-                .categoryCode("100")
-                .categoryName("돼지고기")
-                .categoryDescription("돼지고기")
+                .code("100")
+                .name("돼지고기")
+                .description("돼지고기")
                 .parentCategory("육류")
                 .build());
     }
@@ -23,9 +23,9 @@ public class CategoryController {
     @GetMapping("/{idx}")
     public CategoryResponse getCategory(@PathVariable Long idx) {
         return CategoryResponse.builder()
-                .categoryCode("100")
-                .categoryName("돼지고기")
-                .categoryDescription("돼지고기")
+                .code("100")
+                .name("돼지고기")
+                .description("돼지고기")
                 .parentCategory("육류")
                 .build();
     }
@@ -33,9 +33,9 @@ public class CategoryController {
     @PostMapping
     public CategoryResponse createCategory(@RequestBody CreateCategoryRequest createCategoryRequest) {
         return CategoryResponse.builder()
-                .categoryCode("100")
-                .categoryName("돼지고기")
-                .categoryDescription("돼지고기")
+                .code("100")
+                .name("돼지고기")
+                .description("돼지고기")
                 .parentCategory("육류")
                 .build();
     }
@@ -43,9 +43,9 @@ public class CategoryController {
     @PutMapping("/{idx}")
     public CategoryResponse updateCategory(@PathVariable Long idx) {
         return CategoryResponse.builder()
-                .categoryCode("100")
-                .categoryName("소고기")
-                .categoryDescription("소고기")
+                .code("100")
+                .name("소고기")
+                .description("소고기")
                 .parentCategory("육류")
                 .build();
     }

@@ -7,9 +7,9 @@ import lombok.Getter;
 @Builder
 public class CategoryResponse {
 
-    private String categoryCode;
-    private String categoryName;
-    private String categoryDescription;
+    private String code;
+    private String name;
+    private String description;
 
     private String parentCategory;
 }
