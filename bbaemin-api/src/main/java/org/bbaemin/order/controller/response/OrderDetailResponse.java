@@ -8,6 +8,8 @@ import java.util.List;
 @Getter
 public class OrderDetailResponse {
 
+    private String orderId;           // 주문번호
+
     private String status;
 
     private String store;           // 가게
@@ -15,7 +17,6 @@ public class OrderDetailResponse {
     private String paymentAmount;   // 결제 금액 = 주문 금액 + 배달료
 
     private String orderDate;       // 주문일시
-    private String orderId;           // 주문번호
 
     private List<OrderItemResponse> orderItemList;
 
@@ -25,7 +26,7 @@ public class OrderDetailResponse {
     private String paymentMethod;   // 결제 수단
 
     private String deliveryAddress; // 배달주소
-    private String phoneNumber;     // 전화번소
+    private String phoneNumber;     // 전화번호
     private String email;           // 주문 내역 발송 메일
     private String messageToRider;  // 라이더님께
 

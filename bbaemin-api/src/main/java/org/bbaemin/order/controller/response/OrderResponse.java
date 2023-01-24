@@ -1,7 +1,7 @@
 package org.bbaemin.order.controller.response;
 
-import lombok.Builder;
 import lombok.Getter;
+import org.bbaemin.order.vo.Order;
 
 @Getter
 public class OrderResponse {
@@ -12,12 +12,11 @@ public class OrderResponse {
     private String paymentAmount;   // 결제 금액
     private String orderDate;       // 주문일시
 
-    @Builder
-    private OrderResponse(Long orderId, String status, String description, String paymentAmount, String orderDate) {
-        this.orderId = orderId;
-        this.status = status;
-        this.description = description;
-        this.paymentAmount = paymentAmount;
-        this.orderDate = orderDate;
+    public OrderResponse(Order order) {
+        this.orderId = order.getOrderId();
+        this.status = order.getStatus();
+        this.description = order.getDescription();
+        this.paymentAmount = order.getPaymentAmount();
+        this.orderDate = order.getOrderDate();
     }
 }
