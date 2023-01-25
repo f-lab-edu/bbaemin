@@ -85,7 +85,7 @@ public class ItemController {
                 .build();
     }
 
-    @PutMapping("/{itemId}")
+    @PatchMapping("/{itemId}")
     public ItemResponse updateItem(@PathVariable Long itemId) {
         return ItemResponse.builder()
                 .category("채소")
