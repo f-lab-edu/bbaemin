@@ -62,7 +62,6 @@ public class ItemController {
 
     @PostMapping
     public ItemResponse createItem(@RequestBody CreateItemRequest createItemRequest) {
-
         return ItemResponse.builder()
                 .category("과일")
                 .store("B마트 인천점")
@@ -85,7 +84,7 @@ public class ItemController {
                 .build();
     }
 
-    @PatchMapping("/{itemId}")
+    @PutMapping("/{itemId}")
     public ItemResponse updateItem(@PathVariable Long itemId) {
         return ItemResponse.builder()
                 .category("채소")

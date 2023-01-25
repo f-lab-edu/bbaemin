@@ -40,7 +40,7 @@ public class CategoryController {
                 .build();
     }
 
-    @PatchMapping("/{idx}")
+    @PutMapping("/{idx}")
     public CategoryResponse updateCategory(@PathVariable Long idx) {
         return CategoryResponse.builder()
                 .code("100")
