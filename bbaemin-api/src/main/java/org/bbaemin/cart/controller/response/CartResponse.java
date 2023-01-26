@@ -1,27 +1,26 @@
 package org.bbaemin.cart.controller.response;
 
 import lombok.Getter;
-import org.bbaemin.orderItem.controller.response.OrderItemResponse;
-import org.bbaemin.orderItem.vo.OrderItem;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bbaemin.cart.vo.Cart;
 
+@ToString
 @Getter
 public class CartResponse {
 
-    private List<OrderItemResponse> orderItemList;
+    private List<CartItemResponse> cartItemList;
     private String orderAmount;
     private String deliveryFee;
 
-    public CartResponse(List<OrderItem> orderItemList) {
+    public CartResponse(Cart cart) {
 
-        this.orderItemList = orderItemList.stream()
-                .map(OrderItemResponse::new).collect(Collectors.toList());
+        this.cartItemList = cart.getCartItemList().stream()
+                .map(CartItemResponse::new).collect(Collectors.toList());
 
-        long orderAmount = orderItemList.stream()
-                .mapToLong(OrderItem::getTotalOrderPrice).sum();
-        this.orderAmount = String.format("%,d원", orderAmount);
-        this.deliveryFee = String.format("%,d원", orderAmount >= 10000 ? 0 : 3000);
+        this.orderAmount = cart.getFormattedOrderAmount();
+        this.deliveryFee = cart.getFormattedDeliveryFee(10000);
     }
 }

@@ -1,18 +1,36 @@
 package org.bbaemin.cart.vo;
 
-import lombok.Builder;
 import lombok.Getter;
-import org.bbaemin.orderItem.vo.OrderItem;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 @Getter
 public class Cart {
 
-    private List<OrderItem> orderItemList;
+    private Long userId;
+    private List<CartItem> cartItemList;
 
-    @Builder
-    private Cart(List<OrderItem> orderItemList) {
-        this.orderItemList = orderItemList;
+    public Cart(Long userId, List<CartItem> cartItemList) {
+        this.userId = userId;
+        this.cartItemList = cartItemList;
+    }
+
+    private int getOrderAmount() {
+        return getCartItemList().stream()
+                .mapToInt(CartItem::getTotalOrderPrice).sum();
+    }
+
+    private int getDeliveryFee(int criteria) {
+        return getOrderAmount() >= criteria ? 0 : 3000;
+    }
+
+    public String getFormattedOrderAmount() {
+        return String.format("%,d원", getOrderAmount());
+    }
+
+    public String getFormattedDeliveryFee(int criteria) {
+        return String.format("%,d원", getDeliveryFee(criteria));
     }
 }
