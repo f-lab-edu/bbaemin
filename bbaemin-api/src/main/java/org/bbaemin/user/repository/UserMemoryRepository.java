@@ -7,23 +7,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class UserMemoryRepository implements UserRepository {
 
     private static final Map<Long, User> map = new ConcurrentHashMap<>();
-    private static Long id = 0L;
+    private static final AtomicLong id = new AtomicLong(0L);
+
+    public static AtomicLong getId() {
+        return id;
+    }
 
     static {
-        map.put(++id, User.builder()
-                .userId(id)
+        map.put(getId().incrementAndGet(), User.builder()
+                .userId(getId().get())
                 .email("user1@email.com")
                 .nickname("user1")
                 .image(null)
                 .phoneNumber("010-1234-5678")
                 .build());
-        map.put(++id, User.builder()
-                .userId(id)
+        map.put(getId().incrementAndGet(), User.builder()
+                .userId(getId().get())
                 .email("user2@email.com")
                 .nickname("user2")
                 .image(null)
@@ -47,17 +52,9 @@ public class UserMemoryRepository implements UserRepository {
 
     @Override
     public User insert(User user) {
-        Long userId = ++id;
+        Long userId = getId().incrementAndGet();
         user.setUserId(userId);
         map.put(userId, user);
-        /*
-        map.put(userId, User.builder()
-                .userId(userId)
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .image(user.getImage())
-                .phoneNumber(user.getPhoneNumber())
-                .build());*/
         return user;
     }
 
