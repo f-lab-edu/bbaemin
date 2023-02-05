@@ -30,9 +30,6 @@ public class UserService {
     }
 
     public void quit(Long userId) {
-//        User user = userRepository.findById(userId);
-//        user.quit();
-//        userRepository.update(user);
         userRepository.updateUserDeleted(userId);
     }
 

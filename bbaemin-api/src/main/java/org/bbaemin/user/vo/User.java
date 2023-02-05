@@ -25,10 +25,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public void quit() {
-        this.deleted = true;
-    }
-
     public void setUserId(Long userId) {
         this.userId = userId;
     }
