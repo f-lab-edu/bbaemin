@@ -29,18 +29,6 @@ public class CartItem {
         this.userId = userId;
     }
 
-    public void plusCount() {
-        this.orderCount++;
-    }
-
-    public void minusCount() {
-        // TODO - orderCount가 0일 때
-//        if (this.orderCount == 1) {
-//            throw new RuntimeException("");
-//        }
-        this.orderCount--;
-    }
-
     public int getOrderPrice() {
         return item.getPrice();
     }
@@ -59,6 +47,10 @@ public class CartItem {
 
     public void setCartItemId(Long cartItemId) {
         this.cartItemId = cartItemId;
+    }
+
+    public void setOrderCount(int orderCount) {
+        this.orderCount = orderCount;
     }
 
     public String getFormattedOrderPrice() {

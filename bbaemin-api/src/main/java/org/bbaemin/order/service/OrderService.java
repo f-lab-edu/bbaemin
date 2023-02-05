@@ -31,7 +31,7 @@ public class OrderService {
     public Order order(Long userId, CreateOrderRequest createOrderRequest) {
         Cart cart = cartService.getCart(userId);
         Order order = createOrderRequest.toEntity(cart);
-        cartService.removeAll(userId);
+        cartService.clear(userId);
 
         Order saved = orderRepository.insert(order);
         saved.getOrderItemList().stream().forEach(orderItem -> {
