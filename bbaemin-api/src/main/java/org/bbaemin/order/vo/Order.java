@@ -7,6 +7,10 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.bbaemin.cart.vo.Cart;
+import org.bbaemin.cart.vo.CartItem;
 import org.bbaemin.order.enums.OrderStatus;
 
 import static org.bbaemin.order.enums.OrderStatus.CANCEL_ORDER;
@@ -37,9 +41,11 @@ public class Order {
     private String email;           // 주문 내역 발송 메일
     private String messageToRider;  // 라이더님께
 
+    private List<Long> discountCouponIdList;
+
     @Builder
     public Order(Long orderId, Long userId, LocalDateTime orderDate, OrderStatus status, List<OrderItem> orderItemList, int orderAmount, int deliveryFee, int paymentAmount,
-            String paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider) {
+            String paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider, List<Long> discountCouponIdList) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
@@ -53,6 +59,7 @@ public class Order {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.messageToRider = messageToRider;
+        this.discountCouponIdList = discountCouponIdList;
     }
 
     public void cancel() {
@@ -87,5 +94,26 @@ public class Order {
 
     public String getFormattedOrderDate() {
         return getOrderDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    public void setCart(Cart cart) {
+
+        List<CartItem> cartItemList = cart.getCartItemList();
+        int orderAmount = cartItemList.stream().mapToInt(CartItem::getTotalOrderPrice).sum();
+        int deliveryFee = getDeliveryFee(orderAmount);
+
+        this.orderItemList = cartItemList.stream()
+                .map(CartItem::toOrderItem).collect(Collectors.toList());
+        this.orderAmount = orderAmount;
+        this.deliveryFee = deliveryFee;
+        this.paymentAmount = getPaymentAmount(orderAmount, deliveryFee, getDiscountCouponIdList());
+    }
+
+    private int getPaymentAmount(int orderAmount, int deliveryFee, List<Long> discountCouponIdList) {
+        return orderAmount + deliveryFee;
+    }
+
+    private int getDeliveryFee(int orderAmount) {
+        return orderAmount >= 10000 ? 0 : 3000;
     }
 }

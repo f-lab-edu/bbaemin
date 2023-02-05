@@ -1,9 +1,6 @@
 package org.bbaemin.order.controller;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import org.bbaemin.order.controller.request.CreateOrderRequest;
 import org.bbaemin.order.controller.response.OrderResponse;
 import org.bbaemin.order.controller.response.OrderSummaryResponse;
@@ -17,6 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.bbaemin.order.enums.OrderStatus.COMPLETE_ORDER;
 
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -42,8 +45,20 @@ public class OrderController {
     // 주문
     @PostMapping
     public OrderResponse order(Long userId, @RequestBody CreateOrderRequest createOrderRequest) {
-        Order order = orderService.order(userId, createOrderRequest);
-        return new OrderResponse(order);
+        // TODO - CHECK : toEntity()
+        Order order = Order.builder()
+                .userId(userId)
+                .orderDate(LocalDateTime.now())
+                .status(COMPLETE_ORDER)
+                .deliveryAddress(createOrderRequest.getDeliveryAddress())
+                .phoneNumber(createOrderRequest.getPhoneNumber())
+                .email(createOrderRequest.getEmail())
+                .messageToRider(createOrderRequest.getMessageToRider())
+                .discountCouponIdList(createOrderRequest.getDiscountCouponIdList())
+                .paymentMethod(createOrderRequest.getPaymentMethod())
+                .build();
+        Order saved = orderService.order(userId, order);
+        return new OrderResponse(saved);
     }
 
     // 주문 내역 삭제

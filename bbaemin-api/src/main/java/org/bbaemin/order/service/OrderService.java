@@ -28,13 +28,14 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
-    public Order order(Long userId, CreateOrderRequest createOrderRequest) {
+    public Order order(Long userId, Order order) {
+
         Cart cart = cartService.getCart(userId);
-        Order order = createOrderRequest.toEntity(cart);
+        order.setCart(cart);
         cartService.clear(userId);
 
         Order saved = orderRepository.insert(order);
-        saved.getOrderItemList().stream().forEach(orderItem -> {
+        saved.getOrderItemList().forEach(orderItem -> {
             orderItem.setOrderId(saved.getOrderId());
             orderItemRepository.insert(orderItem);
         });
