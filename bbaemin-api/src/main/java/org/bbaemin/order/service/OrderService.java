@@ -1,10 +1,9 @@
 package org.bbaemin.order.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.cart.repository.CartItemRepository;
 import org.bbaemin.cart.service.CartService;
 import org.bbaemin.cart.vo.Cart;
-import org.bbaemin.order.controller.request.CreateOrderRequest;
+import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
@@ -49,7 +48,7 @@ public class OrderService {
     public Order cancelOrder(Long userId, Long orderId) {
         // TODO - updateStatusCancel
         Order order = orderRepository.findById(orderId);
-        order.cancel();
+        order.setStatus(OrderStatus.CANCEL_ORDER);
         return orderRepository.update(order);
     }
 }

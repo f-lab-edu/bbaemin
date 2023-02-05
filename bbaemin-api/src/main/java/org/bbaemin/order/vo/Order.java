@@ -62,8 +62,8 @@ public class Order {
         this.discountCouponIdList = discountCouponIdList;
     }
 
-    public void cancel() {
-        this.status = CANCEL_ORDER;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public void setOrderId(Long orderId) {
