@@ -47,7 +47,7 @@ class UserServiceTest {
                 .passwordConfirm("password")
                 .phoneNumber("010-2233-4455")
                 .build();
-        User saved = userService.join(joinRequest);
+        User saved = userService.join(joinRequest.toEntity());
 
         // then
         User user = userService.getUser(saved.getUserId());
@@ -68,7 +68,7 @@ class UserServiceTest {
                 .passwordConfirm("password")
                 .phoneNumber("010-2233-4455")
                 .build();
-        User user = userService.join(joinRequest);
+        User user = userService.join(joinRequest.toEntity());
 
         // when
         UpdateUserInfoRequest updateUserInfoRequest = UpdateUserInfoRequest.builder()
@@ -76,7 +76,7 @@ class UserServiceTest {
                 .image("image_path")
                 .phoneNumber("010-2233-4456")
                 .build();
-        User updated = userService.updateUserInfo(user.getUserId(), updateUserInfoRequest);
+        User updated = userService.updateUserInfo(updateUserInfoRequest.toEntity(user.getUserId()));
 
         // then
         assertAll(
@@ -100,7 +100,7 @@ class UserServiceTest {
                 .passwordConfirm("password")
                 .phoneNumber("010-2233-4455")
                 .build();
-        User user = userService.join(joinRequest);
+        User user = userService.join(joinRequest.toEntity());
 
         // when
         userService.quit(user.getUserId());

@@ -35,14 +35,14 @@ public class UserController {
     // 회원 등록
     @PostMapping
     public UserResponse join(@RequestBody JoinRequest joinRequest) {
-        User user = userService.join(joinRequest);
+        User user = userService.join(joinRequest.toEntity());
         return new UserResponse(user);
     }
 
     // 회원정보 수정
     @PutMapping("/{userId}")
     public UserResponse updateUserInfo(@PathVariable Long userId, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        User user = userService.updateUserInfo(userId, updateUserInfoRequest);
+        User user = userService.updateUserInfo(updateUserInfoRequest.toEntity(userId));
         return new UserResponse(user);
     }
 
