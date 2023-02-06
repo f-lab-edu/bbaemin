@@ -1,21 +1,39 @@
 package org.bbaemin.config.response;
 
-import org.springframework.http.HttpStatus;
+
+import static org.bbaemin.config.response.ApiResult.ResultCode.SUCCESS;
 
 public class ApiResult<T> {
 
-    private Integer code;
-    private HttpStatus httpStatus;
+    private static final ApiResult<Void> OK = new ApiResult<>(SUCCESS);
 
-    private String message;
+    enum ResultCode {
+        SUCCESS(200), FAIL(500);
+
+        private int code;
+
+        ResultCode(int code) {
+            this.code = code;
+        }
+    }
+
+    private ResultCode code;
     private T result;
 
-    // TODO - error
-
-    public ApiResult(Integer code, HttpStatus httpStatus, String message, T result) {
+    private ApiResult(ResultCode code) {
         this.code = code;
-        this.httpStatus = httpStatus;
-        this.message = message;
+    }
+
+    private ApiResult(ResultCode code, T result) {
+        this.code = code;
         this.result = result;
+    }
+
+    public static ApiResult<Void> ok() {
+        return ApiResult.OK;
+    }
+
+    public static <T> ApiResult<T> ok(T result) {
+        return new ApiResult<>(SUCCESS, result);
     }
 }
