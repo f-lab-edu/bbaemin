@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
@@ -235,6 +234,14 @@ class ItemServiceTest {
         // then
         assertThat(updateItem.getName()).isEqualTo("닭고기 100g");
         assertThat(updateItem.getDescription()).isEqualTo("닭고기 100g");
+
+        // verify
+        verify(mockItemService, times(1)).updateItem(2L, updateItemRequest);
+        verify(mockItemService, atLeastOnce()).updateItem(2L, updateItemRequest);
+        verifyNoMoreInteractions(mockItemService);
+
+        InOrder inOrder = inOrder(mockItemService);
+        inOrder.verify(mockItemService).updateItem(2L, updateItemRequest);
     }
 
     @Test
