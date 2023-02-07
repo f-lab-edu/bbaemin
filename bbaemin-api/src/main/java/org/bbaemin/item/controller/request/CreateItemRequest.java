@@ -1,10 +1,13 @@
 package org.bbaemin.item.controller.request;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Builder
 public class CreateItemRequest {
 
     private Long categoryId;
@@ -18,8 +21,8 @@ public class CreateItemRequest {
 
     private List<ItemImageRequest> itemImageRequest;
 
-    @Getter @Setter
-    static class ItemImageRequest {
+    @Getter @Setter @Builder
+    public static class ItemImageRequest {
         private Long itemId;
         private String url;
         private String type;
