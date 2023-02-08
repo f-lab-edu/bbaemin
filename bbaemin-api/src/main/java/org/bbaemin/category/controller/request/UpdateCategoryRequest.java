@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateCategoryRequest {
+public class UpdateCategoryRequest {
 
     private Integer code;
     private String name;

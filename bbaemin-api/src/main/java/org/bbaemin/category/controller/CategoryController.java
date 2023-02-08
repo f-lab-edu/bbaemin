@@ -1,57 +1,43 @@
 package org.bbaemin.category.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.bbaemin.category.controller.request.CreateCategoryRequest;
+import org.bbaemin.category.controller.request.UpdateCategoryRequest;
 import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/category")
 public class CategoryController {
 
+    private final CategoryService categoryService;
+
     @GetMapping
     public List<CategoryResponse> listCategory() {
-        return List.of(CategoryResponse.builder()
-                .code("100")
-                .name("돼지고기")
-                .description("돼지고기")
-                .parent("육류")
-                .build());
+        return categoryService.listCategory();
     }
 
-    @GetMapping("/{idx}")
-    public CategoryResponse getCategory(@PathVariable Long idx) {
-        return CategoryResponse.builder()
-                .code("100")
-                .name("돼지고기")
-                .description("돼지고기")
-                .parent("육류")
-                .build();
+    @GetMapping("/{categoryId}")
+    public CategoryResponse getCategory(@PathVariable Long categoryId) {
+        return categoryService.getCategory(categoryId);
     }
 
     @PostMapping
     public CategoryResponse createCategory(@RequestBody CreateCategoryRequest createCategoryRequest) {
-        return CategoryResponse.builder()
-                .code("100")
-                .name("돼지고기")
-                .description("돼지고기")
-                .parent("육류")
-                .build();
+        return categoryService.createCategory(createCategoryRequest);
     }
 
-    @PutMapping("/{idx}")
-    public CategoryResponse updateCategory(@PathVariable Long idx) {
-        return CategoryResponse.builder()
-                .code("100")
-                .name("소고기")
-                .description("소고기")
-                .parent("육류")
-                .build();
+    @PutMapping("/{categoryId}")
+    public CategoryResponse updateCategory(@PathVariable Long categoryId, @RequestBody UpdateCategoryRequest updateCategoryRequest) {
+        return categoryService.updateCategory(categoryId, updateCategoryRequest);
     }
 
-    @DeleteMapping("/{idx}")
-    public Long deleteCategory(@PathVariable Long idx) {
-        return idx;
+    @DeleteMapping("/{categoryId}")
+    public Long deleteCategory(@PathVariable Long categoryId) {
+        return categoryService.deleteCategory(categoryId);
     }
 }
