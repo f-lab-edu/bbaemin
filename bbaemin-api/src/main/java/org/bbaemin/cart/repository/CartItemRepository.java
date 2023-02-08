@@ -1,21 +1,76 @@
 package org.bbaemin.cart.repository;
 
-import java.util.List;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.order.vo.Item_;
+import org.springframework.stereotype.Component;
 
-public interface CartItemRepository {
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-    CartItem findById(Long cartItemId);
+@Component
+public class CartItemRepository {
 
-    List<CartItem> findByUserId(Long userId);
+    private static final Map<Long, CartItem> map = new ConcurrentHashMap<>();
+    private static Long id = 0L;
 
-    CartItem insert(CartItem cartItem);
+    static {
+        map.put(1L, CartItem.builder()
+                        .cartItemId(1L)
+                        .item(new Item_(1L, "item1", "description1", 3000))
+                        .orderCount(1)
+                        .userId(1L)
+                        .build());
+        map.put(2L, CartItem.builder()
+                        .cartItemId(2L)
+                        .item(new Item_(2L, "item2", "description2", 5000))
+                        .orderCount(1)
+                        .userId(1L)
+                        .build());
+    }
 
-    CartItem update(CartItem cartItem);
+    public static void clear() {
+        map.clear();
+    }
 
-    void deleteById(Long cartItemId);
+    public CartItem findById(Long cartItemId) {
+        return map.get(cartItemId);
+    }
 
-    void deleteByIds(List<Long> cartItemIds);
+    public List<CartItem> findByUserId(Long userId) {
+        return map.values().stream()
+                .filter(cartItem -> cartItem.getUserId().equals(userId)).collect(Collectors.toList());
+    }
 
-    void deleteByUserId(Long userId);
+    public CartItem insert(CartItem cartItem) {
+        Long cartItemId = ++id;
+        cartItem.setCartItemId(cartItemId);
+        map.put(cartItemId, cartItem);
+        return cartItem;
+    }
+
+    public CartItem update(CartItem cartItem) {
+        map.put(cartItem.getCartItemId(), cartItem);
+        return cartItem;
+    }
+
+    public void deleteById(Long cartItemId) {
+        map.remove(cartItemId);
+    }
+
+    public void deleteByIds(List<Long> cartItemIds) {
+        cartItemIds.forEach(map::remove);
+    }
+
+    public void deleteByUserId(Long userId) {
+        Iterator<Map.Entry<Long, CartItem>> iterator = map.entrySet().stream().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Long, CartItem> next = iterator.next();
+            if (next.getValue().getUserId().equals(userId)) {
+                map.remove(next.getKey());
+            }
+        }
+    }
 }
