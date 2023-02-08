@@ -4,12 +4,15 @@ import org.bbaemin.item.controller.request.CreateItemRequest;
 import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemImageResponse;
 import org.bbaemin.item.controller.response.ItemResponse;
+import org.bbaemin.item.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
@@ -22,7 +25,10 @@ import static org.mockito.Mockito.*;
 class ItemServiceTest {
 
     @Mock
-    private ItemService mockItemService;
+    private ItemRepository itemRepository;
+
+    @InjectMocks
+    private ItemService itemService;
 
     private static List<ItemResponse> itemList = new ArrayList<>();
     private static Long itemId = 0L;
@@ -86,8 +92,8 @@ class ItemServiceTest {
     @DisplayName("아이템 리스트 조회")
     void 아이템리스트조회() {
         // when
-        when(mockItemService.listItem()).thenReturn(itemList);
-        List<ItemResponse> itemList = mockItemService.listItem();
+        when(itemRepository.listItem()).thenReturn(itemList);
+        List<ItemResponse> itemList = itemService.listItem();
 
         // then
         assertThat(itemList.get(0).getCategory()).isEqualTo("과일");
@@ -99,20 +105,20 @@ class ItemServiceTest {
         assertThat(itemList.get(1).getPrice()).isEqualTo(5000);
 
         // verify
-        verify(mockItemService, times(1)).listItem();
-        verify(mockItemService, atLeastOnce()).listItem();
-        verifyNoMoreInteractions(mockItemService);
+        verify(itemRepository, times(1)).listItem();
+        verify(itemRepository, atLeastOnce()).listItem();
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemService);
-        inOrder.verify(mockItemService).listItem();
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).listItem();
     }
 
     @Test
     @DisplayName("아이템 상세 조회")
     void 아이템상세조회() {
         // when
-        when(mockItemService.getItem(1L)).thenReturn(itemList.get(0));
-        ItemResponse getItem = mockItemService.getItem(1L);
+        when(itemRepository.getItem(1L)).thenReturn(itemList.get(0));
+        ItemResponse getItem = itemService.getItem(1L);
 
         // then
         assertThat(getItem.getCategory()).isEqualTo("과일");
@@ -120,12 +126,12 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(2000);
 
         // verify
-        verify(mockItemService, times(1)).getItem(1L);
-        verify(mockItemService, atLeastOnce()).getItem(1L);
-        verifyNoMoreInteractions(mockItemService);
+        verify(itemRepository, times(1)).getItem(1L);
+        verify(itemRepository, atLeastOnce()).getItem(1L);
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemService);
-        inOrder.verify(mockItemService).getItem(1L);
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).getItem(1L);
     }
 
     @Test
@@ -176,8 +182,8 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(mockItemService.createItem(createItemRequest)).thenReturn(createResponse);
-        ItemResponse getItem = mockItemService.createItem(createItemRequest);
+        when(itemRepository.createItem(createItemRequest)).thenReturn(createResponse);
+        ItemResponse getItem = itemService.createItem(createItemRequest);
 
         // then
         assertThat(getItem.getName()).isEqualTo("달달한 초코칩");
@@ -185,12 +191,12 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(3000);
 
         // verify
-        verify(mockItemService, times(1)).createItem(createItemRequest);
-        verify(mockItemService, atLeastOnce()).createItem(createItemRequest);
-        verifyNoMoreInteractions(mockItemService);
+        verify(itemRepository, times(1)).createItem(createItemRequest);
+        verify(itemRepository, atLeastOnce()).createItem(createItemRequest);
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemService);
-        inOrder.verify(mockItemService).createItem(createItemRequest);
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).createItem(createItemRequest);
     }
 
     @Test
@@ -228,38 +234,38 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(mockItemService.updateItem(2L, updateItemRequest)).thenReturn(updateResponse);
-        ItemResponse updateItem = mockItemService.updateItem(2L, updateItemRequest);
+        when(itemRepository.updateItem(2L, updateItemRequest)).thenReturn(updateResponse);
+        ItemResponse updateItem = itemService.updateItem(2L, updateItemRequest);
 
         // then
         assertThat(updateItem.getName()).isEqualTo("닭고기 100g");
         assertThat(updateItem.getDescription()).isEqualTo("닭고기 100g");
 
         // verify
-        verify(mockItemService, times(1)).updateItem(2L, updateItemRequest);
-        verify(mockItemService, atLeastOnce()).updateItem(2L, updateItemRequest);
-        verifyNoMoreInteractions(mockItemService);
+        verify(itemRepository, times(1)).updateItem(2L, updateItemRequest);
+        verify(itemRepository, atLeastOnce()).updateItem(2L, updateItemRequest);
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemService);
-        inOrder.verify(mockItemService).updateItem(2L, updateItemRequest);
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).updateItem(2L, updateItemRequest);
     }
 
     @Test
     @DisplayName("아이템 삭제")
     void 아이템삭제() {
         // when
-        when(mockItemService.deleteItem(2L)).thenReturn(2L);
-        Long deleteItemId = mockItemService.deleteItem(2L);
+        when(itemRepository.deleteItem(2L)).thenReturn(2L);
+        Long deleteItemId = itemService.deleteItem(2L);
 
         // then
         assertThat(deleteItemId).isEqualTo(2L);
 
         // verify
-        verify(mockItemService, times(1)).deleteItem(2L);
-        verify(mockItemService, atLeastOnce()).deleteItem(2L);
-        verifyNoMoreInteractions(mockItemService);
+        verify(itemRepository, times(1)).deleteItem(2L);
+        verify(itemRepository, atLeastOnce()).deleteItem(2L);
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemService);
-        inOrder.verify(mockItemService).deleteItem(2L);
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).deleteItem(2L);
     }
 }
