@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import org.bbaemin.cart.vo.CartItem;
-
 @ToString
 @Getter
 public class OrderItem {
@@ -13,17 +11,20 @@ public class OrderItem {
     private Long orderItemId;
     private Long orderId;
 
-    // private Long itemId;
-    private Item_ item;
+    private Long itemId;
+    private String itemName;
+    private String itemDescription;
 
     private int orderPrice;
     private int orderCount;
 
     @Builder
-    private OrderItem(Long orderItemId, Long orderId, Item_ item, int orderPrice, int orderCount) {
+    private OrderItem(Long orderItemId, Long orderId, Long itemId, String itemName, String itemDescription, int orderPrice, int orderCount) {
         this.orderItemId = orderItemId;
         this.orderId = orderId;
-        this.item = item;
+        this.itemId = itemId;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
         this.orderPrice = orderPrice;
         this.orderCount = orderCount;
     }
@@ -34,17 +35,5 @@ public class OrderItem {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
-    }
-
-    public int getTotalOrderPrice() {
-        return getOrderPrice() * getOrderCount();
-    }
-
-    public String getFormattedOrderPrice() {
-        return String.format("%,d원", getOrderPrice());
-    }
-
-    public String getFormattedTotalOrderPrice() {
-        return String.format("%,d원", getTotalOrderPrice());
     }
 }
