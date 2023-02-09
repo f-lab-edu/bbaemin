@@ -1,6 +1,9 @@
 package org.bbaemin.config.response;
 
 
+import org.springframework.http.HttpStatus;
+
+import static org.bbaemin.config.response.ApiResult.ResultCode.FAIL;
 import static org.bbaemin.config.response.ApiResult.ResultCode.SUCCESS;
 
 public class ApiResult<T> {
@@ -27,6 +30,18 @@ public class ApiResult<T> {
     private ApiResult(ResultCode code, T result) {
         this.code = code;
         this.result = result;
+    }
+
+    public static ApiResult<Error<String>> internalServerError(Exception e) {
+        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    public static <R> ApiResult<Error<R>> badRequest(R cause) {
+        return ApiResult.error(HttpStatus.BAD_REQUEST, cause);
+    }
+
+    public static <R> ApiResult<Error<R>> error(HttpStatus httpStatus, R cause) {
+        return new ApiResult<>(FAIL, new Error<>(httpStatus, cause));
     }
 
     public static ApiResult<Void> ok() {
