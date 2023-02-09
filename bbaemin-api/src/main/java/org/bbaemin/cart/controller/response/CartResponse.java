@@ -2,7 +2,7 @@ package org.bbaemin.cart.controller.response;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.bbaemin.cart.vo.Cart;
+import org.bbaemin.cart.vo.CartItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,8 +22,8 @@ public class CartResponse {
                 .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
     }
 
-    public CartResponse(Cart cart, int deliveryFee) {
-        this.cartItemList = cart.getCartItemList().stream()
+    public CartResponse(List<CartItem> cartItemList, int deliveryFee) {
+        this.cartItemList = cartItemList.stream()
                 .map(CartItemResponse::new).collect(Collectors.toList());
         this.orderAmountStr = getFormattedPrice(getOrderAmount());
         this.deliveryFeeStr = getFormattedPrice(deliveryFee);

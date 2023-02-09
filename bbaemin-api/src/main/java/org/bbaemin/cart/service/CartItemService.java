@@ -2,27 +2,31 @@ package org.bbaemin.cart.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bbaemin.cart.repository.CartItemRepository;
-import org.bbaemin.cart.vo.Cart;
 import org.bbaemin.cart.vo.CartItem;
-import org.bbaemin.order.vo.Item_;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CartService {
+public class CartItemService {
 
     private final CartItemRepository cartItemRepository;
 
-    public Cart getCart(Long userId) {
-        List<CartItem> cartItemList = cartItemRepository.findByUserId(userId);
-        return new Cart(userId, cartItemList);
+    public List<CartItem> getCartItemListByUserId(Long userId) {
+        return cartItemRepository.findByUserId(userId);
     }
 
     public CartItem addItem(Long userId, Long itemId) {
         CartItem cartItem = CartItem.builder()
-                .item(new Item_(itemId, "name", "description", 10000))
+                .itemId(itemId)
+
+                // TODO - itemRepository 조회
+                // Cart에 담았던 당시의 Item 정보
+                .itemName("name")
+                .itemDescription("description")
+                .orderPrice(10000)
+
                 .userId(userId)
                 .orderCount(1)
                 .build();
@@ -37,18 +41,15 @@ public class CartService {
         return cartItem;
     }
 
-    public Cart removeItem(Long userId, Long cartItemId) {
+    public void removeItem(Long userId, Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);
-        return getCart(userId);
     }
 
-    public Cart removeItems(Long userId, List<Long> cartItemIds) {
+    public void removeItems(Long userId, List<Long> cartItemIds) {
         cartItemRepository.deleteByIds(cartItemIds);
-        return getCart(userId);
     }
 
-    public Cart clear(Long userId) {
+    public void clear(Long userId) {
         cartItemRepository.deleteByUserId(userId);
-        return getCart(userId);
     }
 }
