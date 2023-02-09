@@ -2,10 +2,14 @@ package org.bbaemin.order.controller.response;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.bbaemin.order.vo.Order;
+import org.bbaemin.order.vo.OrderItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.bbaemin.order.vo.Order;
+
+import static org.bbaemin.util.StringUtils.getFormattedLocalDateTime;
+import static org.bbaemin.util.StringUtils.getFormattedPrice;
 
 @ToString
 @Getter
@@ -18,14 +22,14 @@ public class OrderResponse {
     // TODO - CHECK
 //    private String store;           // 가게
     private String description;
-    private String paymentAmount;   // 결제 금액 = 주문 금액 + 배달료
+    private String paymentAmountStr;   // 결제 금액 = 주문 금액 + 배달료
 
     private String orderDate;       // 주문일시
 
     private List<OrderItemResponse> orderItemList;
 
-    private String orderAmount;     // 주문 금액 (할인 금액 반영)
-    private String deliveryFee;     // 배달료
+    private String orderAmountStr;     // 주문 금액 (할인 금액 반영)
+    private String deliveryFeeStr;     // 배달료
 
     private String paymentMethod;   // 결제 수단
 
@@ -34,16 +38,16 @@ public class OrderResponse {
     private String email;           // 주문 내역 발송 메일
     private String messageToRider;  // 라이더님께
 
-    public OrderResponse(Order order) {
+    public OrderResponse(Order order, List<OrderItem> orderItemList) {
         this.orderId = order.getOrderId();
         this.status = order.getStatus().getName();
         this.description = order.getDescription();
-        this.paymentAmount = order.getFormattedPaymentAmount();
-        this.orderDate = order.getFormattedOrderDate();
-        this.orderItemList = order.getOrderItemList().stream()
+        this.paymentAmountStr = getFormattedPrice(order.getPaymentAmount());
+        this.orderDate = getFormattedLocalDateTime(order.getOrderDate());
+        this.orderItemList = orderItemList.stream()
                 .map(OrderItemResponse::new).collect(Collectors.toList());
-        this.orderAmount = order.getFormattedOrderAmount();
-        this.deliveryFee = order.getFormattedDeliveryFee();
+        this.orderAmountStr = getFormattedPrice(order.getOrderAmount());
+        this.deliveryFeeStr = getFormattedPrice(order.getDeliveryFee());
         this.paymentMethod = order.getPaymentMethod();
         this.deliveryAddress = order.getDeliveryAddress();
         this.phoneNumber = order.getPhoneNumber();

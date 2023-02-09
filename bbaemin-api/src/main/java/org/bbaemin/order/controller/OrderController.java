@@ -6,6 +6,7 @@ import org.bbaemin.order.controller.response.OrderResponse;
 import org.bbaemin.order.controller.response.OrderSummaryResponse;
 import org.bbaemin.order.service.OrderService;
 import org.bbaemin.order.vo.Order;
+import org.bbaemin.order.vo.OrderItem;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,13 +40,13 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public OrderResponse getOrder(Long userId, @PathVariable Long orderId) {
         Order order = orderService.getOrder(userId, orderId);
-        return new OrderResponse(order);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(orderId);
+        return new OrderResponse(order, orderItemList);
     }
 
     // 주문
     @PostMapping
     public OrderResponse order(Long userId, @RequestBody CreateOrderRequest createOrderRequest) {
-        // TODO - CHECK : toEntity()
         Order order = Order.builder()
                 .userId(userId)
                 .orderDate(LocalDateTime.now())
@@ -54,11 +55,11 @@ public class OrderController {
                 .phoneNumber(createOrderRequest.getPhoneNumber())
                 .email(createOrderRequest.getEmail())
                 .messageToRider(createOrderRequest.getMessageToRider())
-                .discountCouponIdList(createOrderRequest.getDiscountCouponIdList())
                 .paymentMethod(createOrderRequest.getPaymentMethod())
                 .build();
-        Order saved = orderService.order(userId, order);
-        return new OrderResponse(saved);
+        Order saved = orderService.order(userId, order, createOrderRequest.getDiscountCouponIdList());
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
+        return new OrderResponse(order, orderItemList);
     }
 
     // 주문 내역 삭제
@@ -71,6 +72,7 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public OrderResponse cancelOrder(Long userId, @PathVariable Long orderId) {
         Order order = orderService.cancelOrder(userId, orderId);
-        return new OrderResponse(order);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(orderId);
+        return new OrderResponse(order, orderItemList);
     }
 }

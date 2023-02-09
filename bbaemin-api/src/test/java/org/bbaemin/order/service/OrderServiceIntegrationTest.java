@@ -1,7 +1,8 @@
 package org.bbaemin.order.service;
 
 import org.bbaemin.cart.repository.CartItemRepository;
-import org.bbaemin.cart.service.CartService;
+import org.bbaemin.cart.service.CartItemService;
+import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
 import org.bbaemin.order.controller.response.OrderResponse;
 import org.bbaemin.order.controller.response.OrderSummaryResponse;
@@ -9,6 +10,7 @@ import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
+import org.bbaemin.order.vo.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class OrderServiceIntegrationTest {
 
+    DeliveryFeeService deliveryFeeService = new DeliveryFeeService();
+
     CartItemRepository cartItemRepository = new CartItemRepository();
-    CartService cartService = new CartService(cartItemRepository);
+    CartItemService cartItemService = new CartItemService(cartItemRepository);
 
     OrderRepository orderRepository = new OrderRepository();
     OrderItemRepository orderItemRepository = new OrderItemRepository();
-    OrderService orderService = new OrderService(orderRepository, orderItemRepository, cartService);
+    OrderService orderService = new OrderService(orderRepository, orderItemRepository, cartItemService, deliveryFeeService);
 
     @BeforeEach
     void init() {
@@ -37,93 +41,98 @@ class OrderServiceIntegrationTest {
     @Test
     void getOrderListByUserId() {
         // given
-        CartItem cartItem = cartService.addItem(1L, 1L);
+        CartItem cartItem = cartItemService.addItem(1L, 1L);
         Order order = orderService.order(1L, Order.builder()
-                .userId(1L)
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1111-2222")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .discountCouponIdList(List.of(1L, 2L))
-                .paymentMethod("신용/체크카드")
-                .build());
+                        .userId(1L)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod("신용/체크카드")
+                        .build(),
+                // discountCouponIdList
+                List.of(1L, 2L));
         // when
         List<Order> orderList = orderService.getOrderListByUserId(1L);
         // then
         assertThat(orderList.size()).isEqualTo(1);
         Order saved = orderList.get(0);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
         System.out.println(saved);
         System.out.println(new OrderSummaryResponse(saved));
-        System.out.println(new OrderResponse(saved));
+        System.out.println(new OrderResponse(saved, orderItemList));
     }
 
     @Test
     void getOrder() {
         // given
-        CartItem cartItem = cartService.addItem(1L, 1L);
+        CartItem cartItem = cartItemService.addItem(1L, 1L);
         Order order = orderService.order(1L, Order.builder()
-                .userId(1L)
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1111-2222")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .discountCouponIdList(List.of(1L, 2L))
-                .paymentMethod("신용/체크카드")
-                .build());
+                        .userId(1L)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod("신용/체크카드")
+                        .build(),
+                // discountCouponIdList
+                List.of(1L, 2L));
         // when
         Order saved = orderService.getOrder(1L, order.getOrderId());
         // then
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
         System.out.println(saved);
         System.out.println(new OrderSummaryResponse(saved));
-        System.out.println(new OrderResponse(saved));
+        System.out.println(new OrderResponse(saved, orderItemList));
     }
 
     @Test
     void order() {
         // given
-        CartItem cartItem = cartService.addItem(1L, 1L);
+        CartItem cartItem = cartItemService.addItem(1L, 1L);
         // when
         Order order = orderService.order(1L, Order.builder()
-                .userId(1L)
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1111-2222")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .discountCouponIdList(List.of(1L, 2L))
-                .paymentMethod("신용/체크카드")
-                .build());
+                        .userId(1L)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod("신용/체크카드")
+                        .build(),
+                // discountCouponIdList
+                List.of(1L, 2L));
         // then
         Order saved = orderRepository.findById(order.getOrderId());
         List<Order> orderList = orderRepository.findByUserId(1L);
         assertAll(
                 () -> assertThat(saved).isEqualTo(order),
                 () -> assertThat(orderList.get(0)).isEqualTo(order),
-
-                () -> assertThat(cartService.getCart(1L).getCartItemList()).isEmpty()
+                () -> assertThat(cartItemService.getCartItemListByUserId(1L)).isEmpty()
         );
     }
 
     @Test
     void deleteOrder() {
         // given
-        CartItem cartItem = cartService.addItem(1L, 1L);
+        CartItem cartItem = cartItemService.addItem(1L, 1L);
         Order order = orderService.order(1L, Order.builder()
-                .userId(1L)
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1111-2222")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .discountCouponIdList(List.of(1L, 2L))
-                .paymentMethod("신용/체크카드")
-                .build());
+                        .userId(1L)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod("신용/체크카드")
+                        .build(),
+                // discountCouponIdList
+                List.of(1L, 2L));
         // when
         orderService.deleteOrder(1L, order.getOrderId());
         // then
@@ -133,18 +142,19 @@ class OrderServiceIntegrationTest {
     @Test
     void cancelOrder() {
         // given
-        CartItem cartItem = cartService.addItem(1L, 1L);
+        CartItem cartItem = cartItemService.addItem(1L, 1L);
         Order order = orderService.order(1L, Order.builder()
-                .userId(1L)
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1111-2222")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .discountCouponIdList(List.of(1L, 2L))
-                .paymentMethod("신용/체크카드")
-                .build());
+                        .userId(1L)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod("신용/체크카드")
+                        .build(),
+                // discountCouponIdList
+                List.of(1L, 2L));
         // when
         orderService.cancelOrder(1L, order.getOrderId());
         // then
