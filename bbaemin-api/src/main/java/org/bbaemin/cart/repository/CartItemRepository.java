@@ -1,7 +1,6 @@
 package org.bbaemin.cart.repository;
 
 import org.bbaemin.cart.vo.CartItem;
-import org.bbaemin.order.vo.Item_;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
@@ -15,21 +14,6 @@ public class CartItemRepository {
 
     private static final Map<Long, CartItem> map = new ConcurrentHashMap<>();
     private static Long id = 0L;
-
-    static {
-        map.put(1L, CartItem.builder()
-                        .cartItemId(1L)
-                        .item(new Item_(1L, "item1", "description1", 3000))
-                        .orderCount(1)
-                        .userId(1L)
-                        .build());
-        map.put(2L, CartItem.builder()
-                        .cartItemId(2L)
-                        .item(new Item_(2L, "item2", "description2", 5000))
-                        .orderCount(1)
-                        .userId(1L)
-                        .build());
-    }
 
     public static void clear() {
         map.clear();

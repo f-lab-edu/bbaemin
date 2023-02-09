@@ -1,26 +1,35 @@
 package org.bbaemin.cart.controller.response;
 
-import lombok.Getter;
 import lombok.ToString;
-
 import org.bbaemin.cart.vo.CartItem;
 
+import static org.bbaemin.util.StringUtils.getFormattedPrice;
+
 @ToString
-@Getter
 public class CartItemResponse {
 
     private String itemName;
     private String itemDescription;
 
-    private String orderPrice;
+    private int orderPrice;
+    private String orderPriceStr;
+
     private int orderCount;
-    private String totalOrderPrice;
+
+    private int totalOrderPrice;
+    private String totalOrderPriceStr;
+
+    public int getTotalOrderPrice() {
+        return this.totalOrderPrice;
+    }
 
     public CartItemResponse(CartItem cartItem) {
-        this.itemName = cartItem.getItem().getName();
-        this.itemDescription = cartItem.getItem().getDescription();
-        this.orderPrice = cartItem.getFormattedOrderPrice();
+        this.itemName = cartItem.getItemName();
+        this.itemDescription = cartItem.getItemDescription();
+        this.orderPrice = cartItem.getOrderPrice();
+        this.orderPriceStr = getFormattedPrice(cartItem.getOrderPrice());
         this.orderCount = cartItem.getOrderCount();
-        this.totalOrderPrice = cartItem.getFormattedTotalOrderPrice();
+        this.totalOrderPrice = cartItem.getOrderPrice() * cartItem.getOrderCount();
+        this.totalOrderPriceStr = getFormattedPrice(cartItem.getOrderPrice() * cartItem.getOrderCount());
     }
 }
