@@ -44,40 +44,40 @@ public class CategoryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : listCategory
+     * 1. MethodName : findAll
      * 2. ClassName  : CategoryRepository.java
      * 3. Comment    : 카테고리 리스트 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public List<CategoryResponse> listCategory() {
+    public List<CategoryResponse> findAll() {
         return categoryList;
     }
 
     /**
      * <pre>
-     * 1. MethodName : getCategory
+     * 1. MethodName : findById
      * 2. ClassName  : CategoryRepository.java
      * 3. Comment    : 카테고리 상세 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse getCategory(Long categoryId) {
+    public CategoryResponse findById(Long categoryId) {
         return oneCategory(categoryId);
     }
 
     /**
      * <pre>
-     * 1. MethodName : createCategory
+     * 1. MethodName : save
      * 2. ClassName  : CategoryRepository.java
      * 3. Comment    : 카테고리 등록
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
+    public CategoryResponse save(CreateCategoryRequest createCategoryRequest) {
         return CategoryResponse.builder()
                 .categoryId(++categoryId)
                 .code(createCategoryRequest.getCode())
@@ -89,14 +89,14 @@ public class CategoryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : updateCategory
+     * 1. MethodName : update
      * 2. ClassName  : CategoryRepository.java
      * 3. Comment    : 카테고리 수정
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
+    public CategoryResponse update(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
         return CategoryResponse.builder()
                 .categoryId(categoryId)
                 .code(updateCategoryRequest.getCode())
@@ -108,14 +108,14 @@ public class CategoryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : deleteCategory
+     * 1. MethodName : deleteById
      * 2. ClassName  : CategoryRepository.java
      * 3. Comment    : 카테고리 삭제
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public Long deleteCategory(Long categoryId) {
+    public Long deleteById(Long categoryId) {
         categoryList.stream().filter(category -> category.getCategoryId().equals(categoryId))
                 .collect(Collectors.toList()).remove(0);
 

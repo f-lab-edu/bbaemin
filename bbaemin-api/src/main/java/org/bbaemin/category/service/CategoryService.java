@@ -25,7 +25,7 @@ public class CategoryService {
      * </pre>
      */
     public List<CategoryResponse> listCategory() {
-        return categoryRepository.listCategory();
+        return categoryRepository.findAll();
     }
 
     /**
@@ -38,7 +38,7 @@ public class CategoryService {
      * </pre>
      */
     public CategoryResponse getCategory(Long categoryId) {
-        return categoryRepository.getCategory(categoryId);
+        return categoryRepository.findById(categoryId);
     }
 
     /**
@@ -51,7 +51,7 @@ public class CategoryService {
      * </pre>
      */
     public CategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
-        return categoryRepository.createCategory(createCategoryRequest);
+        return categoryRepository.save(createCategoryRequest);
     }
 
     /**
@@ -64,7 +64,7 @@ public class CategoryService {
      * </pre>
      */
     public CategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
-        return categoryRepository.updateCategory(categoryId, updateCategoryRequest);
+        return categoryRepository.update(categoryId, updateCategoryRequest);
     }
 
     /**
@@ -77,6 +77,6 @@ public class CategoryService {
      * </pre>
      */
     public Long deleteCategory(Long categoryId) {
-        return categoryRepository.deleteCategory(categoryId);
+        return categoryRepository.deleteById(categoryId);
     }
 }
