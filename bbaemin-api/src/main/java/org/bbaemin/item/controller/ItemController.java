@@ -5,8 +5,10 @@ import org.bbaemin.item.controller.request.CreateItemRequest;
 import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemResponse;
 import org.bbaemin.item.service.ItemService;
+import org.bbaemin.item.vo.Item;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,12 +30,52 @@ public class ItemController {
 
     @PostMapping
     public ItemResponse createItem(@RequestBody CreateItemRequest createItemRequest) {
-        return itemService.createItem(createItemRequest);
+        Item item = Item.builder()
+                .categoryId(createItemRequest.getCategoryId())
+                .storeId(createItemRequest.getStoreId())
+                .price(createItemRequest.getPrice())
+                .quantity(createItemRequest.getQuantity())
+                .itemImageRequest(
+                        Arrays.asList(
+                                Item.ItemImageRequest.builder()
+                                        .itemId(createItemRequest.getItemImageRequest().get(0).getItemId())
+                                        .url(createItemRequest.getItemImageRequest().get(0).getUrl())
+                                        .type(createItemRequest.getItemImageRequest().get(0).getType())
+                                        .build(),
+                                Item.ItemImageRequest.builder()
+                                        .itemId(createItemRequest.getItemImageRequest().get(1).getItemId())
+                                        .url(createItemRequest.getItemImageRequest().get(1).getUrl())
+                                        .type(createItemRequest.getItemImageRequest().get(1).getType())
+                                        .build()
+                        ))
+                .build();
+
+        return itemService.createItem(item);
     }
 
     @PutMapping("/{itemId}")
     public ItemResponse updateItem(@PathVariable Long itemId, @RequestBody UpdateItemRequest updateItemRequest) {
-        return itemService.updateItem(itemId, updateItemRequest);
+        Item item = Item.builder()
+                .categoryId(updateItemRequest.getCategoryId())
+                .storeId(updateItemRequest.getStoreId())
+                .price(updateItemRequest.getPrice())
+                .quantity(updateItemRequest.getQuantity())
+                .itemImageRequest(
+                        Arrays.asList(
+                                Item.ItemImageRequest.builder()
+                                        .itemId(updateItemRequest.getItemImageRequest().get(0).getItemId())
+                                        .url(updateItemRequest.getItemImageRequest().get(0).getUrl())
+                                        .type(updateItemRequest.getItemImageRequest().get(0).getType())
+                                        .build(),
+                                Item.ItemImageRequest.builder()
+                                        .itemId(updateItemRequest.getItemImageRequest().get(1).getItemId())
+                                        .url(updateItemRequest.getItemImageRequest().get(1).getUrl())
+                                        .type(updateItemRequest.getItemImageRequest().get(1).getType())
+                                        .build()
+                        ))
+                .build();
+
+        return itemService.updateItem(itemId, item);
     }
 
     @DeleteMapping("/{itemId}")

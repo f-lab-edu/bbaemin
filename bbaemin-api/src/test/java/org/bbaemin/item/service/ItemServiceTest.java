@@ -1,10 +1,9 @@
 package org.bbaemin.item.service;
 
-import org.bbaemin.item.controller.request.CreateItemRequest;
-import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemImageResponse;
 import org.bbaemin.item.controller.response.ItemResponse;
 import org.bbaemin.item.repository.ItemRepository;
+import org.bbaemin.item.vo.Item;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ class ItemServiceTest {
     @InjectMocks
     private ItemService itemService;
 
-    private static List<ItemResponse> itemList = new ArrayList<>();
+    private static final List<ItemResponse> itemList = new ArrayList<>();
     private static Long itemId = 0L;
 
     void createItem() {
@@ -136,7 +135,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템 등록")
     void 아이템등록() {
-        CreateItemRequest createItemRequest = CreateItemRequest.builder()
+        Item item = Item.builder()
                 .categoryId(1L)
                 .storeId(1L)
                 .name("달달한 초코칩")
@@ -145,12 +144,12 @@ class ItemServiceTest {
                 .quantity(999)
                 .itemImageRequest(
                         Arrays.asList(
-                                CreateItemRequest.ItemImageRequest.builder()
+                                Item.ItemImageRequest.builder()
                                         .itemId(3L)
                                         .url("https://image.thumbnail.com")
                                         .type("thumbnail")
                                         .build(),
-                                CreateItemRequest.ItemImageRequest.builder()
+                                Item.ItemImageRequest.builder()
                                         .itemId(3L)
                                         .url("https://image.detail.com")
                                         .type("detail")
@@ -162,10 +161,10 @@ class ItemServiceTest {
                 .itemId(itemId)
                 .category("과자")
                 .store("B마트 계양점")
-                .name(createItemRequest.getName())
-                .description(createItemRequest.getDescription())
-                .price(createItemRequest.getPrice())
-                .quantity(createItemRequest.getQuantity())
+                .name(item.getName())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .quantity(item.getQuantity())
                 .itemImageResponse(
                         Arrays.asList(
                                 ItemImageResponse.builder()
@@ -181,8 +180,8 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(itemRepository.save(createItemRequest)).thenReturn(createResponse);
-        ItemResponse getItem = itemService.createItem(createItemRequest);
+        when(itemRepository.save(item)).thenReturn(createResponse);
+        ItemResponse getItem = itemService.createItem(item);
 
         // then
         assertThat(getItem.getName()).isEqualTo("달달한 초코칩");
@@ -190,18 +189,18 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(3000);
 
         // verify
-        verify(itemRepository, times(1)).save(createItemRequest);
-        verify(itemRepository, atLeastOnce()).save(createItemRequest);
+        verify(itemRepository, times(1)).save(item);
+        verify(itemRepository, atLeastOnce()).save(item);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).save(createItemRequest);
+        inOrder.verify(itemRepository).save(item);
     }
 
     @Test
     @DisplayName("아이템 수정")
     void 아이템수정() {
-        UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
+        Item item = Item.builder()
                 .categoryId(999L)
                 .storeId(999L)
                 .name("닭고기 100g")
@@ -214,10 +213,10 @@ class ItemServiceTest {
                 .itemId(itemId)
                 .category("과자")
                 .store("B마트 계양점")
-                .name(updateItemRequest.getName())
-                .description(updateItemRequest.getDescription())
-                .price(updateItemRequest.getPrice())
-                .quantity(updateItemRequest.getQuantity())
+                .name(item.getName())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .quantity(item.getQuantity())
                 .itemImageResponse(
                         Arrays.asList(
                                 ItemImageResponse.builder()
@@ -233,20 +232,20 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(itemRepository.update(2L, updateItemRequest)).thenReturn(updateResponse);
-        ItemResponse updateItem = itemService.updateItem(2L, updateItemRequest);
+        when(itemRepository.update(2L, item)).thenReturn(updateResponse);
+        ItemResponse updateItem = itemService.updateItem(2L, item);
 
         // then
         assertThat(updateItem.getName()).isEqualTo("닭고기 100g");
         assertThat(updateItem.getDescription()).isEqualTo("닭고기 100g");
 
         // verify
-        verify(itemRepository, times(1)).update(2L, updateItemRequest);
-        verify(itemRepository, atLeastOnce()).update(2L, updateItemRequest);
+        verify(itemRepository, times(1)).update(2L, item);
+        verify(itemRepository, atLeastOnce()).update(2L, item);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).update(2L, updateItemRequest);
+        inOrder.verify(itemRepository).update(2L, item);
     }
 
     @Test

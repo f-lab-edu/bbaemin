@@ -5,6 +5,7 @@ import org.bbaemin.item.controller.request.CreateItemRequest;
 import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemResponse;
 import org.bbaemin.item.repository.ItemRepository;
+import org.bbaemin.item.vo.Item;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,8 +51,8 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse createItem(CreateItemRequest createItemRequest) {
-        return itemRepository.save(createItemRequest);
+    public ItemResponse createItem(Item item) {
+        return itemRepository.save(item);
     }
 
     /**
@@ -63,8 +64,8 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
-        return itemRepository.update(itemId, updateItemRequest);
+    public ItemResponse updateItem(Long itemId, Item item) {
+        return itemRepository.update(itemId, item);
     }
 
     /**

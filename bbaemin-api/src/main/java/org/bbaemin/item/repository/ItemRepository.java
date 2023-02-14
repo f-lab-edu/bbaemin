@@ -1,9 +1,8 @@
 package org.bbaemin.item.repository;
 
-import org.bbaemin.item.controller.request.CreateItemRequest;
-import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemImageResponse;
 import org.bbaemin.item.controller.response.ItemResponse;
+import org.bbaemin.item.vo.Item;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -106,24 +105,24 @@ public class ItemRepository {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse save(CreateItemRequest createItemRequest) {
+    public ItemResponse save(Item item) {
         return ItemResponse.builder()
                 .itemId(++itemId)
                 .category("과자")
                 .store("B마트 계양점")
-                .name("달달한 초코칩")
-                .description("순도 100% 초콜릿 초코칩")
-                .price(3000)
-                .quantity(999)
+                .name(item.getName())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .quantity(item.getQuantity())
                 .itemImageResponse(
                         Arrays.asList(
                                 ItemImageResponse.builder()
-                                        .url("https://image.thumbnail.com")
-                                        .type("thumbnail")
+                                        .url(item.getItemImageRequest().get(0).getUrl())
+                                        .type(item.getItemImageRequest().get(0).getType())
                                         .build(),
                                 ItemImageResponse.builder()
-                                        .url("https://image.detail.com")
-                                        .type("detail")
+                                        .url(item.getItemImageRequest().get(1).getUrl())
+                                        .type(item.getItemImageRequest().get(1).getType())
                                         .build()
                         )
                 )
@@ -139,24 +138,24 @@ public class ItemRepository {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse update(Long itemId, UpdateItemRequest updateItemRequest) {
+    public ItemResponse update(Long itemId, Item item) {
         return ItemResponse.builder()
                 .itemId(itemId)
                 .category("과자")
                 .store("B마트 계양점")
-                .name(updateItemRequest.getName())
-                .description(updateItemRequest.getDescription())
-                .price(updateItemRequest.getPrice())
-                .quantity(updateItemRequest.getQuantity())
+                .name(item.getName())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .quantity(item.getQuantity())
                 .itemImageResponse(
                         Arrays.asList(
                                 ItemImageResponse.builder()
-                                        .url("https://image.thumbnail.com")
-                                        .type("thumbnail")
+                                        .url(item.getItemImageRequest().get(0).getUrl())
+                                        .type(item.getItemImageRequest().get(0).getType())
                                         .build(),
                                 ItemImageResponse.builder()
-                                        .url("https://image.detail.com")
-                                        .type("detail")
+                                        .url(item.getItemImageRequest().get(1).getUrl())
+                                        .type(item.getItemImageRequest().get(1).getType())
                                         .build()
                         )
                 )

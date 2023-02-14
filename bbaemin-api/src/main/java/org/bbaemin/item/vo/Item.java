@@ -1,4 +1,4 @@
-package org.bbaemin.item.controller.request;
+package org.bbaemin.item.vo;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 @Builder
-public class UpdateItemRequest {
+public class Item {
 
+    private Long itemId;
     private Long categoryId;
-
     private Long storeId;
 
     private String name;
