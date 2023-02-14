@@ -5,9 +5,9 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.37.128.188:3306/chanee
-    username: root
-    password: chanee1234!#%Z
+    url: ENC(HufVEV4W+ynnAc8BpouhxGtGx3a1ceVjyektgkAZkGZ5OGu8n5vuhpDaE+Hm9Ute) # TODO
+    username: ENC(cxfArgS8RAalawi+OHv5jg==) # TODO
+    password: ENC(1NUNT15zhoEEFWyI+xTvypLERxcAKMUh) #TODO
   jpa:
     hibernate:
       ddl-auto: none
