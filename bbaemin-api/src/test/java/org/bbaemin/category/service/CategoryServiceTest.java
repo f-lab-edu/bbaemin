@@ -1,9 +1,8 @@
 package org.bbaemin.category.service;
 
-import org.bbaemin.category.controller.request.CreateCategoryRequest;
-import org.bbaemin.category.controller.request.UpdateCategoryRequest;
 import org.bbaemin.category.controller.response.CategoryResponse;
 import org.bbaemin.category.repository.CategoryRepository;
+import org.bbaemin.category.vo.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ class CategoryServiceTest {
     @InjectMocks
     private CategoryService categoryService;
 
-    private static List<CategoryResponse> categoryList = new ArrayList<>();
+    private static final List<CategoryResponse> categoryList = new ArrayList<>();
     private static Long categoryId = 0L;
 
     void createCategory() {
@@ -109,7 +108,7 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리 등록")
     void 카테고리등록() {
-        CreateCategoryRequest createCategoryRequest = CreateCategoryRequest.builder()
+        Category category = Category.builder()
                 .code(102)
                 .name("닭고기")
                 .description("닭고기")
@@ -119,14 +118,14 @@ class CategoryServiceTest {
         CategoryResponse categoryResponse = CategoryResponse.builder()
                 .categoryId(categoryId)
                 .code(102)
-                .name(createCategoryRequest.getName())
-                .description(createCategoryRequest.getDescription())
+                .name(category.getName())
+                .description(category.getDescription())
                 .parent(100)
                 .build();
 
         // when
-        when(categoryRepository.save(createCategoryRequest)).thenReturn(categoryResponse);
-        CategoryResponse getCategory = categoryService.createCategory(createCategoryRequest);
+        when(categoryRepository.save(category)).thenReturn(categoryResponse);
+        CategoryResponse getCategory = categoryService.createCategory(category);
 
         // then
         assertThat(getCategory.getCode()).isEqualTo(102);
@@ -135,18 +134,18 @@ class CategoryServiceTest {
         assertThat(getCategory.getParent()).isEqualTo(100);
 
         // verify
-        verify(categoryRepository, times(1)).save(createCategoryRequest);
-        verify(categoryRepository, atLeastOnce()).save(createCategoryRequest);
+        verify(categoryRepository, times(1)).save(category);
+        verify(categoryRepository, atLeastOnce()).save(category);
         verifyNoMoreInteractions(categoryRepository);
 
         InOrder inOrder = inOrder(categoryRepository);
-        inOrder.verify(categoryRepository).save(createCategoryRequest);
+        inOrder.verify(categoryRepository).save(category);
     }
 
     @Test
     @DisplayName("카테고리 수정")
     void 카테고리수정() {
-        UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
+        Category category = Category.builder()
                 .code(102)
                 .name("소고기")
                 .description("소고기")
@@ -156,14 +155,14 @@ class CategoryServiceTest {
         CategoryResponse updateResponse = CategoryResponse.builder()
                 .categoryId(categoryId)
                 .code(102)
-                .name(updateCategoryRequest.getName())
-                .description(updateCategoryRequest.getDescription())
+                .name(category.getName())
+                .description(category.getDescription())
                 .parent(100)
                 .build();
 
         // when
-        when(categoryRepository.update(2L, updateCategoryRequest)).thenReturn(updateResponse);
-        CategoryResponse updateCategory = categoryService.updateCategory(2L, updateCategoryRequest);
+        when(categoryRepository.update(2L, category)).thenReturn(updateResponse);
+        CategoryResponse updateCategory = categoryService.updateCategory(2L, category);
 
         // then
         assertThat(updateCategory.getCode()).isEqualTo(102);
@@ -171,12 +170,12 @@ class CategoryServiceTest {
         assertThat(updateCategory.getDescription()).isEqualTo("소고기");
 
         // verify
-        verify(categoryRepository, times(1)).update(2L, updateCategoryRequest);
-        verify(categoryRepository, atLeastOnce()).update(2L, updateCategoryRequest);
+        verify(categoryRepository, times(1)).update(2L, category);
+        verify(categoryRepository, atLeastOnce()).update(2L, category);
         verifyNoMoreInteractions(categoryRepository);
 
         InOrder inOrder = inOrder(categoryRepository);
-        inOrder.verify(categoryRepository).update(2L, updateCategoryRequest);
+        inOrder.verify(categoryRepository).update(2L, category);
     }
 
     @Test

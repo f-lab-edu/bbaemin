@@ -1,10 +1,9 @@
 package org.bbaemin.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.controller.request.CreateCategoryRequest;
-import org.bbaemin.category.controller.request.UpdateCategoryRequest;
 import org.bbaemin.category.controller.response.CategoryResponse;
 import org.bbaemin.category.repository.CategoryRepository;
+import org.bbaemin.category.vo.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,8 +49,8 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
-        return categoryRepository.save(createCategoryRequest);
+    public CategoryResponse createCategory(Category category) {
+        return categoryRepository.save(category);
     }
 
     /**
@@ -63,8 +62,8 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
-        return categoryRepository.update(categoryId, updateCategoryRequest);
+    public CategoryResponse updateCategory(Long categoryId, Category category) {
+        return categoryRepository.update(categoryId, category);
     }
 
     /**

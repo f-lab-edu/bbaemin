@@ -1,8 +1,7 @@
 package org.bbaemin.category.repository;
 
-import org.bbaemin.category.controller.request.CreateCategoryRequest;
-import org.bbaemin.category.controller.request.UpdateCategoryRequest;
 import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.vo.Category;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -77,13 +76,13 @@ public class CategoryRepository {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse save(CreateCategoryRequest createCategoryRequest) {
+    public CategoryResponse save(Category category) {
         return CategoryResponse.builder()
                 .categoryId(++categoryId)
-                .code(createCategoryRequest.getCode())
-                .name(createCategoryRequest.getName())
-                .description(createCategoryRequest.getDescription())
-                .parent(createCategoryRequest.getCode())
+                .code(category.getCode())
+                .name(category.getName())
+                .description(category.getDescription())
+                .parent(category.getCode())
                 .build();
     }
 
@@ -96,13 +95,13 @@ public class CategoryRepository {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse update(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
+    public CategoryResponse update(Long categoryId, Category category) {
         return CategoryResponse.builder()
                 .categoryId(categoryId)
-                .code(updateCategoryRequest.getCode())
-                .name(updateCategoryRequest.getName())
-                .description(updateCategoryRequest.getDescription())
-                .parent(updateCategoryRequest.getCode())
+                .code(category.getCode())
+                .name(category.getName())
+                .description(category.getDescription())
+                .parent(category.getCode())
                 .build();
     }
 

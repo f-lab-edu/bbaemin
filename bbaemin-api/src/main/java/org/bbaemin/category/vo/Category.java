@@ -1,14 +1,17 @@
-package org.bbaemin.category.controller.request;
+package org.bbaemin.category.vo;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class CreateCategoryRequest {
+@Builder
+public class Category {
+
+    private Long categoryId;
 
     private Integer code;
     private String name;
     private String description;
 
-    private Long parentId;    // 상위 카테고리
+    private Long parentId;
 }
