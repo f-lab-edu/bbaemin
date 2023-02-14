@@ -25,7 +25,7 @@ public class ItemService {
      * </pre>
      */
     public List<ItemResponse> listItem() {
-        return itemRepository.listItem();
+        return itemRepository.findAll();
     }
 
     /**
@@ -38,7 +38,7 @@ public class ItemService {
      * </pre>
      */
     public ItemResponse getItem(Long itemId) {
-        return itemRepository.getItem(itemId);
+        return itemRepository.findById(itemId);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ItemService {
      * </pre>
      */
     public ItemResponse createItem(CreateItemRequest createItemRequest) {
-        return itemRepository.createItem(createItemRequest);
+        return itemRepository.save(createItemRequest);
     }
 
     /**
@@ -64,7 +64,7 @@ public class ItemService {
      * </pre>
      */
     public ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
-        return itemRepository.updateItem(itemId, updateItemRequest);
+        return itemRepository.update(itemId, updateItemRequest);
     }
 
     /**
@@ -77,6 +77,6 @@ public class ItemService {
      * </pre>
      */
     public Long deleteItem(Long itemId) {
-        return itemRepository.deleteItem(itemId);
+        return itemRepository.deleteById(itemId);
     }
 }

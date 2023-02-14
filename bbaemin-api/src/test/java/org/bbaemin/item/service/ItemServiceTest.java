@@ -12,7 +12,6 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ class ItemServiceTest {
     @DisplayName("아이템 리스트 조회")
     void 아이템리스트조회() {
         // when
-        when(itemRepository.listItem()).thenReturn(itemList);
+        when(itemRepository.findAll()).thenReturn(itemList);
         List<ItemResponse> itemList = itemService.listItem();
 
         // then
@@ -105,19 +104,19 @@ class ItemServiceTest {
         assertThat(itemList.get(1).getPrice()).isEqualTo(5000);
 
         // verify
-        verify(itemRepository, times(1)).listItem();
-        verify(itemRepository, atLeastOnce()).listItem();
+        verify(itemRepository, times(1)).findAll();
+        verify(itemRepository, atLeastOnce()).findAll();
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).listItem();
+        inOrder.verify(itemRepository).findAll();
     }
 
     @Test
     @DisplayName("아이템 상세 조회")
     void 아이템상세조회() {
         // when
-        when(itemRepository.getItem(1L)).thenReturn(itemList.get(0));
+        when(itemRepository.findById(1L)).thenReturn(itemList.get(0));
         ItemResponse getItem = itemService.getItem(1L);
 
         // then
@@ -126,12 +125,12 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(2000);
 
         // verify
-        verify(itemRepository, times(1)).getItem(1L);
-        verify(itemRepository, atLeastOnce()).getItem(1L);
+        verify(itemRepository, times(1)).findById(1L);
+        verify(itemRepository, atLeastOnce()).findById(1L);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).getItem(1L);
+        inOrder.verify(itemRepository).findById(1L);
     }
 
     @Test
@@ -182,7 +181,7 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(itemRepository.createItem(createItemRequest)).thenReturn(createResponse);
+        when(itemRepository.save(createItemRequest)).thenReturn(createResponse);
         ItemResponse getItem = itemService.createItem(createItemRequest);
 
         // then
@@ -191,12 +190,12 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(3000);
 
         // verify
-        verify(itemRepository, times(1)).createItem(createItemRequest);
-        verify(itemRepository, atLeastOnce()).createItem(createItemRequest);
+        verify(itemRepository, times(1)).save(createItemRequest);
+        verify(itemRepository, atLeastOnce()).save(createItemRequest);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).createItem(createItemRequest);
+        inOrder.verify(itemRepository).save(createItemRequest);
     }
 
     @Test
@@ -234,7 +233,7 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(itemRepository.updateItem(2L, updateItemRequest)).thenReturn(updateResponse);
+        when(itemRepository.update(2L, updateItemRequest)).thenReturn(updateResponse);
         ItemResponse updateItem = itemService.updateItem(2L, updateItemRequest);
 
         // then
@@ -242,30 +241,30 @@ class ItemServiceTest {
         assertThat(updateItem.getDescription()).isEqualTo("닭고기 100g");
 
         // verify
-        verify(itemRepository, times(1)).updateItem(2L, updateItemRequest);
-        verify(itemRepository, atLeastOnce()).updateItem(2L, updateItemRequest);
+        verify(itemRepository, times(1)).update(2L, updateItemRequest);
+        verify(itemRepository, atLeastOnce()).update(2L, updateItemRequest);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).updateItem(2L, updateItemRequest);
+        inOrder.verify(itemRepository).update(2L, updateItemRequest);
     }
 
     @Test
     @DisplayName("아이템 삭제")
     void 아이템삭제() {
         // when
-        when(itemRepository.deleteItem(2L)).thenReturn(2L);
+        when(itemRepository.deleteById(2L)).thenReturn(2L);
         Long deleteItemId = itemService.deleteItem(2L);
 
         // then
         assertThat(deleteItemId).isEqualTo(2L);
 
         // verify
-        verify(itemRepository, times(1)).deleteItem(2L);
-        verify(itemRepository, atLeastOnce()).deleteItem(2L);
+        verify(itemRepository, times(1)).deleteById(2L);
+        verify(itemRepository, atLeastOnce()).deleteById(2L);
         verifyNoMoreInteractions(itemRepository);
 
         InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).deleteItem(2L);
+        inOrder.verify(itemRepository).deleteById(2L);
     }
 }

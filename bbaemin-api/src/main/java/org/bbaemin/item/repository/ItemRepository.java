@@ -73,40 +73,40 @@ public class ItemRepository {
 
     /**
      * <pre>
-     * 1. MethodName : listItem
+     * 1. MethodName : findAll
      * 2. ClassName  : ItemRepository.java
      * 3. Comment    : 아이템 리스트 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public List<ItemResponse> listItem() {
+    public List<ItemResponse> findAll() {
         return itemList;
     }
 
     /**
      * <pre>
-     * 1. MethodName : getItem
+     * 1. MethodName : findById
      * 2. ClassName  : ItemRepository.java
      * 3. Comment    : 아이템 상세 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse getItem(Long itemId) {
+    public ItemResponse findById(Long itemId) {
         return oneResponse(itemId);
     }
 
     /**
      * <pre>
-     * 1. MethodName : createItem
+     * 1. MethodName : save
      * 2. ClassName  : ItemRepository.java
      * 3. Comment    : 아이템 등록
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse createItem(CreateItemRequest createItemRequest) {
+    public ItemResponse save(CreateItemRequest createItemRequest) {
         return ItemResponse.builder()
                 .itemId(++itemId)
                 .category("과자")
@@ -132,14 +132,14 @@ public class ItemRepository {
 
     /**
      * <pre>
-     * 1. MethodName : updateItem
+     * 1. MethodName : update
      * 2. ClassName  : ItemRepository.java
      * 3. Comment    : 아이템 수정
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
+    public ItemResponse update(Long itemId, UpdateItemRequest updateItemRequest) {
         return ItemResponse.builder()
                 .itemId(itemId)
                 .category("과자")
@@ -165,14 +165,14 @@ public class ItemRepository {
 
     /**
      * <pre>
-     * 1. MethodName : deleteItem
+     * 1. MethodName : deleteById
      * 2. ClassName  : ItemRepository.java
      * 3. Comment    : 아이템 삭제
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public Long deleteItem(Long itemId) {
+    public Long deleteById(Long itemId) {
         itemList.stream().filter(item -> item.getItemId().equals(itemId))
                 .collect(Collectors.toList()).remove(0);
 
