@@ -1,10 +1,9 @@
 package org.bbaemin.category.controller.request;
 
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class CreateCategoryRequest {
+public class UpdateCategoryRequest {
 
     private Integer code;
     private String name;

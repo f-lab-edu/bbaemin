@@ -1,11 +1,11 @@
-package org.bbaemin.category.controller.response;
+package org.bbaemin.category.vo;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class CategoryResponse {
+public class Category {
 
     private Long categoryId;
 
@@ -13,5 +13,5 @@ public class CategoryResponse {
     private String name;
     private String description;
 
-    private Integer parent;
+    private Long parentId;
 }
