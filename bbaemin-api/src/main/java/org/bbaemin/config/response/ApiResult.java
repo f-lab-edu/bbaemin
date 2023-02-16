@@ -20,6 +20,16 @@ public class ApiResult<T> {
         }
     }
 
+    public static class Error<R> {
+        private HttpStatus httpStatus;
+        private R cause;
+
+        public Error(HttpStatus httpStatus, R cause) {
+            this.httpStatus = httpStatus;
+            this.cause = cause;
+        }
+    }
+
     private ResultCode code;
     private T result;
 
