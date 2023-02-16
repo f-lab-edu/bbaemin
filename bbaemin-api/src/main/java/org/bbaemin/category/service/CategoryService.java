@@ -1,18 +1,24 @@
 package org.bbaemin.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.domain.CategoryDto;
+import org.bbaemin.category.domain.CategoryEntity;
 import org.bbaemin.category.repository.CategoryRepository;
-import org.bbaemin.category.vo.Category;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    private CategoryEntity oneCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId).orElseThrow();
+    }
 
     /**
      * <pre>
@@ -23,8 +29,11 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public List<CategoryResponse> listCategory() {
-        return categoryRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<CategoryDto> listCategory() {
+        return categoryRepository.findAll()
+                .stream().map(CategoryEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -36,8 +45,9 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse getCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId);
+    @Transactional(readOnly = true)
+    public CategoryDto getCategory(Long categoryId) {
+        return CategoryEntity.toDto(oneCategory(categoryId));
     }
 
     /**
@@ -49,8 +59,13 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse createCategory(Category category) {
-        return categoryRepository.save(category);
+    @Transactional
+    public CategoryDto createCategory(CategoryEntity categoryEntity) {
+        if (categoryEntity.getParent() != null) {
+            categoryEntity.setParent(categoryEntity.getParent());
+            categoryEntity.getChildren().add(categoryEntity);
+        }
+        return CategoryEntity.toDto(categoryRepository.save(categoryEntity));
     }
 
     /**
@@ -62,8 +77,17 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse updateCategory(Long categoryId, Category category) {
-        return categoryRepository.update(categoryId, category);
+    @Transactional
+    public CategoryDto updateCategory(Long categoryId, CategoryEntity categoryEntity) {
+        CategoryEntity oneCategory = oneCategory(categoryId);
+        oneCategory.setCode(categoryEntity.getCode());
+        oneCategory.setName(categoryEntity.getName());
+        oneCategory.setDescription(categoryEntity.getDescription());
+        if (oneCategory.getParent() != null) {
+            oneCategory.setParent(categoryEntity.getParent());
+            oneCategory.getChildren().add(categoryEntity);
+        }
+        return CategoryEntity.toDto(oneCategory);
     }
 
     /**
@@ -75,7 +99,9 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
+    @Transactional
     public Long deleteCategory(Long categoryId) {
-        return categoryRepository.deleteById(categoryId);
+        categoryRepository.findById(categoryId);
+        return categoryId;
     }
 }

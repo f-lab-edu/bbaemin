@@ -1,11 +1,9 @@
 package org.bbaemin.category.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.controller.request.CreateCategoryRequest;
-import org.bbaemin.category.controller.request.UpdateCategoryRequest;
-import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.domain.CategoryDto;
+import org.bbaemin.category.domain.CategoryEntity;
 import org.bbaemin.category.service.CategoryService;
-import org.bbaemin.category.vo.Category;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,37 +16,23 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryResponse> listCategory() {
+    public List<CategoryDto> listCategory() {
         return categoryService.listCategory();
     }
 
     @GetMapping("/{categoryId}")
-    public CategoryResponse getCategory(@PathVariable Long categoryId) {
+    public CategoryDto getCategory(@PathVariable Long categoryId) {
         return categoryService.getCategory(categoryId);
     }
 
     @PostMapping
-    public CategoryResponse createCategory(@RequestBody CreateCategoryRequest createCategoryRequest) {
-        Category category = Category.builder()
-                .code(createCategoryRequest.getCode())
-                .name(createCategoryRequest.getName())
-                .description(createCategoryRequest.getDescription())
-                .parentId(createCategoryRequest.getParentId())
-                .build();
-
-        return categoryService.createCategory(category);
+    public CategoryDto createCategory(@RequestBody CategoryEntity categoryEntity) {
+        return categoryService.createCategory(categoryEntity);
     }
 
     @PutMapping("/{categoryId}")
-    public CategoryResponse updateCategory(@PathVariable Long categoryId, @RequestBody UpdateCategoryRequest updateCategoryRequest) {
-        Category category = Category.builder()
-                .code(updateCategoryRequest.getCode())
-                .name(updateCategoryRequest.getName())
-                .description(updateCategoryRequest.getDescription())
-                .parentId(updateCategoryRequest.getParentId())
-                .build();
-
-        return categoryService.updateCategory(categoryId, category);
+    public CategoryDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryEntity categoryEntity) {
+        return categoryService.updateCategory(categoryId, categoryEntity);
     }
 
     @DeleteMapping("/{categoryId}")
