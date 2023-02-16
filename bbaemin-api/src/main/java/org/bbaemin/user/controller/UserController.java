@@ -35,14 +35,27 @@ public class UserController {
     // 회원 등록
     @PostMapping
     public UserResponse join(@RequestBody JoinRequest joinRequest) {
-        User user = userService.join(joinRequest.toEntity());
+        User user = userService.join(
+                User.builder()
+                        .email(joinRequest.getEmail())
+                        .nickname(joinRequest.getNickname())
+                        .image(joinRequest.getImage())
+                        .password(joinRequest.getPassword())
+                        .phoneNumber(joinRequest.getPhoneNumber())
+                        .build());
         return new UserResponse(user);
     }
 
     // 회원정보 수정
     @PutMapping("/{userId}")
     public UserResponse updateUserInfo(@PathVariable Long userId, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        User user = userService.updateUserInfo(updateUserInfoRequest.toEntity(userId));
+        User user = userService.updateUserInfo(
+                User.builder()
+                        .userId(userId)
+                        .nickname(updateUserInfoRequest.getNickname())
+                        .image(updateUserInfoRequest.getImage())
+                        .phoneNumber(updateUserInfoRequest.getPhoneNumber())
+                        .build());
         return new UserResponse(user);
     }
 

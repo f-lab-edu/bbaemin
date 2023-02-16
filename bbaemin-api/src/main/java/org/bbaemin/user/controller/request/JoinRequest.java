@@ -1,8 +1,9 @@
 package org.bbaemin.user.controller.request;
 
 import lombok.Builder;
-import org.bbaemin.user.vo.User;
+import lombok.Getter;
 
+@Getter
 public class JoinRequest {
 
     private String email;
@@ -14,16 +15,6 @@ public class JoinRequest {
     private String passwordConfirm;
 
     private String phoneNumber;
-
-    public User toEntity() {
-        return User.builder()
-                .email(email)
-                .nickname(nickname)
-                .image(image)
-                .password(password)
-                .phoneNumber(phoneNumber)
-                .build();
-    }
 
     @Builder
     private JoinRequest(String email, String nickname, String image, String password, String passwordConfirm, String phoneNumber) {
