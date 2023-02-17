@@ -23,31 +23,36 @@ subprojects {
 
     dependencies {
 
-        // lombok
+        // dependencies alphabet order
+        // H2
+        testImplementation 'com.h2database:h2'
+
+        // Jasypt 암호화 관련
+        implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
+        // Jdbc
+        implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+        // JPA
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+        // Junit
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
+        // Lombok
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.projectlombok:lombok'
 
-        // junit
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-
         // MySQL
         runtimeOnly 'mysql:mysql-connector-java'
 
-        // JPA
+        // Spring
         implementation 'org.springframework.boot:spring-boot-starter-web'
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-        // H2
-        implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-        testImplementation 'com.h2database:h2'
-
-        // yml 암호화 관련
-        implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
     }
 
     test {
