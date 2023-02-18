@@ -9,8 +9,6 @@ import java.util.List;
 @Builder
 public class ItemResponse {
 
-    private Long itemId;
-
     private String category;
 
     private String store;

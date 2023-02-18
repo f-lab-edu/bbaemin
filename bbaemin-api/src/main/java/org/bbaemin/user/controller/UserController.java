@@ -4,64 +4,70 @@ import lombok.RequiredArgsConstructor;
 import org.bbaemin.user.controller.request.JoinRequest;
 import org.bbaemin.user.controller.request.UpdateUserInfoRequest;
 import org.bbaemin.user.controller.response.UserResponse;
-import org.bbaemin.user.service.UserService;
-import org.bbaemin.user.vo.User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/api/v1/users")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-
     // 회원 리스트
     @GetMapping
     public List<UserResponse> listUser() {
-        return userService.getUserList().stream()
-                .map(UserResponse::new).collect(Collectors.toList());
+        return Arrays.asList(
+                UserResponse.builder()
+                        .userId(1L)
+                        .email("user1@email.com")
+                        .nickname("user1")
+                        .image(null)
+                        .phoneNumber("010-1234-5678")
+                        .build(),
+                UserResponse.builder()
+                        .userId(2L)
+                        .email("user2@email.com")
+                        .nickname("user2")
+                        .image(null)
+                        .phoneNumber("010-1111-2222")
+                        .build()
+        );
     }
 
     // 회원 조회
     @GetMapping("/{userId}")
     public UserResponse getUser(@PathVariable Long userId) {
-        User user = userService.getUser(userId);
-        return new UserResponse(user);
+        return UserResponse.builder()
+                .userId(userId)
+                .email("user1@email.com")
+                .nickname("user1")
+                .image(null)
+                .phoneNumber("010-1234-5678")
+                .build();
     }
 
     // 회원 등록
     @PostMapping
-    public UserResponse join(@RequestBody JoinRequest joinRequest) {
-        User user = userService.join(
-                User.builder()
-                        .email(joinRequest.getEmail())
-                        .nickname(joinRequest.getNickname())
-                        .image(joinRequest.getImage())
-                        .password(joinRequest.getPassword())
-                        .phoneNumber(joinRequest.getPhoneNumber())
-                        .build());
-        return new UserResponse(user);
+    public Long join(JoinRequest joinRequest) {
+        return 1L;
     }
 
     // 회원정보 수정
     @PutMapping("/{userId}")
-    public UserResponse updateUserInfo(@PathVariable Long userId, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        User user = userService.updateUserInfo(
-                User.builder()
-                        .userId(userId)
-                        .nickname(updateUserInfoRequest.getNickname())
-                        .image(updateUserInfoRequest.getImage())
-                        .phoneNumber(updateUserInfoRequest.getPhoneNumber())
-                        .build());
-        return new UserResponse(user);
+    public Long updateUserInfo(@PathVariable Long userId, UpdateUserInfoRequest updateUserInfoRequest) {
+        return userId;
     }
 
     // 회원 탈퇴
     @PatchMapping("/{userId}")
-    public void quit(@PathVariable Long userId) {
-        userService.quit(userId);
+    public Long quit(@PathVariable Long userId) {
+        return userId;
     }
 }
