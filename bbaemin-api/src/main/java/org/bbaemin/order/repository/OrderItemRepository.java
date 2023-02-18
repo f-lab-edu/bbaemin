@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderItemRepository {
 
-    private static final Map<Long, OrderItem> map = new ConcurrentHashMap<>();
-    private static Long id = 0L;
+    private final Map<Long, OrderItem> map = new ConcurrentHashMap<>();
+    private Long id = 0L;
 
     public OrderItem findById(Long orderItemId) {
         return map.get(orderItemId);

@@ -24,18 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class OrderServiceIntegrationTest {
 
     DeliveryFeeService deliveryFeeService = new DeliveryFeeService();
-
     CartItemRepository cartItemRepository = new CartItemRepository();
     CartItemService cartItemService = new CartItemService(cartItemRepository);
-
     OrderRepository orderRepository = new OrderRepository();
     OrderItemRepository orderItemRepository = new OrderItemRepository();
     OrderService orderService = new OrderService(orderRepository, orderItemRepository, cartItemService, deliveryFeeService);
 
     @BeforeEach
     void init() {
-        OrderRepository.clear();
-        CartItemRepository.clear();
+        orderRepository.clear();
+        cartItemRepository.clear();
     }
 
     @Test

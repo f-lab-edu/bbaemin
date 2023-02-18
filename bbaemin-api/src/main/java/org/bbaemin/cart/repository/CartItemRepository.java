@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @Component
 public class CartItemRepository {
 
-    private static final Map<Long, CartItem> map = new ConcurrentHashMap<>();
-    private static Long id = 0L;
+    private final Map<Long, CartItem> map = new ConcurrentHashMap<>();
+    private Long id = 0L;
 
-    public static void clear() {
+    public void clear() {
         map.clear();
     }
 

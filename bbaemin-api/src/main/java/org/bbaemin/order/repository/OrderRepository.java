@@ -1,11 +1,8 @@
 package org.bbaemin.order.repository;
 
-import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.vo.Order;
-import org.bbaemin.order.vo.OrderItem;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,10 +11,10 @@ import java.util.stream.Collectors;
 @Component
 public class OrderRepository {
 
-    private static final Map<Long, Order> map = new ConcurrentHashMap<>();
-    private static Long id = 0L;
+    private final Map<Long, Order> map = new ConcurrentHashMap<>();
+    private Long id = 0L;
 
-    public static void clear() {
+    public void clear() {
         map.clear();
     }
 
