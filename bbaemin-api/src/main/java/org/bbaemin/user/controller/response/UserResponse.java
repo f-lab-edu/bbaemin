@@ -1,7 +1,9 @@
 package org.bbaemin.user.controller.response;
 
+import lombok.Getter;
 import org.bbaemin.user.vo.User;
 
+@Getter
 public class UserResponse {
 
     private Long userId;

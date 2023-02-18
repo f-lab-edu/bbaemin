@@ -1,11 +1,13 @@
 package org.bbaemin.config.response;
 
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import static org.bbaemin.config.response.ApiResult.ResultCode.FAIL;
 import static org.bbaemin.config.response.ApiResult.ResultCode.SUCCESS;
 
+@Getter
 public class ApiResult<T> {
 
     private static final ApiResult<Void> OK = new ApiResult<>(SUCCESS);
