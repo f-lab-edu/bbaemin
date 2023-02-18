@@ -18,6 +18,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -130,6 +131,32 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.result.phoneNumber").value(user.getPhoneNumber()));
         // then
         verify(userService).join(any(User.class));
+    }
+
+    @Test
+    void join_throws_BindException_when_nickname_is_blank() throws Exception {
+        // given
+        // when
+        JoinRequest joinRequest = JoinRequest.builder()
+                .email("user@email.com")
+                .nickname("")
+                .image(null)
+                .password("password")
+                .passwordConfirm("passwordConfirm")
+                .phoneNumber("010-1234-5678")
+                .build();
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(joinRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("FAIL"))
+                .andExpect(jsonPath("$.result").exists())
+                .andExpect(jsonPath("$.result.httpStatus").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.result.cause").exists());
+        // then
+        verify(userService, times(0)).join(any(User.class));
     }
 
     @Test

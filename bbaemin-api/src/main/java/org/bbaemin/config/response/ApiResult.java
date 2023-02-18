@@ -22,6 +22,7 @@ public class ApiResult<T> {
         }
     }
 
+    @Getter
     public static class Error<R> {
         private HttpStatus httpStatus;
         private R cause;

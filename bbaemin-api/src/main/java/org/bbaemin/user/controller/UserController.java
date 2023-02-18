@@ -1,12 +1,15 @@
 package org.bbaemin.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.config.exception.BindException;
 import org.bbaemin.config.response.ApiResult;
 import org.bbaemin.user.controller.request.JoinRequest;
 import org.bbaemin.user.controller.request.UpdateUserInfoRequest;
 import org.bbaemin.user.controller.response.UserResponse;
 import org.bbaemin.user.service.UserService;
 import org.bbaemin.user.vo.User;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +46,15 @@ public class UserController {
 
     // 회원 등록
     @PostMapping
-    public ApiResult<UserResponse> join(@RequestBody JoinRequest joinRequest) {
+    public ApiResult<UserResponse> join(@Validated @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            // TODO - CHECK : org.springframework.validation.BindException
+            // validation 라이브러리에서 제공하는 BindException을 사용하는 것이 좋은가?
+            // checked 예외 vs unchecked 예외
+            throw new BindException(bindingResult);
+        }
+
         User user = userService.join(
                 User.builder()
                         .email(joinRequest.getEmail())
@@ -57,7 +68,12 @@ public class UserController {
 
     // 회원정보 수정
     @PutMapping("/{userId}")
-    public ApiResult<UserResponse> updateUserInfo(@PathVariable Long userId, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
+    public ApiResult<UserResponse> updateUserInfo(@PathVariable Long userId, @Validated @RequestBody UpdateUserInfoRequest updateUserInfoRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+
         User user = userService.updateUserInfo(userId,
                 updateUserInfoRequest.getNickname(),
                 updateUserInfoRequest.getImage(),
