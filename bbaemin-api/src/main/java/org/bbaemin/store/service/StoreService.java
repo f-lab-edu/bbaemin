@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,7 +90,7 @@ public class StoreService {
     public StoreDto updateStore(Long storeId, StoreEntity storeEntity) {
         StoreEntity oneStore = oneStore(storeId);
         // 기존 매장 카테고리와 다를 시 새로운 연관관계 설정
-        if (oneStore.getStoreCategory() != storeEntity.getStoreCategory()) {
+        if (!Objects.equals(oneStore.getStoreCategory().getCategoryId(), storeEntity.getStoreCategory().getCategoryId())) {
             CategoryEntity oneCategory = oneCategory(storeEntity.getStoreCategory().getCategoryId());
             storeEntity.setStoreCategory(oneCategory);
             oneCategory.getStoreList().add(storeEntity);
