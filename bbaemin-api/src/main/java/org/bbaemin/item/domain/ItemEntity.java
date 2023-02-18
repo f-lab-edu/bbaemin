@@ -3,6 +3,7 @@ package org.bbaemin.item.domain;
 import lombok.*;
 import org.bbaemin.category.domain.CategoryEntity;
 import org.bbaemin.store.domain.StoreEntity;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
 public class ItemEntity {
 
     @Id
