@@ -41,6 +41,7 @@ public class OrderService {
         int orderAmount = cartItemList.stream().mapToInt(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount()).sum();
         int deliveryFee = deliveryFeeService.getDeliveryFee(orderAmount);
 
+        // TODO - 어떻게 테스트 하나요?
         List<OrderItem> orderItemList = cartItemList.stream()
                 .map(cartItem -> OrderItem.builder()
                         .itemId(cartItem.getItemId())
