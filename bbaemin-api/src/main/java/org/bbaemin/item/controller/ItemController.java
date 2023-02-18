@@ -1,6 +1,7 @@
 package org.bbaemin.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.config.response.ApiResult;
 import org.bbaemin.item.domain.ItemDTO;
 import org.bbaemin.item.domain.ItemEntity;
 import org.bbaemin.item.service.ItemService;
@@ -17,27 +18,27 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDTO> listItem() {
-        return itemService.listItem();
+    public ApiResult<List<ItemDTO>> listItem() {
+        return ApiResult.ok(itemService.listItem());
     }
 
     @GetMapping("/{itemId}")
-    public ItemDTO getItem(@PathVariable Long itemId) {
-        return itemService.getItem(itemId);
+    public ApiResult<ItemDTO> getItem(@PathVariable Long itemId) {
+        return ApiResult.ok(itemService.getItem(itemId));
     }
 
     @PostMapping
-    public ItemDTO createItem(@Valid @RequestBody ItemEntity itemEntity) {
-        return itemService.createItem(itemEntity);
+    public ApiResult<ItemDTO> createItem(@Valid @RequestBody ItemEntity itemEntity) {
+        return ApiResult.ok(itemService.createItem(itemEntity));
     }
 
     @PutMapping("/{itemId}")
-    public ItemDTO updateItem(@PathVariable Long itemId, @Valid @RequestBody ItemEntity itemEntity) {
-        return itemService.updateItem(itemId, itemEntity);
+    public ApiResult<ItemDTO> updateItem(@PathVariable Long itemId, @Valid @RequestBody ItemEntity itemEntity) {
+        return ApiResult.ok(itemService.updateItem(itemId, itemEntity));
     }
 
     @DeleteMapping("/{itemId}")
-    public Long deleteItem(@PathVariable Long itemId) {
-        return itemService.deleteItem(itemId);
+    public ApiResult<Long> deleteItem(@PathVariable Long itemId) {
+        return ApiResult.ok(itemService.deleteItem(itemId));
     }
 }
