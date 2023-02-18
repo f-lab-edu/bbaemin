@@ -1,6 +1,6 @@
 package org.bbaemin.user.controller.response;
 
-import lombok.Builder;
+import org.bbaemin.user.vo.User;
 
 public class UserResponse {
 
@@ -11,12 +11,11 @@ public class UserResponse {
 
     private String phoneNumber;
 
-    @Builder
-    private UserResponse(Long userId, String email, String nickname, String image, String phoneNumber) {
-        this.userId = userId;
-        this.email = email;
-        this.nickname = nickname;
-        this.image = image;
-        this.phoneNumber = phoneNumber;
+    public UserResponse(User user) {
+        this.userId = user.getUserId();
+        this.email = user.getEmail();
+        this.nickname = user.getNickname();
+        this.image = user.getImage();
+        this.phoneNumber = user.getPhoneNumber();
     }
 }

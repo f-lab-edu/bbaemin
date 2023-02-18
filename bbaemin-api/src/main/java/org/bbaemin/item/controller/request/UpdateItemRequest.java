@@ -6,7 +6,8 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class CreateItemRequest {
+@Builder
+public class UpdateItemRequest {
 
     private Long categoryId;
 
