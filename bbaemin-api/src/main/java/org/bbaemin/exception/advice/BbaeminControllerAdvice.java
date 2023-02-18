@@ -3,13 +3,14 @@ package org.bbaemin.exception.advice;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestControllerAdvice
 public class BbaeminControllerAdvice {
@@ -24,7 +25,7 @@ public class BbaeminControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     protected Error handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();
@@ -36,6 +37,6 @@ public class BbaeminControllerAdvice {
             builder.append(fieldError.getDefaultMessage());
         }
 
-        return new Error("BAD_REQUEST", 400, builder.toString());
+        return new Error(BAD_REQUEST.getReasonPhrase(), BAD_REQUEST.value(), builder.toString());
     }
 }
