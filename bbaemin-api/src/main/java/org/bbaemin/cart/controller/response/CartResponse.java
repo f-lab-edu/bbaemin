@@ -17,15 +17,16 @@ public class CartResponse {
     private String orderAmountStr;
     private String deliveryFeeStr;
 
-    private int getOrderAmount() {
-        return getCartItemList().stream()
-                .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
-    }
-
     public CartResponse(List<CartItem> cartItemList, int deliveryFee) {
         this.cartItemList = cartItemList.stream()
                 .map(CartItemResponse::new).collect(Collectors.toList());
         this.orderAmountStr = getFormattedPrice(getOrderAmount());
         this.deliveryFeeStr = getFormattedPrice(deliveryFee);
     }
+
+    private int getOrderAmount() {
+        return getCartItemList().stream()
+                .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
+    }
+
 }

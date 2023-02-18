@@ -19,10 +19,6 @@ public class CartItemResponse {
     private int totalOrderPrice;
     private String totalOrderPriceStr;
 
-    public int getTotalOrderPrice() {
-        return this.totalOrderPrice;
-    }
-
     public CartItemResponse(CartItem cartItem) {
         this.itemName = cartItem.getItemName();
         this.itemDescription = cartItem.getItemDescription();
@@ -32,4 +28,9 @@ public class CartItemResponse {
         this.totalOrderPrice = cartItem.getOrderPrice() * cartItem.getOrderCount();
         this.totalOrderPriceStr = getFormattedPrice(cartItem.getOrderPrice() * cartItem.getOrderCount());
     }
+
+    public int getTotalOrderPrice() {
+        return this.totalOrderPrice;
+    }
+
 }

@@ -16,7 +16,6 @@ import static org.bbaemin.util.StringUtils.getFormattedPrice;
 public class OrderResponse {
 
     private Long orderId;           // 주문번호
-
     private String status;
 
     // TODO - CHECK

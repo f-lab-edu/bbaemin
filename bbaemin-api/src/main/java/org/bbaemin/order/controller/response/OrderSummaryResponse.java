@@ -21,7 +21,6 @@ public class OrderSummaryResponse {
         this.orderId = order.getOrderId();
         this.status = order.getStatus().getName();
         this.description = order.getDescription();
-
         this.paymentAmountStr = getFormattedPrice(order.getPaymentAmount());
         this.orderDate = getFormattedLocalDateTime(order.getOrderDate());
     }

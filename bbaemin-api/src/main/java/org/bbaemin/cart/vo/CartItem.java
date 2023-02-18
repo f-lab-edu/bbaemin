@@ -9,7 +9,6 @@ import lombok.ToString;
 public class CartItem {
 
     private Long cartItemId;
-
     private Long itemId;
     private String itemName;
     private String itemDescription;
