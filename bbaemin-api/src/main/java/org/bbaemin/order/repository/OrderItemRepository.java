@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bbaemin.order.vo.OrderItem;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,12 +42,6 @@ public class OrderItemRepository {
     }
 
     public void deleteByOrderId(Long orderId) {
-        Iterator<Map.Entry<Long, OrderItem>> iterator = map.entrySet().stream().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Long, OrderItem> next = iterator.next();
-            if (next.getValue().getOrderId().equals(orderId)) {
-                map.remove(next.getKey());
-            }
-        }
+        map.entrySet().removeIf(entry -> entry.getValue().getOrderId().equals(orderId));
     }
 }
