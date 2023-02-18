@@ -23,20 +23,26 @@ subprojects {
 
     dependencies {
 
-        // lombok
-        compileOnly 'org.projectlombok:lombok:1.18.22'
-        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        // dependencies alphabet order
+        annotationProcessor 'org.projectlombok:lombok'
 
-        // junit
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+        compileOnly 'org.projectlombok:lombok'
 
-        // mysql
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+        implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+        implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+
         runtimeOnly 'mysql:mysql-connector-java'
 
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        testImplementation 'com.h2database:h2'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+        testImplementation 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     }
 
     test {
