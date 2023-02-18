@@ -49,13 +49,10 @@ public class UserController {
     // 회원정보 수정
     @PutMapping("/{userId}")
     public UserResponse updateUserInfo(@PathVariable Long userId, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        User user = userService.updateUserInfo(
-                User.builder()
-                        .userId(userId)
-                        .nickname(updateUserInfoRequest.getNickname())
-                        .image(updateUserInfoRequest.getImage())
-                        .phoneNumber(updateUserInfoRequest.getPhoneNumber())
-                        .build());
+        User user = userService.updateUserInfo(userId,
+                updateUserInfoRequest.getNickname(),
+                updateUserInfoRequest.getImage(),
+                updateUserInfoRequest.getPhoneNumber());
         return new UserResponse(user);
     }
 
