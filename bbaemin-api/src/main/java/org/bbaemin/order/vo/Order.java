@@ -18,8 +18,6 @@ public class Order {
 
     private OrderStatus status;          // 주문완료, 주문취소 / 배달중, 배달완료, 배달취소
 
-    private String description;
-
     private int orderAmount;     // 주문 금액 (할인 금액 반영)
     private int deliveryFee;     // 배달료
     private int paymentAmount;   // 결제 금액 = 주문 금액 + 배달료
@@ -34,13 +32,12 @@ public class Order {
     private String messageToRider;  // 라이더님께
 
     @Builder
-    public Order(Long orderId, Long userId, LocalDateTime orderDate, OrderStatus status, String description, int orderAmount, int deliveryFee, int paymentAmount,
+    public Order(Long orderId, Long userId, LocalDateTime orderDate, OrderStatus status, int orderAmount, int deliveryFee, int paymentAmount,
             String paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status;
-        this.description = description;
         this.orderAmount = orderAmount;
         this.deliveryFee = deliveryFee;
         this.paymentAmount = paymentAmount;
@@ -57,10 +54,6 @@ public class Order {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public void setOrderAmount(int orderAmount) {

@@ -53,12 +53,6 @@ public class OrderService {
         order.setOrderAmount(orderAmount);
         order.setDeliveryFee(deliveryFee);
 
-        if (cartItemList.size() > 1) {
-            order.setDescription(String.format("%s 외 %d개", cartItemList.get(0).getItemName(), cartItemList.size() - 1));
-        } else {
-            order.setDescription(cartItemList.get(0).getItemName());
-        }
-
         // TODO - discountCouponIdList
         order.setPaymentAmount(orderAmount + deliveryFee);
 

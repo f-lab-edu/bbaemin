@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bbaemin.util.StringUtils.getFormattedLocalDateTime;
-import static org.bbaemin.util.StringUtils.getFormattedPrice;
 
 @ToString
 @Getter
@@ -19,16 +18,15 @@ public class OrderResponse {
     private String status;
 
     // TODO - CHECK
-//    private String store;           // 가게
-    private String description;
-    private String paymentAmountStr;   // 결제 금액 = 주문 금액 + 배달료
+//    private String store;         // 가게
+    private int paymentAmount;      // 결제 금액 = 주문 금액 + 배달료
 
     private String orderDate;       // 주문일시
 
     private List<OrderItemResponse> orderItemList;
 
-    private String orderAmountStr;     // 주문 금액 (할인 금액 반영)
-    private String deliveryFeeStr;     // 배달료
+    private int orderAmount;        // 주문 금액 (할인 금액 반영)
+    private int deliveryFee;        // 배달료
 
     private String paymentMethod;   // 결제 수단
 
@@ -40,13 +38,12 @@ public class OrderResponse {
     public OrderResponse(Order order, List<OrderItem> orderItemList) {
         this.orderId = order.getOrderId();
         this.status = order.getStatus().getName();
-        this.description = order.getDescription();
-        this.paymentAmountStr = getFormattedPrice(order.getPaymentAmount());
+        this.paymentAmount = order.getPaymentAmount();
         this.orderDate = getFormattedLocalDateTime(order.getOrderDate());
         this.orderItemList = orderItemList.stream()
                 .map(OrderItemResponse::new).collect(Collectors.toList());
-        this.orderAmountStr = getFormattedPrice(order.getOrderAmount());
-        this.deliveryFeeStr = getFormattedPrice(order.getDeliveryFee());
+        this.orderAmount = order.getOrderAmount();
+        this.deliveryFee = order.getDeliveryFee();
         this.paymentMethod = order.getPaymentMethod();
         this.deliveryAddress = order.getDeliveryAddress();
         this.phoneNumber = order.getPhoneNumber();
