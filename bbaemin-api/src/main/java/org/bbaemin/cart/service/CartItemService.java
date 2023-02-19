@@ -6,6 +6,7 @@ import org.bbaemin.cart.vo.CartItem;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,12 @@ public class CartItemService {
         return cartItemRepository.findByUserId(userId);
     }
 
+    private CartItem getCartItem(Long cartItemId) {
+        return cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new NoSuchElementException("cartItemId : " + cartItemId));
+    }
+
+    // TODO - 만약 똑같은 아이템을 두 번 넣으면 어떻게 되나요?
     public CartItem addItem(Long userId, Long itemId) {
         CartItem cartItem = CartItem.builder()
                 .itemId(itemId)
@@ -30,14 +37,13 @@ public class CartItemService {
                 .userId(userId)
                 .orderCount(1)
                 .build();
-        cartItemRepository.insert(cartItem);
+        cartItemRepository.save(cartItem);
         return cartItem;
     }
 
     public CartItem updateCount(Long userId, Long cartItemId, int orderCount) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId);
+        CartItem cartItem = getCartItem(cartItemId);
         cartItem.setOrderCount(orderCount);
-        cartItemRepository.update(cartItem);
         return cartItem;
     }
 
@@ -46,7 +52,7 @@ public class CartItemService {
     }
 
     public void removeItems(Long userId, List<Long> cartItemIds) {
-        cartItemRepository.deleteByIds(cartItemIds);
+        cartItemRepository.deleteAllById(cartItemIds);
     }
 
     public void clear(Long userId) {
