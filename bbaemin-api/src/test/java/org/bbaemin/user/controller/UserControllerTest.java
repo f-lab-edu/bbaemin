@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -178,7 +177,7 @@ class UserControllerTest {
         doReturn(user)
                 .when(userService).updateUserInfo(1L, "user", null, "010-1234-5678");
         // when
-        mockMvc.perform(put(BASE_URL + "/{userId}", 1L)
+        mockMvc.perform(patch(BASE_URL + "/{userId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserInfoRequest)))
                 .andDo(print())
@@ -202,7 +201,7 @@ class UserControllerTest {
                 .when(userService).quit(1L);
         // when
         // then
-        mockMvc.perform(patch(BASE_URL + "/{userId}", 1L))
+        mockMvc.perform(patch(BASE_URL + "/{userId}/quit", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("SUCCESS"))
