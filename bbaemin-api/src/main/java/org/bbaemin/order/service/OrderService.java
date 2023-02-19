@@ -10,10 +10,13 @@ import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -28,13 +31,15 @@ public class OrderService {
     }
 
     public Order getOrder(Long userId, Long orderId) {
-        return orderRepository.findById(orderId);
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new NoSuchElementException("orderId : " + orderId));
     }
 
-    public List<OrderItem> getOrderItemListByOrderId(Long orderId) {
-        return orderItemRepository.findByOrderId(orderId);
+    public List<OrderItem> getOrderItemListByOrder(Order order) {
+        return orderItemRepository.findByOrder(order);
     }
 
+    @Transactional
     public Order order(Long userId, Order order, List<Long> discountCouponIdList) {
 
         List<CartItem> cartItemList = cartItemService.getCartItemListByUserId(userId);
@@ -57,24 +62,28 @@ public class OrderService {
         // TODO - discountCouponIdList
         order.setPaymentAmount(orderAmount + deliveryFee);
 
-        Order saved = orderRepository.insert(order);
+        Order saved = orderRepository.save(order);
         orderItemList.forEach(orderItem -> {
-            orderItem.setOrderId(saved.getOrderId());
-            orderItemRepository.insert(orderItem);
+            orderItem.setOrder(saved);
+            orderItemRepository.save(orderItem);
         });
 
         cartItemService.clear(userId);
         return saved;
     }
 
+    @Transactional
     public void deleteOrder(Long userId, Long orderId) {
-        orderRepository.deleteById(orderId);
+        Order order = getOrder(userId, orderId);
+        orderItemRepository.deleteByOrder(order);
+        orderRepository.delete(order);
     }
 
+    @Transactional
     public Order cancelOrder(Long userId, Long orderId) {
-        // TODO - updateStatusCancel
-        Order order = orderRepository.findById(orderId);
+        // TODO - vs updateStatusCancel
+        Order order = getOrder(userId, orderId);
         order.setStatus(OrderStatus.CANCEL_ORDER);
-        return orderRepository.update(order);
+        return order;
     }
 }

@@ -40,7 +40,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public OrderResponse getOrder(Long userId, @PathVariable Long orderId) {
         Order order = orderService.getOrder(userId, orderId);
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(orderId);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(order);
         return new OrderResponse(order, orderItemList);
     }
 
@@ -58,7 +58,7 @@ public class OrderController {
                 .paymentMethod(createOrderRequest.getPaymentMethod())
                 .build();
         Order saved = orderService.order(userId, order, createOrderRequest.getDiscountCouponIdList());
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
         return new OrderResponse(order, orderItemList);
     }
 
@@ -72,7 +72,7 @@ public class OrderController {
     @PutMapping("/{orderId}")
     public OrderResponse cancelOrder(Long userId, @PathVariable Long orderId) {
         Order order = orderService.cancelOrder(userId, orderId);
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(orderId);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(order);
         return new OrderResponse(order, orderItemList);
     }
 }

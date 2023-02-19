@@ -13,7 +13,10 @@ import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,18 +24,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.bbaemin.order.enums.OrderStatus.COMPLETE_ORDER;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@Transactional
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 class OrderServiceIntegrationTest {
 
-    DeliveryFeeService deliveryFeeService = new DeliveryFeeService();
-    CartItemRepository cartItemRepository = new CartItemRepository();
-    CartItemService cartItemService = new CartItemService(cartItemRepository);
-    OrderRepository orderRepository = new OrderRepository();
-    OrderItemRepository orderItemRepository = new OrderItemRepository();
-    OrderService orderService = new OrderService(orderRepository, orderItemRepository, cartItemService, deliveryFeeService);
+    @Autowired
+    DeliveryFeeService deliveryFeeService;
+    @Autowired
+    CartItemRepository cartItemRepository;
+    @Autowired
+    CartItemService cartItemService;
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    OrderItemRepository orderItemRepository;
+    @Autowired
+    OrderService orderService;
 
     @BeforeEach
     void init() {
-        orderRepository.clear();
+        orderItemRepository.deleteAll();
+        orderRepository.deleteAll();
         cartItemRepository.clear();
     }
 
@@ -57,7 +69,7 @@ class OrderServiceIntegrationTest {
         // then
         assertThat(orderList.size()).isEqualTo(1);
         Order saved = orderList.get(0);
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
         System.out.println(saved);
         System.out.println(new OrderSummaryResponse(saved));
         System.out.println(new OrderResponse(saved, orderItemList));
@@ -82,7 +94,7 @@ class OrderServiceIntegrationTest {
         // when
         Order saved = orderService.getOrder(1L, order.getOrderId());
         // then
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrderId(saved.getOrderId());
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
         System.out.println(saved);
         System.out.println(new OrderSummaryResponse(saved));
         System.out.println(new OrderResponse(saved, orderItemList));
@@ -106,7 +118,7 @@ class OrderServiceIntegrationTest {
                 // discountCouponIdList
                 List.of(1L, 2L));
         // then
-        Order saved = orderRepository.findById(order.getOrderId());
+        Order saved = orderRepository.findById(order.getOrderId()).orElseThrow(RuntimeException::new);
         List<Order> orderList = orderRepository.findByUserId(1L);
         assertAll(
                 () -> assertThat(saved).isEqualTo(order),
@@ -156,7 +168,7 @@ class OrderServiceIntegrationTest {
         // when
         orderService.cancelOrder(1L, order.getOrderId());
         // then
-        Order canceled = orderRepository.findById(order.getOrderId());
+        Order canceled = orderRepository.findById(order.getOrderId()).orElseThrow(RuntimeException::new);
         assertThat(canceled.getStatus()).isEqualTo(OrderStatus.CANCEL_ORDER);
     }
 }

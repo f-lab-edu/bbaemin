@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,12 +54,13 @@ class OrderServiceTest {
     @Test
     void getOrder() {
         Order order = mock(Order.class);
-        doReturn(order)
+        doReturn(Optional.of(order))
                 .when(orderRepository).findById(1L);
 
         assertEquals(order, orderService.getOrder(null, 1L));
     }
 
+    // TODO - TEST
     @Test
     void order() {
         CartItem cartItem1 = mock(CartItem.class);
@@ -79,9 +81,10 @@ class OrderServiceTest {
                 .when(deliveryFeeService).getDeliveryFee(10000);
 
         Order saved = mock(Order.class);
-        doReturn(1L).when(saved).getOrderId();
-        doReturn(saved).when(orderRepository).insert(any(Order.class));
-        doNothing().when(cartItemService).clear(1L);
+        doReturn(saved)
+                .when(orderRepository).save(any(Order.class));
+        doNothing()
+                .when(cartItemService).clear(1L);
 
         Order order = mock(Order.class);
         orderService.order(1L, order, Collections.emptyList());
@@ -91,8 +94,8 @@ class OrderServiceTest {
         verify(order).setOrderAmount(10000);
         verify(order).setDeliveryFee(3000);
         verify(order).setPaymentAmount(13000);
-        verify(orderRepository).insert(order);
-        verify(orderItemRepository, times(2)).insert(any(OrderItem.class));
+        verify(orderRepository).save(order);
+        verify(orderItemRepository, times(2)).save(any(OrderItem.class));
         verify(cartItemService).clear(1L);
     }
 
@@ -107,13 +110,11 @@ class OrderServiceTest {
     @Test
     void cancelOrder() {
         Order order = mock(Order.class);
-        doReturn(order)
+        doReturn(Optional.of(order))
                 .when(orderRepository).findById(1L);
-        doReturn(order).when(orderRepository).update(order);
 
         orderService.cancelOrder(1L, 1L);
 
         verify(order).setStatus(OrderStatus.CANCEL_ORDER);
-        verify(orderRepository, times(1)).update(order);
     }
 }
