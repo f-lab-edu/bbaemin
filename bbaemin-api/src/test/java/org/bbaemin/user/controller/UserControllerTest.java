@@ -133,7 +133,7 @@ class UserControllerTest {
     }
 
     @Test
-    void join_throws_BindException_when_nickname_is_blank() throws Exception {
+    void join_throws_MethodArgumentNotValidException_when_nickname_is_blank() throws Exception {
         // given
         // when
         JoinRequest joinRequest = JoinRequest.builder()
