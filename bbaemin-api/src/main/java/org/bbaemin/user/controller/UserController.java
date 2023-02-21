@@ -52,7 +52,7 @@ public class UserController {
                         .password(joinRequest.getPassword())
                         .phoneNumber(joinRequest.getPhoneNumber())
                         .build());
-        return ApiResult.ok(new UserResponse(user));
+        return ApiResult.created(new UserResponse(user));
     }
 
     // 회원정보 수정

@@ -121,7 +121,7 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(joinRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.code").value("CREATED"))
                 .andExpect(jsonPath("$.result").exists())
                 .andExpect(jsonPath("$.result.userId").value(1L))
                 .andExpect(jsonPath("$.result.email").value(user.getEmail()))
