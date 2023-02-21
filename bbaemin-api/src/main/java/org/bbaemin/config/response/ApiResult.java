@@ -1,17 +1,22 @@
 package org.bbaemin.config.response;
 
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import static org.bbaemin.config.response.ApiResult.ResultCode.CREATED;
 import static org.bbaemin.config.response.ApiResult.ResultCode.FAIL;
 import static org.bbaemin.config.response.ApiResult.ResultCode.SUCCESS;
 
+@Getter
 public class ApiResult<T> {
 
     private static final ApiResult<Void> OK = new ApiResult<>(SUCCESS);
 
     enum ResultCode {
-        SUCCESS(200), FAIL(500);
+        SUCCESS(200),
+        CREATED(201),
+        FAIL(500);
 
         private int code;
 
@@ -20,6 +25,7 @@ public class ApiResult<T> {
         }
     }
 
+    @Getter
     public static class Error<R> {
         private HttpStatus httpStatus;
         private R cause;
@@ -56,6 +62,10 @@ public class ApiResult<T> {
 
     public static ApiResult<Void> ok() {
         return ApiResult.OK;
+    }
+
+    public static <T> ApiResult<T> created(T result) {
+        return new ApiResult<>(CREATED, result);
     }
 
     public static <T> ApiResult<T> ok(T result) {
