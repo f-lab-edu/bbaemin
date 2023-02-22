@@ -7,11 +7,12 @@ import org.bbaemin.cart.controller.response.CartResponse;
 import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.config.response.ApiResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,46 +28,50 @@ public class CartController {
     private final CartItemService cartItemService;
     private final DeliveryFeeService deliveryFeeService;
 
-    // 장바구니 조회
-    @GetMapping
-    public CartResponse getCart(@PathVariable Long userId) {
+    private CartResponse getCartOfUser(Long userId) {
         List<CartItem> cartItemList = cartItemService.getCartItemListByUserId(userId);
         int deliveryFee = deliveryFeeService.getDeliveryFee(cartItemList);
         return new CartResponse(cartItemList, deliveryFee);
     }
 
+    // 장바구니 조회
+    @GetMapping
+    public ApiResult<CartResponse> getCart(@PathVariable Long userId) {
+        return ApiResult.ok(getCartOfUser(userId));
+    }
+
     // 장바구니에 추가
     @PostMapping("/items")
-    public CartResponse addItem(@PathVariable Long userId, @RequestBody CreateCartItemRequest createCartItemRequest) {
+    public ApiResult<CartResponse> addItem(@PathVariable Long userId, @RequestBody CreateCartItemRequest createCartItemRequest) {
         cartItemService.addItem(userId, createCartItemRequest.getItemId());
-        return getCart(userId);
+        return ApiResult.created(getCartOfUser(userId));
     }
 
     // 수량 변경
-    @PutMapping("/items")
-    public CartResponse updateCount(@PathVariable Long userId, @RequestBody UpdateCartItemCountRequest updateCartItemCountRequest) {
+    @PatchMapping("/items")
+    public ApiResult<CartResponse> updateCount(@PathVariable Long userId, @RequestBody UpdateCartItemCountRequest updateCartItemCountRequest) {
         cartItemService.updateCount(userId, updateCartItemCountRequest.getCartItemId(), updateCartItemCountRequest.getOrderCount());
-        return getCart(userId);
+        return ApiResult.ok(getCartOfUser(userId));
     }
 
     // 장바구니에서 삭제
     @DeleteMapping("/items/{cartItemId}")
-    public CartResponse removeItem(@PathVariable Long userId, @PathVariable Long cartItemId) {
+    public ApiResult<CartResponse> removeItem(@PathVariable Long userId, @PathVariable Long cartItemId) {
         cartItemService.removeItem(userId, cartItemId);
-        return getCart(userId);
+        return ApiResult.ok(getCartOfUser(userId));
     }
 
     // 장바구니에서 선택 삭제
     @DeleteMapping("/items")
-    public CartResponse removeItems(@PathVariable Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIds) { // removeItemList
+    public ApiResult<CartResponse> removeItems(@PathVariable Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIds) { // removeItemList
         cartItemService.removeItems(userId, cartItemIds);
-        return getCart(userId);
+        return ApiResult.ok(getCartOfUser(userId));
     }
 
     // 장바구니 비우기
     @DeleteMapping
-    public CartResponse clear(@PathVariable Long userId) {
+    public ApiResult<CartResponse> clear(@PathVariable Long userId) {
         cartItemService.clear(userId);
-        return getCart(userId);
+        return ApiResult.ok(getCartOfUser(userId));
     }
 }
