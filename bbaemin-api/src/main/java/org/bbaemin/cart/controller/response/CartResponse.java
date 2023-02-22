@@ -1,40 +1,30 @@
 package org.bbaemin.cart.controller.response;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
+import org.bbaemin.cart.vo.CartItem;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@ToString
 @Getter
 public class CartResponse {
 
-    private List<OrderItemResponse> orderItemList;
-    private String orderAmount;
-    private String deliveryFee;
+    private List<CartItemResponse> cartItemList;
+    private int orderAmount;
+    private int deliveryFee;
 
-    @Getter
-    public static class OrderItemResponse {
-
-        private String itemName;
-        private String itemDescription;
-        private String orderPrice;
-        private int orderCount;
-        private String totalOrderPrice;
-
-        @Builder
-        private OrderItemResponse(String itemName, String itemDescription, String orderPrice, int orderCount, String totalOrderPrice) {
-            this.itemName = itemName;
-            this.itemDescription = itemDescription;
-            this.orderPrice = orderPrice;
-            this.orderCount = orderCount;
-            this.totalOrderPrice = totalOrderPrice;
-        }
-    }
-
-    @Builder
-    private CartResponse(List<OrderItemResponse> orderItemList, String orderAmount, String deliveryFee) {
-        this.orderItemList = orderItemList;
-        this.orderAmount = orderAmount;
+    public CartResponse(List<CartItem> cartItemList, int deliveryFee) {
+        this.cartItemList = cartItemList.stream()
+                .map(CartItemResponse::new).collect(Collectors.toList());
+        this.orderAmount = getOrderAmount();
         this.deliveryFee = deliveryFee;
     }
+
+    private int getOrderAmount() {
+        return getCartItemList().stream()
+                .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
+    }
+
 }

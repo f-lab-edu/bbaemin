@@ -3,17 +3,23 @@ package org.bbaemin.user.controller.request;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 public class JoinRequest {
 
+    @NotBlank
     private String email;
+    @NotBlank
     private String nickname;
     private String image;
 
     // TODO - validation check : password.equals(passwordConfirm)
+    @NotBlank
     private String password;
     private String passwordConfirm;
 
+    @NotBlank
     private String phoneNumber;
 
     @Builder

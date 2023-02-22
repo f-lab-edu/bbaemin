@@ -1,173 +1,72 @@
 package org.bbaemin.cart.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.cart.controller.request.CreateCartItemRequest;
+import org.bbaemin.cart.controller.request.UpdateCartItemCountRequest;
 import org.bbaemin.cart.controller.response.CartResponse;
+import org.bbaemin.cart.service.CartItemService;
+import org.bbaemin.cart.service.DeliveryFeeService;
+import org.bbaemin.cart.vo.CartItem;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
+import java.util.List;
 
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/v1/users/{userId}/cart")
 @RestController
 @RequiredArgsConstructor
 public class CartController {
 
+    private final CartItemService cartItemService;
+    private final DeliveryFeeService deliveryFeeService;
+
     // 장바구니 조회
     @GetMapping
-    public CartResponse getCart(Long userId) {
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(1)
-                                .totalOrderPrice("3,250원")
-                                .build()
-                ))
-                .orderAmount("3,250원")
-                .deliveryFee("3,000원")
-                .build();
+    public CartResponse getCart(@PathVariable Long userId) {
+        List<CartItem> cartItemList = cartItemService.getCartItemListByUserId(userId);
+        int deliveryFee = deliveryFeeService.getDeliveryFee(cartItemList);
+        return new CartResponse(cartItemList, deliveryFee);
     }
 
     // 장바구니에 추가
-    @PostMapping("/{itemId}")
-    public CartResponse addItem(Long userId, @PathVariable Long itemId) {
-
-        // add item
-
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(1)
-                                .totalOrderPrice("3,250원")
-                                .build(),
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("비비고 소고기 무국 500g")
-                                .itemDescription("비비고 소고기 무국 500g")
-                                .orderPrice("5,890원")
-                                .orderCount(1)
-                                .totalOrderPrice("5,890원")
-                                .build()
-                ))
-                .orderAmount("9,140원")
-                .deliveryFee("3,000원")
-                .build();
+    @PostMapping("/items")
+    public CartResponse addItem(@PathVariable Long userId, @RequestBody CreateCartItemRequest createCartItemRequest) {
+        cartItemService.addItem(userId, createCartItemRequest.getItemId());
+        return getCart(userId);
     }
 
     // 수량 변경
-    @PatchMapping("/{orderItemId}")
-    public CartResponse plusCount(Long userId, @PathVariable Long orderItemId) {
-
-        // plus count
-
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(2)
-                                .totalOrderPrice("6,500원")
-                                .build(),
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("비비고 소고기 무국 500g")
-                                .itemDescription("비비고 소고기 무국 500g")
-                                .orderPrice("5,890원")
-                                .orderCount(1)
-                                .totalOrderPrice("5,890원")
-                                .build()
-                ))
-                .orderAmount("12,390원")
-                .deliveryFee("3,000원")
-                .build();
-    }
-
-    @PatchMapping("/{orderItemId}")
-    public CartResponse minusCount(@PathVariable Long orderItemId) {
-
-        // minus count
-
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(1)
-                                .totalOrderPrice("3,250원")
-                                .build(),
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("비비고 소고기 무국 500g")
-                                .itemDescription("비비고 소고기 무국 500g")
-                                .orderPrice("5,890원")
-                                .orderCount(1)
-                                .totalOrderPrice("5,890원")
-                                .build()
-                ))
-                .orderAmount("9,140원")
-                .deliveryFee("3,000원")
-                .build();
+    @PutMapping("/items")
+    public CartResponse updateCount(@PathVariable Long userId, @RequestBody UpdateCartItemCountRequest updateCartItemCountRequest) {
+        cartItemService.updateCount(userId, updateCartItemCountRequest.getCartItemId(), updateCartItemCountRequest.getOrderCount());
+        return getCart(userId);
     }
 
     // 장바구니에서 삭제
-    @DeleteMapping("/{orderItemId}")
-    public CartResponse removeItem(Long userId, @PathVariable Long orderItemId) {
-
-        // remove item
-
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(1)
-                                .totalOrderPrice("3,250원")
-                                .build()
-                ))
-                .orderAmount("3,250원")
-                .deliveryFee("3,000원")
-                .build();
+    @DeleteMapping("/items/{cartItemId}")
+    public CartResponse removeItem(@PathVariable Long userId, @PathVariable Long cartItemId) {
+        cartItemService.removeItem(userId, cartItemId);
+        return getCart(userId);
     }
-/*
+
     // 장바구니에서 선택 삭제
-    @DeleteMapping
-    public CartResponse removeItems(Long userId, @RequestParam(value = "orderItemIds") List<Long> orderItemIds) { // removeItemList
-
-        // remove checked items
-
-        return CartResponse.builder()
-                .orderItemList(Arrays.asList(
-                        CartResponse.OrderItemResponse.builder()
-                                .itemName("서울우유 1000ml")
-                                .itemDescription("서울우유 1000ml")
-                                .orderPrice("3,250원")
-                                .orderCount(1)
-                                .totalOrderPrice("3,250원")
-                                .build()
-                ))
-                .orderAmount("3,250원")
-                .deliveryFee("3,000원")
-                .build();
-    }*/
+    @DeleteMapping("/items")
+    public CartResponse removeItems(@PathVariable Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIds) { // removeItemList
+        cartItemService.removeItems(userId, cartItemIds);
+        return getCart(userId);
+    }
 
     // 장바구니 비우기
     @DeleteMapping
-    public CartResponse removeAll() {
-
-        // remove all
-
-        return CartResponse.builder()
-//                .orderItemList(Collections.emptyList())
-                .build();
+    public CartResponse clear(@PathVariable Long userId) {
+        cartItemService.clear(userId);
+        return getCart(userId);
     }
 }
