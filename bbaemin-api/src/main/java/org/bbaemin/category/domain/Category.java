@@ -51,4 +51,8 @@ public class Category {
     @Builder.Default
     @OneToMany(mappedBy = "storeCategory")
     private List<Store> storeList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "itemCategory")
+    private List<Item> itemList = new ArrayList<>();
 }

@@ -6,6 +6,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -52,4 +54,8 @@ public class Store {
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Category storeCategory;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "itemStore")
+    private List<Item> itemList = new ArrayList<>();
 }
