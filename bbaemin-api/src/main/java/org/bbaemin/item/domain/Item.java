@@ -54,21 +54,4 @@ public class Item {
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity itemCategory;
-
-    public static ItemDto toDto(Item entity) {
-        return ItemDto.builder()
-                .name(entity.name)
-                .description(entity.description)
-                .price(entity.price)
-                .quantity(entity.quantity)
-                .categoryName(entity.itemCategory.getName())
-                .categoryDescription(entity.itemCategory.getDescription())
-                .storeName(entity.itemStore.getName())
-                .storeDescription(entity.itemStore.getDescription())
-                .storeOwner(entity.itemStore.getOwner())
-                .address(entity.itemStore.getAddress())
-                .zipCode(entity.itemStore.getZipCode())
-                .phoneNumber(entity.itemStore.getPhoneNumber())
-                .build();
-    }
 }
