@@ -1,91 +1,81 @@
 package org.bbaemin.item.service;
 
-import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.domain.CategoryEntity;
-import org.bbaemin.category.repository.CategoryRepository;
-import org.bbaemin.item.domain.ItemDTO;
-import org.bbaemin.item.domain.ItemEntity;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.category.service.CategoryService;
+import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.repository.ItemRepository;
-import org.bbaemin.store.domain.StoreEntity;
-import org.bbaemin.store.repository.StoreRepository;
+import org.bbaemin.store.domain.Store;
+import org.bbaemin.store.service.StoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@Transactional
-@TestConstructor(autowireMode = ALL)
-@RequiredArgsConstructor
+@ExtendWith(MockitoExtension.class)
 @DisplayName("아이템 관련 Service Test")
 class ItemServiceTest {
 
-    private final EntityManager em;
 
     @Mock private ItemRepository mockItemRepository;
     @InjectMocks private ItemService mockItemService;
 
-    @Mock private CategoryRepository mockCategoryRepository;
-    @Mock private StoreRepository mockStoreRepository;
+    @Mock private CategoryService mockCategoryService;
+    @Mock private StoreService mockStoreService;
 
-    private ItemEntity itemEntity;
-    private CategoryEntity firstItemCategory;
-    private CategoryEntity secondItemCategory;
-    private CategoryEntity firstStoreCategory;
-    private StoreEntity firstStoreEntity;
-    private StoreEntity secondStoreEntity;
+    private Item item;
+    private Category firstItemCategory;
+    private Category secondItemCategory;
+    private Category firstStoreCategory;
+    private Store firstStoreEntity;
+    private Store secondStoreEntity;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
         // 카테고리 등록
-        firstItemCategory = CategoryEntity.builder()
+        firstItemCategory = Category.builder()
+                .categoryId(1L)
                 .code(300)
                 .name("과일")
                 .description("과일")
                 .useYn(true)
                 .parent(null)
                 .build();
-        em.persist(firstItemCategory);
 
-        secondItemCategory = CategoryEntity.builder()
+        secondItemCategory = Category.builder()
+                .categoryId(2L)
                 .code(400)
                 .name("과자")
                 .description("과자")
                 .useYn(true)
                 .parent(null)
                 .build();
-        em.persist(secondItemCategory);
 
-        firstStoreCategory = CategoryEntity.builder()
+        firstStoreCategory = Category.builder()
+                .categoryId(3L)
                 .code(200)
                 .name("편의점")
                 .description("편의점")
                 .useYn(true)
                 .parent(null)
                 .build();
-        em.persist(firstStoreCategory);
 
         // 매장 등록
-        firstStoreEntity = StoreEntity.builder()
+        firstStoreEntity = Store.builder()
+                .storeId(1L)
                 .storeCategory(firstStoreCategory)
                 .name("B마트 인천점")
                 .description("B마트 인천점")
@@ -95,9 +85,9 @@ class ItemServiceTest {
                 .phoneNumber("01012345678")
                 .useYn(true)
                 .build();
-        em.persist(firstStoreEntity);
 
-        secondStoreEntity = StoreEntity.builder()
+        secondStoreEntity = Store.builder()
+                .storeId(2L)
                 .storeCategory(firstStoreCategory)
                 .name("B마트 관악점")
                 .description("B마트 관악점")
@@ -107,10 +97,10 @@ class ItemServiceTest {
                 .phoneNumber("01078912345")
                 .useYn(true)
                 .build();
-        em.persist(secondStoreEntity);
 
         // 아이템 등록
-        itemEntity = ItemEntity.builder()
+        item = Item.builder()
+                .itemId(1L)
                 .itemCategory(firstItemCategory)
                 .itemStore(firstStoreEntity)
                 .name("청동사과")
@@ -118,21 +108,20 @@ class ItemServiceTest {
                 .price(2000)
                 .quantity(999)
                 .build();
-        em.persist(itemEntity);
     }
 
     @Test
     @DisplayName("아이템_리스트_조회")
     void 아이템_리스트_조회() {
-        List<ItemEntity> itemList = new ArrayList<>();
-        itemList.add(itemEntity);
+        List<Item> itemList = new ArrayList<>();
+        itemList.add(item);
         // when
         when(mockItemRepository.findAll()).thenReturn(itemList);
-        List<ItemDTO> findItemList = mockItemService.listItem();
+        List<Item> findItemList = mockItemService.listItem();
 
         // then
-        assertThat(findItemList.get(0).getCategoryName()).isEqualTo("과일");
-        assertThat(findItemList.get(0).getStoreName()).isEqualTo("B마트 인천점");
+        assertThat(findItemList.get(0).getItemCategory().getName()).isEqualTo("과일");
+        assertThat(findItemList.get(0).getItemStore().getName()).isEqualTo("B마트 인천점");
         assertThat(findItemList.get(0).getName()).isEqualTo("청동사과");
         assertThat(findItemList.get(0).getPrice()).isEqualTo(2000);
 
@@ -149,28 +138,28 @@ class ItemServiceTest {
     @DisplayName("아이템_상세_조회")
     void 아이템_상세_조회() {
         // when
-        when(mockItemRepository.findByItemId(itemEntity.getItemId())).thenReturn(Optional.ofNullable(itemEntity));
-        ItemDTO getItem = mockItemService.getItem(itemEntity.getItemId());
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        Item getItem = mockItemService.getItem(item.getItemId());
 
         // then
-        assertThat(getItem.getCategoryName()).isEqualTo("과일");
-        assertThat(getItem.getStoreName()).isEqualTo("B마트 인천점");
+        assertThat(getItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(getItem.getItemStore().getName()).isEqualTo("B마트 인천점");
         assertThat(getItem.getName()).isEqualTo("청동사과");
         assertThat(getItem.getPrice()).isEqualTo(2000);
 
         // verify
-        verify(mockItemRepository, times(1)).findByItemId(itemEntity.getItemId());
-        verify(mockItemRepository, atLeastOnce()).findByItemId(itemEntity.getItemId());
+        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
+        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
         verifyNoMoreInteractions(mockItemRepository);
 
         InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).findByItemId(itemEntity.getItemId());
+        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
     }
 
     @Test
     @DisplayName("아이템_등록")
     void 아이템_등록() {
-        ItemEntity item = ItemEntity.builder()
+        Item item = Item.builder()
                 .itemCategory(firstItemCategory)
                 .itemStore(firstStoreEntity)
                 .name("복숭아")
@@ -180,14 +169,14 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(mockStoreRepository.findByStoreId(firstStoreEntity.getStoreId())).thenReturn(Optional.ofNullable(firstStoreEntity));
-        when(mockCategoryRepository.findById(firstItemCategory.getCategoryId())).thenReturn(Optional.ofNullable(firstItemCategory));
+        when(mockStoreService.getStore(firstStoreEntity.getStoreId())).thenReturn(firstStoreEntity);
+        when(mockCategoryService.getCategory(firstItemCategory.getCategoryId())).thenReturn(firstItemCategory);
         when(mockItemRepository.save(item)).thenReturn(item);
-        ItemDTO saveItem = mockItemService.createItem(item);
+        Item saveItem = mockItemService.createItem(item);
 
         // then
-        assertThat(saveItem.getCategoryName()).isEqualTo("과일");
-        assertThat(saveItem.getStoreName()).isEqualTo("B마트 인천점");
+        assertThat(saveItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(saveItem.getItemStore().getName()).isEqualTo("B마트 인천점");
         assertThat(saveItem.getName()).isEqualTo("복숭아");
         assertThat(saveItem.getDescription()).isEqualTo("복숭아");
         assertThat(saveItem.getPrice()).isEqualTo(3000);
@@ -205,8 +194,8 @@ class ItemServiceTest {
     @DisplayName("아이템_수정")
     void 아이템_수정() {
         // 동일 매장 및 동일 카테고리
-        ItemEntity firstItem = ItemEntity.builder()
-                .itemId(itemEntity.getItemId())
+        Item firstItem = Item.builder()
+                .itemId(item.getItemId())
                 .itemCategory(firstItemCategory)
                 .itemStore(firstStoreEntity)
                 .name("메론")
@@ -216,27 +205,26 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(mockItemRepository.findByItemId(itemEntity.getItemId())).thenReturn(Optional.of(itemEntity));
-        when(mockItemRepository.save(firstItem)).thenReturn(firstItem);
-        ItemDTO updateItem = mockItemService.updateItem(itemEntity.getItemId(), firstItem);
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
+        Item updateItem = mockItemService.updateItem(item.getItemId(), firstItem);
 
         // then
-        assertThat(updateItem.getCategoryName()).isEqualTo("과일");
-        assertThat(updateItem.getStoreName()).isEqualTo("B마트 인천점");
+        assertThat(updateItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(updateItem.getItemStore().getName()).isEqualTo("B마트 인천점");
         assertThat(updateItem.getName()).isEqualTo("메론");
         assertThat(updateItem.getDescription()).isEqualTo("메론");
 
         // verify
-        verify(mockItemRepository, times(1)).findByItemId(itemEntity.getItemId());
-        verify(mockItemRepository, atLeastOnce()).findByItemId(itemEntity.getItemId());
+        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
+        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
         verifyNoMoreInteractions(mockItemRepository);
 
         InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).findByItemId(itemEntity.getItemId());
+        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
 
         // 다른 매장 및 다른 카테고리
-        ItemEntity secondItem = ItemEntity.builder()
-                .itemId(itemEntity.getItemId())
+        Item secondItem = Item.builder()
+                .itemId(item.getItemId())
                 .itemCategory(secondItemCategory)
                 .itemStore(secondStoreEntity)
                 .name("칙촉")
@@ -246,14 +234,14 @@ class ItemServiceTest {
                 .build();
 
         // when
-        when(mockCategoryRepository.findById(secondItemCategory.getCategoryId())).thenReturn(Optional.ofNullable(secondItemCategory));
-        when(mockStoreRepository.findByStoreId(secondStoreEntity.getStoreId())).thenReturn(Optional.ofNullable(secondStoreEntity));
-        when(mockItemRepository.findByItemId(itemEntity.getItemId())).thenReturn(Optional.ofNullable(itemEntity));
-        ItemDTO secondUpdateItem = mockItemService.updateItem(itemEntity.getItemId(), secondItem);
+        when(mockCategoryService.getCategory(secondItemCategory.getCategoryId())).thenReturn(secondItemCategory);
+        when(mockStoreService.getStore(secondStoreEntity.getStoreId())).thenReturn(secondStoreEntity);
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        Item secondUpdateItem = mockItemService.updateItem(item.getItemId(), secondItem);
 
         // then
-        assertThat(secondUpdateItem.getCategoryName()).isEqualTo("과자");
-        assertThat(secondUpdateItem.getStoreName()).isEqualTo("B마트 관악점");
+        assertThat(secondUpdateItem.getItemCategory().getName()).isEqualTo("과자");
+        assertThat(secondUpdateItem.getItemStore().getName()).isEqualTo("B마트 관악점");
         assertThat(secondUpdateItem.getName()).isEqualTo("칙촉");
         assertThat(secondUpdateItem.getPrice()).isEqualTo(2500);
         assertThat(secondUpdateItem.getQuantity()).isEqualTo(999);
@@ -262,7 +250,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템_삭제")
     void 아이템_삭제() {
-        Long deleteItemId = mockItemService.deleteItem(itemEntity.getItemId());
-        assertThat(deleteItemId).isEqualTo(itemEntity.getItemId());
+        Long deleteItemId = mockItemService.deleteItem(item.getItemId());
+        assertThat(deleteItemId).isEqualTo(item.getItemId());
     }
 }

@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicUpdate
-public class ItemEntity {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +42,8 @@ public class ItemEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity itemCategory;
 
-    public static ItemDTO toDto(ItemEntity entity) {
-        return ItemDTO.builder()
+    public static ItemDto toDto(Item entity) {
+        return ItemDto.builder()
                 .name(entity.name)
                 .description(entity.description)
                 .price(entity.price)

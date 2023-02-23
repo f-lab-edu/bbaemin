@@ -1,20 +1,19 @@
 package org.bbaemin.item.repository;
 
-import org.bbaemin.item.domain.ItemEntity;
+import org.bbaemin.item.domain.Item;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("select i from ItemEntity i join fetch i.itemCategory join fetch i.itemStore")
-    List<ItemEntity> findAll();
+    @EntityGraph(attributePaths = {"itemStore", "itemCategory"})
+    List<Item> findAll();
 
-    @Query("select i from ItemEntity i join fetch i.itemCategory join fetch i.itemStore where i.itemId = :itemId")
-    Optional<ItemEntity> findByItemId(@Param("itemId") Long itemId);
+    @EntityGraph(attributePaths = {"itemStore", "itemCategory"})
+    Optional<Item> findByItemId(Long itemId);
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ItemDTO {
+public class ItemDto {
 
     // 아이템 관련
     private String name;

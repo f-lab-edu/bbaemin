@@ -1,39 +1,35 @@
 package org.bbaemin.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.domain.CategoryEntity;
-import org.bbaemin.category.repository.CategoryRepository;
-import org.bbaemin.item.domain.ItemDTO;
-import org.bbaemin.item.domain.ItemEntity;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.category.service.CategoryService;
+import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.repository.ItemRepository;
-import org.bbaemin.store.domain.StoreEntity;
-import org.bbaemin.store.repository.StoreRepository;
+import org.bbaemin.store.domain.Store;
+import org.bbaemin.store.service.StoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
 
-    private final CategoryRepository categoryRepository;
-    private final StoreRepository storeRepository;
+    private final CategoryService categoryService;
+    private final StoreService storeService;
     private final ItemRepository itemRepository;
 
-    private CategoryEntity oneCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow();
+    private Category getCategory(Long categoryId) {
+        return categoryService.getCategory(categoryId);
     }
 
-    private StoreEntity oneStore(Long storeId) {
-        return storeRepository.findByStoreId(storeId).orElseThrow();
+    private Store getStore(Long storeId) {
+        return storeService.getStore(storeId);
     }
 
-    private ItemEntity oneItem(Long itemId) {
-        return itemRepository.findByItemId(itemId).orElseThrow();
-    }
 
     /**
      * <pre>
@@ -45,10 +41,8 @@ public class ItemService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<ItemDTO> listItem() {
-        return itemRepository.findAll()
-                .stream().map(ItemEntity::toDto)
-                .collect(Collectors.toList());
+    public List<Item> listItem() {
+        return itemRepository.findAll();
     }
 
     /**
@@ -61,8 +55,8 @@ public class ItemService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public ItemDTO getItem(Long itemId) {
-        return ItemEntity.toDto(oneItem(itemId));
+    public Item getItem(Long itemId) {
+        return itemRepository.findByItemId(itemId).orElseThrow(() -> new NoSuchElementException("itemId : " + itemId));
     }
 
     /**
@@ -75,16 +69,16 @@ public class ItemService {
      * </pre>
      */
     @Transactional
-    public ItemDTO createItem(ItemEntity itemEntity) {
+    public Item createItem(Item item) {
         // 아이템 매장 연관관계 설정
-        StoreEntity oneStore = oneStore(itemEntity.getItemStore().getStoreId());
-        itemEntity.setItemStore(oneStore);
-        oneStore.getItemList().add(itemEntity);
+        Store oneStore = getStore(item.getItemStore().getStoreId());
+        item.setItemStore(oneStore);
+        oneStore.getItemList().add(item);
         // 아이템 카테고리 연관관계 설정
-        CategoryEntity oneCategory = oneCategory(itemEntity.getItemCategory().getCategoryId());
-        itemEntity.setItemCategory(oneCategory);
-        oneCategory.getItemList().add(itemEntity);
-        return ItemEntity.toDto(itemRepository.save(itemEntity));
+        Category oneCategory = getCategory(item.getItemCategory().getCategoryId());
+        item.setItemCategory(oneCategory);
+        oneCategory.getItemList().add(item);
+        return itemRepository.save(item);
     }
 
     /**
@@ -97,27 +91,27 @@ public class ItemService {
      * </pre>
      */
     @Transactional
-    public ItemDTO updateItem(Long itemId, ItemEntity itemEntity) {
-        ItemEntity oneItem = oneItem(itemId);
+    public Item updateItem(Long itemId, Item item) {
+        Item oneItem = getItem(itemId);
         // 카테고리 수정
-        if (!Objects.equals(oneItem.getItemCategory().getCategoryId(), itemEntity.getItemCategory().getCategoryId())) {
-            CategoryEntity oneCategory = oneCategory(itemEntity.getItemCategory().getCategoryId());
-            itemEntity.setItemCategory(oneCategory);
-            oneCategory.getItemList().add(itemEntity);
+        if (!Objects.equals(oneItem.getItemCategory().getCategoryId(), item.getItemCategory().getCategoryId())) {
+            Category getCategory = getCategory(item.getItemCategory().getCategoryId());
+            item.setItemCategory(getCategory);
+            getCategory.getItemList().add(item);
         }
 
         // 매장 수정
-        if (!Objects.equals(oneItem.getItemStore().getStoreId(), itemEntity.getItemStore().getStoreId())) {
-            StoreEntity oneStore = oneStore(itemEntity.getItemStore().getStoreId());
-            itemEntity.setItemStore(oneStore);
-            oneStore.getItemList().add(itemEntity);
+        if (!Objects.equals(oneItem.getItemStore().getStoreId(), item.getItemStore().getStoreId())) {
+            Store getStore = getStore(item.getItemStore().getStoreId());
+            item.setItemStore(getStore);
+            getStore.getItemList().add(item);
         }
 
-        oneItem.setName(itemEntity.getName());
-        oneItem.setDescription(itemEntity.getDescription());
-        oneItem.setPrice(itemEntity.getPrice());
-        oneItem.setQuantity(itemEntity.getQuantity());
-        return ItemEntity.toDto(itemEntity);
+        oneItem.setName(item.getName());
+        oneItem.setDescription(item.getDescription());
+        oneItem.setPrice(item.getPrice());
+        oneItem.setQuantity(item.getQuantity());
+        return item;
     }
 
     /**

@@ -2,13 +2,14 @@ package org.bbaemin.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.bbaemin.config.response.ApiResult;
-import org.bbaemin.item.domain.ItemDTO;
-import org.bbaemin.item.domain.ItemEntity;
+import org.bbaemin.item.controller.response.ItemResponse;
+import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.service.ItemService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,23 +19,27 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public ApiResult<List<ItemDTO>> listItem() {
-        return ApiResult.ok(itemService.listItem());
+    public ApiResult<List<ItemResponse>> listItem() {
+        return ApiResult.ok(itemService.listItem().stream()
+                .map(ItemResponse::new).collect(Collectors.toList()));
     }
 
     @GetMapping("/{itemId}")
-    public ApiResult<ItemDTO> getItem(@PathVariable Long itemId) {
-        return ApiResult.ok(itemService.getItem(itemId));
+    public ApiResult<ItemResponse> getItem(@PathVariable Long itemId) {
+        Item getItem = itemService.getItem(itemId);
+        return ApiResult.ok(new ItemResponse(getItem));
     }
 
     @PostMapping
-    public ApiResult<ItemDTO> createItem(@Valid @RequestBody ItemEntity itemEntity) {
-        return ApiResult.ok(itemService.createItem(itemEntity));
+    public ApiResult<ItemResponse> createItem(@Validated @RequestBody Item item) {
+        Item saveItem = itemService.createItem(item);
+        return ApiResult.ok(new ItemResponse(saveItem));
     }
 
     @PutMapping("/{itemId}")
-    public ApiResult<ItemDTO> updateItem(@PathVariable Long itemId, @Valid @RequestBody ItemEntity itemEntity) {
-        return ApiResult.ok(itemService.updateItem(itemId, itemEntity));
+    public ApiResult<ItemResponse> updateItem(@PathVariable Long itemId, @Validated @RequestBody Item item) {
+        Item updateItem = itemService.updateItem(itemId, item);
+        return ApiResult.ok(new ItemResponse(updateItem));
     }
 
     @DeleteMapping("/{itemId}")
