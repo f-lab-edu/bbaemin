@@ -1,8 +1,7 @@
 package org.bbaemin.category.domain;
 
 import lombok.*;
-import org.bbaemin.category.domain.CategoryDto.CategoryDtoBuilder;
-import org.bbaemin.store.domain.StoreEntity;
+import org.bbaemin.store.domain.Store;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -18,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicUpdate
-public class CategoryEntity {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +25,7 @@ public class CategoryEntity {
     private Long categoryId;
 
     @NotNull(message = "코드값 입력은 필수입니다.")
-    @Column(name = "code")
+    @Column(name = "code", nullable = false, unique = true)
     private Integer code;
 
     @NotBlank(message = "카테고리명 입력은 필수입니다.")
@@ -39,32 +38,17 @@ public class CategoryEntity {
     private String description;
 
     @Column(name = "useYn")
-    private Boolean useYn;
+    private boolean useYn;
 
     @JoinColumn(name = "parent_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private CategoryEntity parent;
+    private Category parent;
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<CategoryEntity> children = new ArrayList<>();
+    private List<Category> children = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "storeCategory")
-    private List<StoreEntity> storeList = new ArrayList<>();
-
-    public static CategoryDto toDto(CategoryEntity entity) {
-        CategoryDtoBuilder dtoBuilder = CategoryDto.builder()
-                .code(entity.code)
-                .name(entity.name)
-                .description(entity.description);
-
-        if (entity.parent != null) {
-            dtoBuilder.parentCode(entity.parent.code)
-                    .parentName(entity.parent.name)
-                    .parentDescription(entity.parent.description);
-        }
-
-        return dtoBuilder.build();
-    }
+    private List<Store> storeList = new ArrayList<>();
 }

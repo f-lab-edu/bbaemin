@@ -1,7 +1,7 @@
 package org.bbaemin.store.domain;
 
 import lombok.*;
-import org.bbaemin.category.domain.CategoryEntity;
+import org.bbaemin.category.domain.Category;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicUpdate
-public class StoreEntity {
+public class Store {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,13 +47,13 @@ public class StoreEntity {
     private String phoneNumber;
 
     @Column(name = "useYn")
-    private Boolean useYn;
+    private boolean useYn;
 
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private CategoryEntity storeCategory;
+    private Category storeCategory;
 
-    public static StoreDto toDto(StoreEntity entity) {
+    public static StoreDto toDto(Store entity) {
         return StoreDto.builder()
                 .name(entity.name)
                 .description(entity.description)

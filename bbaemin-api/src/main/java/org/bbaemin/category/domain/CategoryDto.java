@@ -14,5 +14,5 @@ public class CategoryDto {
     private Integer parentCode;
     private String parentName;
     private String parentDescription;
-    private Boolean useYn;
+    private boolean useYn;
 }

@@ -1,17 +1,23 @@
 package org.bbaemin.category.controller.response;
 
-import lombok.Builder;
 import lombok.Getter;
+import org.bbaemin.category.domain.Category;
 
 @Getter
-@Builder
 public class CategoryResponse {
-
-    private Long categoryId;
 
     private Integer code;
     private String name;
     private String description;
+    private boolean useYn;
 
-    private Integer parent;
+    private Integer parentCode;
+
+    public CategoryResponse(Category category) {
+        this.code = category.getCode();
+        this.name = category.getName();
+        this.description = category.getDescription();
+        this.useYn = category.isUseYn();
+        this.parentCode = category.getParent().getCode();
+    }
 }

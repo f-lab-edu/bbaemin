@@ -1,14 +1,18 @@
 package org.bbaemin.store.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.category.service.CategoryService;
 import org.bbaemin.config.response.ApiResult;
-import org.bbaemin.store.domain.StoreDto;
-import org.bbaemin.store.domain.StoreEntity;
+import org.bbaemin.store.controller.request.CreateStoreRequest;
+import org.bbaemin.store.controller.request.UpdateStoreRequest;
+import org.bbaemin.store.controller.response.StoreResponse;
+import org.bbaemin.store.domain.Store;
 import org.bbaemin.store.service.StoreService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/stores")
@@ -16,25 +20,50 @@ import java.util.List;
 public class StoreController {
 
     private final StoreService storeService;
+    private final CategoryService categoryService;
 
     @GetMapping
-    public ApiResult<List<StoreDto>> listStore() {
-        return ApiResult.ok(storeService.listStore());
+    public ApiResult<List<StoreResponse>> listStore() {
+        return ApiResult.ok(storeService.listStore().stream()
+                .map(StoreResponse::new).collect(Collectors.toList()));
     }
 
     @GetMapping("/{storeId}")
-    public ApiResult<StoreDto> getStore(@PathVariable Long storeId) {
-        return ApiResult.ok(storeService.getStore(storeId));
+    public ApiResult<StoreResponse> getStore(@PathVariable Long storeId) {
+        Store getStore = storeService.getStore(storeId);
+        return ApiResult.ok(new StoreResponse(getStore));
     }
 
     @PostMapping
-    public ApiResult<StoreDto> createStore(@Valid @RequestBody StoreEntity storeEntity) {
-        return ApiResult.ok(storeService.createStore(storeEntity));
+    public ApiResult<Store> createStore(@Validated @RequestBody CreateStoreRequest createStoreRequest) {
+        Store store = Store.builder()
+                .name(createStoreRequest.getName())
+                .description(createStoreRequest.getDescription())
+                .owner(createStoreRequest.getOwner())
+                .address(createStoreRequest.getAddress())
+                .zipCode(createStoreRequest.getZipCode())
+                .phoneNumber(createStoreRequest.getPhoneNumber())
+                .useYn(createStoreRequest.isUseYn())
+                .storeCategory(categoryService.getCategory(createStoreRequest.getCategoryId()))
+                .build();
+
+        return ApiResult.ok(storeService.createStore(store));
     }
 
     @PutMapping("/{storeId}")
-    public ApiResult<StoreDto> updateStore(@PathVariable Long storeId, @Valid @RequestBody StoreEntity storeEntity) {
-        return ApiResult.ok(storeService.updateStore(storeId, storeEntity));
+    public ApiResult<Store> updateStore(@PathVariable Long storeId, @Validated @RequestBody UpdateStoreRequest updateStoreRequest) {
+        Store store = Store.builder()
+                .name(updateStoreRequest.getName())
+                .description(updateStoreRequest.getDescription())
+                .owner(updateStoreRequest.getOwner())
+                .address(updateStoreRequest.getAddress())
+                .zipCode(updateStoreRequest.getZipCode())
+                .phoneNumber(updateStoreRequest.getPhoneNumber())
+                .useYn(updateStoreRequest.isUseYn())
+                .storeCategory(categoryService.getCategory(updateStoreRequest.getCategoryId()))
+                .build();
+
+        return ApiResult.ok(storeService.updateStore(storeId, store));
     }
 
     @DeleteMapping("/{storeId}")

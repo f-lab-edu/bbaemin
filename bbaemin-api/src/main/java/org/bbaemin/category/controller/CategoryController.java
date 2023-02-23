@@ -1,13 +1,17 @@
 package org.bbaemin.category.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.domain.CategoryDto;
-import org.bbaemin.category.domain.CategoryEntity;
+import org.bbaemin.category.controller.request.CreateCategoryRequest;
+import org.bbaemin.category.controller.request.UpdateCategoryRequest;
+import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.domain.Category;
 import org.bbaemin.category.service.CategoryService;
 import org.bbaemin.config.response.ApiResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,23 +21,43 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ApiResult<List<CategoryDto>> listCategory() {
-        return ApiResult.ok(categoryService.listCategory());
+    public ApiResult<List<CategoryResponse>> listCategory() {
+        return ApiResult.ok(categoryService.listCategory().stream()
+                .map(CategoryResponse::new).collect(Collectors.toList()));
     }
 
     @GetMapping("/{categoryId}")
-    public ApiResult<CategoryDto> getCategory(@PathVariable Long categoryId) {
-        return ApiResult.ok(categoryService.getCategory(categoryId));
+    public ApiResult<CategoryResponse> getCategory(@PathVariable Long categoryId) {
+        Category getCategory = categoryService.getCategory(categoryId);
+        return ApiResult.ok(new CategoryResponse(getCategory));
     }
 
     @PostMapping
-    public ApiResult<CategoryDto> createCategory(@RequestBody CategoryEntity categoryEntity) {
-        return ApiResult.ok(categoryService.createCategory(categoryEntity));
+    public ApiResult<CategoryResponse> createCategory(@Validated @RequestBody CreateCategoryRequest createCategoryRequest) {
+        Category category = Category.builder()
+                .code(createCategoryRequest.getCode())
+                .name(createCategoryRequest.getName())
+                .description(createCategoryRequest.getDescription())
+                .useYn(createCategoryRequest.isUseYn())
+                .parent(categoryService.getCategory(createCategoryRequest.getParentId()))
+                .build();
+
+        Category getCategory = categoryService.createCategory(category);
+        return ApiResult.ok(new CategoryResponse(getCategory));
     }
 
     @PutMapping("/{categoryId}")
-    public ApiResult<CategoryDto> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryEntity categoryEntity) {
-        return ApiResult.ok(categoryService.updateCategory(categoryId, categoryEntity));
+    public ApiResult<CategoryResponse> updateCategory(@PathVariable Long categoryId, @Validated @RequestBody UpdateCategoryRequest updateCategoryRequest) {
+        Category category = Category.builder()
+                .code(updateCategoryRequest.getCode())
+                .name(updateCategoryRequest.getName())
+                .description(updateCategoryRequest.getDescription())
+                .useYn(updateCategoryRequest.isUseYn())
+                .parent(categoryService.getCategory(updateCategoryRequest.getParentId()))
+                .build();
+
+        Category getCategory = categoryService.updateCategory(categoryId, category);
+        return ApiResult.ok(new CategoryResponse(getCategory));
     }
 
     @DeleteMapping("/{categoryId}")

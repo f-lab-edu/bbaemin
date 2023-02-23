@@ -1,24 +1,19 @@
 package org.bbaemin.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.domain.CategoryDto;
-import org.bbaemin.category.domain.CategoryEntity;
+import org.bbaemin.category.domain.Category;
 import org.bbaemin.category.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
-    private CategoryEntity oneCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow();
-    }
 
     /**
      * <pre>
@@ -30,10 +25,8 @@ public class CategoryService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<CategoryDto> listCategory() {
-        return categoryRepository.findAll()
-                .stream().map(CategoryEntity::toDto)
-                .collect(Collectors.toList());
+    public List<Category> listCategory() {
+        return categoryRepository.findAll();
     }
 
     /**
@@ -46,8 +39,9 @@ public class CategoryService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public CategoryDto getCategory(Long categoryId) {
-        return CategoryEntity.toDto(oneCategory(categoryId));
+    public Category getCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NoSuchElementException("categoryId : " + categoryId));
     }
 
     /**
@@ -60,12 +54,12 @@ public class CategoryService {
      * </pre>
      */
     @Transactional
-    public CategoryDto createCategory(CategoryEntity categoryEntity) {
-        if (categoryEntity.getParent() != null) {
-            categoryEntity.setParent(categoryEntity.getParent());
-            categoryEntity.getChildren().add(categoryEntity);
+    public Category createCategory(Category category) {
+        if (category.getParent() != null) {
+            category.setParent(category.getParent());
+            category.getChildren().add(category);
         }
-        return CategoryEntity.toDto(categoryRepository.save(categoryEntity));
+        return categoryRepository.save(category);
     }
 
     /**
@@ -78,16 +72,16 @@ public class CategoryService {
      * </pre>
      */
     @Transactional
-    public CategoryDto updateCategory(Long categoryId, CategoryEntity categoryEntity) {
-        CategoryEntity oneCategory = oneCategory(categoryId);
-        oneCategory.setCode(categoryEntity.getCode());
-        oneCategory.setName(categoryEntity.getName());
-        oneCategory.setDescription(categoryEntity.getDescription());
+    public Category updateCategory(Long categoryId, Category category) {
+        Category oneCategory = getCategory(categoryId);
+        oneCategory.setCode(category.getCode());
+        oneCategory.setName(category.getName());
+        oneCategory.setDescription(category.getDescription());
         if (oneCategory.getParent() != null) {
-            oneCategory.setParent(categoryEntity.getParent());
-            oneCategory.getChildren().add(categoryEntity);
+            oneCategory.setParent(category.getParent());
+            oneCategory.getChildren().add(category);
         }
-        return CategoryEntity.toDto(oneCategory);
+        return oneCategory;
     }
 
     /**
@@ -101,7 +95,7 @@ public class CategoryService {
      */
     @Transactional
     public Long deleteCategory(Long categoryId) {
-        categoryRepository.findById(categoryId);
+        categoryRepository.deleteById(categoryId);
         return categoryId;
     }
 }

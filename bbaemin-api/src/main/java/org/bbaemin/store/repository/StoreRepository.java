@@ -1,6 +1,7 @@
 package org.bbaemin.store.repository;
 
-import org.bbaemin.store.domain.StoreEntity;
+import org.bbaemin.store.domain.Store;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,11 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface StoreRepository extends JpaRepository<StoreEntity, Long> {
+public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    @Query("select s from StoreEntity s join fetch s.storeCategory")
-    List<StoreEntity> findAll();
+    @EntityGraph(attributePaths = {"storeCategory"})
+    List<Store> findAll();
 
-    @Query("select s from StoreEntity s join fetch s.storeCategory where s.storeId = :storeId and s.useYn = true")
-    Optional<StoreEntity> findByStoreId(@Param("storeId") Long storeId);
+    @EntityGraph(attributePaths = {"storeCategory"})
+    Optional<Store> findById(Long storeId);
 }

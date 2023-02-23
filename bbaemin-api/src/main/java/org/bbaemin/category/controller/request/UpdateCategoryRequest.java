@@ -8,6 +8,7 @@ public class UpdateCategoryRequest {
     private Integer code;
     private String name;
     private String description;
+    private boolean useYn;
 
     private Long parentId;    // 상위 카테고리
 }
