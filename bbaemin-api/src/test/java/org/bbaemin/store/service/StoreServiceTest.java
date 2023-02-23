@@ -39,7 +39,6 @@ class StoreServiceTest {
     private Category secondCategory;
 
     @BeforeEach
-    @EventListener
     public void init() {
         firstCategory = Category.builder()
                 .categoryId(1L)
