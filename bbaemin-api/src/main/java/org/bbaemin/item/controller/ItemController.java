@@ -2,6 +2,8 @@ package org.bbaemin.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.bbaemin.config.response.ApiResult;
+import org.bbaemin.item.controller.request.CreateItemRequest;
+import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemResponse;
 import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.service.ItemService;
@@ -31,13 +33,31 @@ public class ItemController {
     }
 
     @PostMapping
-    public ApiResult<ItemResponse> createItem(@Validated @RequestBody Item item) {
+    public ApiResult<ItemResponse> createItem(@Validated @RequestBody CreateItemRequest createItemRequest) {
+        Item item = Item.builder()
+                .itemCategory(itemService.getCategory(createItemRequest.getCategoryId()))
+                .itemStore(itemService.getStore(createItemRequest.getStoreId()))
+                .name(createItemRequest.getName())
+                .description(createItemRequest.getDescription())
+                .price(createItemRequest.getPrice())
+                .quantity(createItemRequest.getQuantity())
+                .build();
+
         Item saveItem = itemService.createItem(item);
         return ApiResult.ok(new ItemResponse(saveItem));
     }
 
     @PutMapping("/{itemId}")
-    public ApiResult<ItemResponse> updateItem(@PathVariable Long itemId, @Validated @RequestBody Item item) {
+    public ApiResult<ItemResponse> updateItem(@PathVariable Long itemId, @Validated @RequestBody UpdateItemRequest updateItemRequest) {
+        Item item = Item.builder()
+                .itemCategory(itemService.getCategory(updateItemRequest.getCategoryId()))
+                .itemStore(itemService.getStore(updateItemRequest.getStoreId()))
+                .name(updateItemRequest.getName())
+                .description(updateItemRequest.getDescription())
+                .price(updateItemRequest.getPrice())
+                .quantity(updateItemRequest.getQuantity())
+                .build();
+
         Item updateItem = itemService.updateItem(itemId, item);
         return ApiResult.ok(new ItemResponse(updateItem));
     }

@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bbaemin.category.domain.CategoryEntity;
-import org.bbaemin.store.domain.StoreEntity;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.store.domain.Store;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
@@ -49,9 +49,9 @@ public class Item {
 
     @JoinColumn(name = "store_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private StoreEntity itemStore;
+    private Store itemStore;
 
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private CategoryEntity itemCategory;
+    private Category itemCategory;
 }

@@ -22,11 +22,11 @@ public class ItemService {
     private final StoreService storeService;
     private final ItemRepository itemRepository;
 
-    private Category getCategory(Long categoryId) {
+    public Category getCategory(Long categoryId) {
         return categoryService.getCategory(categoryId);
     }
 
-    private Store getStore(Long storeId) {
+    public Store getStore(Long storeId) {
         return storeService.getStore(storeId);
     }
 
