@@ -55,7 +55,9 @@ public class CategoryController {
                 .name(updateCategoryRequest.getName())
                 .description(updateCategoryRequest.getDescription())
                 .useYn(updateCategoryRequest.isUseYn())
-                .parent(categoryService.getCategory(updateCategoryRequest.getParentId()))
+                .parent(updateCategoryRequest.getParentId() != null ?
+                        categoryService.getCategory(updateCategoryRequest.getParentId()) :
+                        null)
                 .build();
 
         Category getCategory = categoryService.updateCategory(categoryId, category);
