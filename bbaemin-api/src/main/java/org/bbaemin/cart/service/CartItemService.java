@@ -61,8 +61,8 @@ public class CartItemService {
         cartItemRepository.deleteById(cartItemId);
     }
 
-    public void removeItems(Long userId, List<Long> cartItemIds) {
-        cartItemRepository.deleteAllById(cartItemIds);
+    public void removeItems(Long userId, List<Long> cartItemIdList) {
+        cartItemRepository.deleteAllById(cartItemIdList);
     }
 
     public void clear(Long userId) {

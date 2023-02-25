@@ -64,8 +64,8 @@ public class CartController {
 
     // 장바구니에서 선택 삭제
     @DeleteMapping("/items")
-    public ApiResult<CartResponse> removeItems(@PathVariable Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIds) { // removeItemList
-        cartItemService.removeItems(userId, cartItemIds);
+    public ApiResult<CartResponse> removeItems(@PathVariable Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIdList) {
+        cartItemService.removeItems(userId, cartItemIdList);
         return ApiResult.ok(getCartOfUser(userId));
     }
 
