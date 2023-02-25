@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class StoreController {
 
     private final StoreService storeService;
-    private final CategoryService categoryService;
 
     @GetMapping
     public ApiResult<List<StoreResponse>> listStore() {
@@ -44,7 +43,7 @@ public class StoreController {
                 .zipCode(createStoreRequest.getZipCode())
                 .phoneNumber(createStoreRequest.getPhoneNumber())
                 .useYn(createStoreRequest.isUseYn())
-                .storeCategory(categoryService.getCategory(createStoreRequest.getCategoryId()))
+                .storeCategory(storeService.getCategory(createStoreRequest.getCategoryId()))
                 .build();
 
         return ApiResult.ok(storeService.createStore(store));
@@ -60,7 +59,7 @@ public class StoreController {
                 .zipCode(updateStoreRequest.getZipCode())
                 .phoneNumber(updateStoreRequest.getPhoneNumber())
                 .useYn(updateStoreRequest.isUseYn())
-                .storeCategory(categoryService.getCategory(updateStoreRequest.getCategoryId()))
+                .storeCategory(storeService.getCategory(updateStoreRequest.getCategoryId()))
                 .build();
 
         return ApiResult.ok(storeService.updateStore(storeId, store));

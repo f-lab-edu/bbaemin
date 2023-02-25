@@ -23,7 +23,7 @@ public class StoreService {
     private final CategoryService categoryService;
 
 
-    private Category getCategory(Long categoryId) {
+    public Category getCategory(Long categoryId) {
         return categoryService.getCategory(categoryId);
     }
 

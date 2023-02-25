@@ -39,7 +39,9 @@ public class CategoryController {
                 .name(createCategoryRequest.getName())
                 .description(createCategoryRequest.getDescription())
                 .useYn(createCategoryRequest.isUseYn())
-                .parent(categoryService.getCategory(createCategoryRequest.getParentId()))
+                .parent(createCategoryRequest.getParentId() != null ?
+                        categoryService.getCategory(createCategoryRequest.getParentId()) :
+                        null)
                 .build();
 
         Category getCategory = categoryService.createCategory(category);
