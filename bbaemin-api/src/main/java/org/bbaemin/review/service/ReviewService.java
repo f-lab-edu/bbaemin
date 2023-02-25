@@ -1,14 +1,18 @@
 package org.bbaemin.review.service;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.order.vo.OrderItem;
 import org.bbaemin.review.repository.ReviewRepository;
 import org.bbaemin.review.vo.Review;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Service
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -18,22 +22,30 @@ public class ReviewService {
     }
 
     public Review getReview(Long reviewId) {
-        return reviewRepository.findById(reviewId);
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NoSuchElementException("reviewId : " + reviewId));
     }
 
-    public Review createReview(Review review) {
-        return reviewRepository.insert(review);
+    @Transactional
+    public Review createReview(Long orderItemId, Review review) {
+        // TODO - orderItem
+        review.setOrderItem(OrderItem.builder()
+                        .orderItemId(orderItemId).build());
+        return reviewRepository.save(review);
     }
 
+    @Transactional
     public Review updateReview(Long reviewId, int score, String content, String image) {
-        Review review = reviewRepository.findById(reviewId);
+        Review review = getReview(reviewId);
         review.setScore(score);
         review.setContent(content);
         review.setImage(image);
-        return reviewRepository.update(review);
+        return review;
     }
 
+    @Transactional
     public void deleteReview(Long reviewId) {
-        reviewRepository.delete(reviewId);
+        Review review = getReview(reviewId);
+        reviewRepository.delete(review);
     }
 }

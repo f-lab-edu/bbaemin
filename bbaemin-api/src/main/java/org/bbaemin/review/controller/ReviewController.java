@@ -7,7 +7,6 @@ import org.bbaemin.review.controller.request.UpdateReviewRequest;
 import org.bbaemin.review.controller.response.ReviewResponse;
 import org.bbaemin.review.service.ReviewService;
 import org.bbaemin.review.vo.Review;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,24 +42,23 @@ public class ReviewController {
         return ApiResult.ok(new ReviewResponse(review));
     }
 
-    // TODO - CHECK : /api/v1/reviews vs /api/v1/orders/{orderId}/reviews
+    // TODO - CHECK : /api/v1/reviews vs /api/v1/orders/{orderId}/orderItems/{orderItemId}/reviews
     // 리뷰 등록
     @PostMapping
-    public ApiResult<ReviewResponse> createReview(@Validated @RequestBody CreateReviewRequest createReviewRequest, BindingResult bindingResult) {
+    public ApiResult<ReviewResponse> createReview(@Validated @RequestBody CreateReviewRequest createReviewRequest) {
         Review review = Review.builder()
-                .orderId(createReviewRequest.getOrderId())
                 .score(createReviewRequest.getScore())
                 .content(createReviewRequest.getContent())
                 .image(createReviewRequest.getImage())
                 .build();
-        Review created = reviewService.createReview(review);
-        return ApiResult.ok(new ReviewResponse(created));
+        Review created = reviewService.createReview(createReviewRequest.getOrderItemId(), review);
+        return ApiResult.created(new ReviewResponse(created));
     }
 
     // 리뷰 수정
     @PatchMapping("/{reviewId}")
     public ApiResult<ReviewResponse> updateReview(@PathVariable Long reviewId,
-                                                  @Validated @RequestBody UpdateReviewRequest updateReviewRequest, BindingResult bindingResult) {
+                                                  @Validated @RequestBody UpdateReviewRequest updateReviewRequest) {
         Review updated = reviewService.updateReview(reviewId, updateReviewRequest.getScore(), updateReviewRequest.getContent(), updateReviewRequest.getImage());
         return ApiResult.ok(new ReviewResponse(updated));
     }

@@ -1,6 +1,7 @@
 package org.bbaemin.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bbaemin.order.vo.OrderItem;
 import org.bbaemin.review.controller.request.CreateReviewRequest;
 import org.bbaemin.review.controller.request.UpdateReviewRequest;
 import org.bbaemin.review.service.ReviewService;
@@ -17,8 +18,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,9 +47,10 @@ class ReviewControllerTest {
     @Test
     void listReview() throws Exception {
         // given
+        OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
-                .orderId(1L)
+                .orderItem(orderItem)
                 .score(5)
                 .content("good")
                 .image(null)
@@ -68,9 +72,10 @@ class ReviewControllerTest {
     @Test
     void getReview() throws Exception {
         // given
+        OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
-                .orderId(1L)
+                .orderItem(orderItem)
                 .score(5)
                 .content("good")
                 .image(null)
@@ -94,19 +99,20 @@ class ReviewControllerTest {
     @Test
     void createReview() throws Exception {
         // given
+        OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
-                .orderId(1L)
+                .orderItem(orderItem)
                 .score(5)
                 .content("good")
                 .image(null)
                 .build();
         doReturn(review)
-                .when(reviewService).createReview(any(Review.class));
+                .when(reviewService).createReview(anyLong(), any(Review.class));
 
         // when
         CreateReviewRequest createReviewRequest = CreateReviewRequest.builder()
-                .orderId(1L)
+                .orderItemId(1L)
                 .score(5)
                 .content("good")
                 .image(null)
@@ -118,20 +124,21 @@ class ReviewControllerTest {
         // then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.code").value("CREATED"))
                 .andExpect(jsonPath("$.result").exists())
                 .andExpect(jsonPath("$.result.score").value(review.getScore()))
                 .andExpect(jsonPath("$.result.content").value(review.getContent()))
                 .andExpect(jsonPath("$.result.image").value(review.getImage()));
-        verify(reviewService).createReview(any(Review.class));
+        verify(reviewService).createReview(anyLong(), any(Review.class));
     }
 
     @Test
     void updateReview() throws Exception {
         // given
+        OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
-                .orderId(1L)
+                .orderItem(orderItem)
                 .score(1)
                 .content("bad")
                 .image(null)
