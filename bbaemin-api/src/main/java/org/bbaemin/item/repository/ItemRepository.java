@@ -1,6 +1,6 @@
 package org.bbaemin.item.repository;
 
-import org.bbaemin.item.domain.Item;
+import org.bbaemin.item.vo.Item;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

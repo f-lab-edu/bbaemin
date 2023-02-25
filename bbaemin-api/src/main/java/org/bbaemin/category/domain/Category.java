@@ -1,6 +1,7 @@
 package org.bbaemin.category.domain;
 
 import lombok.*;
+import org.bbaemin.item.vo.Item;
 import org.bbaemin.store.domain.Store;
 import org.hibernate.annotations.DynamicUpdate;
 

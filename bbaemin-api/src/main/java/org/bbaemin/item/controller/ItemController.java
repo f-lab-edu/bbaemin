@@ -5,8 +5,8 @@ import org.bbaemin.config.response.ApiResult;
 import org.bbaemin.item.controller.request.CreateItemRequest;
 import org.bbaemin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.item.controller.response.ItemResponse;
-import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.service.ItemService;
+import org.bbaemin.item.vo.Item;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
