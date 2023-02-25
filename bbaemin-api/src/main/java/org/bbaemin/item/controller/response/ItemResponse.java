@@ -1,7 +1,7 @@
 package org.bbaemin.item.controller.response;
 
 import lombok.Getter;
-import org.bbaemin.item.domain.Item;
+import org.bbaemin.item.vo.Item;
 
 import java.util.List;
 

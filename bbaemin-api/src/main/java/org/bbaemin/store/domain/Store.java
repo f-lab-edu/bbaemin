@@ -2,6 +2,7 @@ package org.bbaemin.store.domain;
 
 import lombok.*;
 import org.bbaemin.category.domain.Category;
+import org.bbaemin.item.vo.Item;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;

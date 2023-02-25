@@ -1,29 +1,44 @@
 package org.bbaemin.item.vo;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.store.domain.Store;
+import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.List;
+import javax.persistence.*;
 
+@Entity
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@DynamicUpdate
 public class Item {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     private Long itemId;
-    private Long categoryId;
-    private Long storeId;
 
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description", nullable = false)
+    @Lob
     private String description;
+
+    @Column(name = "price")
     private int price;
+
+    @Column(name = "quantity")
     private int quantity;
 
-    private List<ItemImageRequest> itemImageRequest;
+    @JoinColumn(name = "store_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Store itemStore;
 
-    @Getter @Builder
-    public static class ItemImageRequest {
-        private Long itemId;
-        private String url;
-        private String type;
-    }
+    @JoinColumn(name = "category_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category itemCategory;
 }
