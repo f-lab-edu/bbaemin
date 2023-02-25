@@ -44,7 +44,7 @@ public class OrderService {
         // TODO - 어떻게 테스트 하나요?
         List<OrderItem> orderItemList = cartItemList.stream()
                 .map(cartItem -> OrderItem.builder()
-                        .itemId(cartItem.getItemId())
+                        .itemId(cartItem.getItem().getItemId())
                         .itemName(cartItem.getItemName())
                         .itemDescription(cartItem.getItemDescription())
                         .orderPrice(cartItem.getOrderPrice())

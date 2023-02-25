@@ -6,6 +6,8 @@ import org.bbaemin.cart.controller.request.UpdateCartItemCountRequest;
 import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.item.vo.Item;
+import org.bbaemin.user.vo.User;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,14 +51,16 @@ class CartControllerTest {
     void getCart() throws Exception {
 
         // given
+        Item item = mock(Item.class);
+        User user = mock(User.class);
         CartItem cartItem = CartItem.builder()
                 .cartItemId(1L)
-                .itemId(1L)
+                .item(item)
                 .itemName("item1")
                 .itemDescription("item1_desc")
                 .orderPrice(10000)
                 .orderCount(2)
-                .userId(1L)
+                .user(user)
                 .build();
         List<CartItem> cartItemList = List.of(cartItem);
         doReturn(cartItemList)
@@ -79,23 +84,26 @@ class CartControllerTest {
     @Test
     void addItem() throws Exception {
         // given
+        Item item1 = mock(Item.class);
+        Item item2 = mock(Item.class);
+        User user = mock(User.class);
         CartItem cartItem1 = CartItem.builder()
                 .cartItemId(1L)
-                .itemId(1L)
+                .item(item1)
                 .itemName("item1")
                 .itemDescription("item1_desc")
                 .orderPrice(10000)
                 .orderCount(2)
-                .userId(1L)
+                .user(user)
                 .build();
         CartItem cartItem2 = CartItem.builder()
                 .cartItemId(2L)
-                .itemId(2L)
+                .item(item2)
                 .itemName("item2")
                 .itemDescription("item2_desc")
                 .orderPrice(5000)
                 .orderCount(2)
-                .userId(1L)
+                .user(user)
                 .build();
         List<CartItem> cartItemList = Arrays.asList(cartItem1, cartItem2);
         doReturn(cartItemList)
@@ -126,14 +134,16 @@ class CartControllerTest {
     @Test
     void updateCount() throws Exception {
         // given
+        Item item = mock(Item.class);
+        User user = mock(User.class);
         CartItem cartItem = CartItem.builder()
                 .cartItemId(1L)
-                .itemId(1L)
+                .item(item)
                 .itemName("item1")
                 .itemDescription("item1_desc")
                 .orderPrice(10000)
                 .orderCount(4)
-                .userId(1L)
+                .user(user)
                 .build();
         List<CartItem> cartItemList = Arrays.asList(cartItem);
         doReturn(cartItemList)
@@ -164,14 +174,16 @@ class CartControllerTest {
     @Test
     void removeItem() throws Exception {
         // given
+        Item item = mock(Item.class);
+        User user = mock(User.class);
         CartItem cartItem = CartItem.builder()
                 .cartItemId(1L)
-                .itemId(1L)
+                .item(item)
                 .itemName("item1")
                 .itemDescription("item1_desc")
                 .orderPrice(10000)
                 .orderCount(2)
-                .userId(1L)
+                .user(user)
                 .build();
         List<CartItem> cartItemList = Arrays.asList(cartItem);
         doReturn(cartItemList)
@@ -198,14 +210,16 @@ class CartControllerTest {
     @Test
     void removeItems() throws Exception {
         // given
+        Item item = mock(Item.class);
+        User user = mock(User.class);
         CartItem cartItem = CartItem.builder()
                 .cartItemId(1L)
-                .itemId(1L)
+                .item(item)
                 .itemName("item1")
                 .itemDescription("item1_desc")
                 .orderPrice(10000)
                 .orderCount(2)
-                .userId(1L)
+                .user(user)
                 .build();
         List<CartItem> cartItemList = Arrays.asList(cartItem);
         doReturn(cartItemList)

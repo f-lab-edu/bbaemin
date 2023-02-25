@@ -1,6 +1,7 @@
 package org.bbaemin.cart.repository;
 
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.user.vo.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
@@ -12,9 +13,9 @@ import java.util.List;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    List<CartItem> findByUserId(Long userId);
+    List<CartItem> findByUser(User user);
 
     @Transactional
     @Modifying
-    void deleteByUserId(Long userId);
+    void deleteByUser(User user);
 }

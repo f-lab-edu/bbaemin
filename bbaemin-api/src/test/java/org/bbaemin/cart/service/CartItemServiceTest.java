@@ -2,6 +2,10 @@ package org.bbaemin.cart.service;
 
 import org.bbaemin.cart.repository.CartItemRepository;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.item.service.ItemService;
+import org.bbaemin.item.vo.Item;
+import org.bbaemin.user.service.UserService;
+import org.bbaemin.user.vo.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,19 +29,32 @@ class CartItemServiceTest {
     CartItemService cartItemService;
     @Mock
     CartItemRepository cartItemRepository;
+    @Mock
+    ItemService itemService;
+    @Mock
+    UserService userService;
 
     @Test
     void getCartItemListByUserId() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         CartItem cartItem = mock(CartItem.class);
         List<CartItem> cartItemList = List.of(cartItem);
         doReturn(cartItemList)
-                .when(cartItemRepository).findByUserId(1L);
+                .when(cartItemRepository).findByUser(user);
 
         assertEquals(cartItemList, cartItemService.getCartItemListByUserId(1L));
     }
 
     @Test
     void addItem() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
+        Item item = mock(Item.class);
+        doReturn(item)
+                .when(itemService).getItem(2L);
         CartItem cartItem = mock(CartItem.class);
         doReturn(cartItem)
                 .when(cartItemRepository).save(any(CartItem.class));
@@ -76,10 +93,13 @@ class CartItemServiceTest {
 
     @Test
     void clear() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         doNothing()
-                .when(cartItemRepository).deleteByUserId(1L);
+                .when(cartItemRepository).deleteByUser(user);
 
         cartItemService.clear(1L);
-        verify(cartItemRepository).deleteByUserId(1L);
+        verify(cartItemRepository).deleteByUser(user);
     }
 }

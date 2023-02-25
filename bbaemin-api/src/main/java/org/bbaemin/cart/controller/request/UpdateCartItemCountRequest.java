@@ -1,12 +1,14 @@
 package org.bbaemin.cart.controller.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class UpdateCartItemCountRequest {
-    // TODO - CHECK : no-args constructor
-    private final Long cartItemId;
-    private final int orderCount;
+
+    private Long cartItemId;
+    private int orderCount;
 }

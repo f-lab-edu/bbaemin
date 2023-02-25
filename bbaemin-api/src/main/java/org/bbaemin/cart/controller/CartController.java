@@ -8,6 +8,7 @@ import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
 import org.bbaemin.config.response.ApiResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,14 +43,14 @@ public class CartController {
 
     // 장바구니에 추가
     @PostMapping("/items")
-    public ApiResult<CartResponse> addItem(@PathVariable Long userId, @RequestBody CreateCartItemRequest createCartItemRequest) {
+    public ApiResult<CartResponse> addItem(@PathVariable Long userId, @Validated @RequestBody CreateCartItemRequest createCartItemRequest) {
         cartItemService.addItem(userId, createCartItemRequest.getItemId());
         return ApiResult.created(getCartOfUser(userId));
     }
 
     // 수량 변경
     @PatchMapping("/items")
-    public ApiResult<CartResponse> updateCount(@PathVariable Long userId, @RequestBody UpdateCartItemCountRequest updateCartItemCountRequest) {
+    public ApiResult<CartResponse> updateCount(@PathVariable Long userId, @Validated @RequestBody UpdateCartItemCountRequest updateCartItemCountRequest) {
         cartItemService.updateCount(userId, updateCartItemCountRequest.getCartItemId(), updateCartItemCountRequest.getOrderCount());
         return ApiResult.ok(getCartOfUser(userId));
     }
