@@ -1,12 +1,11 @@
 package org.bbaemin.item.controller.response;
 
-import lombok.Builder;
 import lombok.Getter;
+import org.bbaemin.item.domain.Item;
 
 import java.util.List;
 
 @Getter
-@Builder
 public class ItemResponse {
 
     private Long itemId;
@@ -21,4 +20,13 @@ public class ItemResponse {
     private int quantity;
 
     private List<ItemImageResponse> itemImageResponse;
+
+    public ItemResponse(Item item) {
+        this.category = item.getItemCategory().getName();
+        this.store = item.getItemStore().getName();
+        this.name = item.getName();
+        this.description = item.getDescription();
+        this.price = item.getPrice();
+        this.quantity = item.getQuantity();
+    }
 }

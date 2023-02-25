@@ -1,269 +1,256 @@
 package org.bbaemin.item.service;
 
-import org.bbaemin.item.controller.response.ItemImageResponse;
-import org.bbaemin.item.controller.response.ItemResponse;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.category.service.CategoryService;
+import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.repository.ItemRepository;
-import org.bbaemin.item.vo.Item;
+import org.bbaemin.store.domain.Store;
+import org.bbaemin.store.service.StoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@DisplayName("아이템 관련 Service Test")
 class ItemServiceTest {
 
-    @Mock
-    private ItemRepository itemRepository;
 
-    @InjectMocks
-    private ItemService itemService;
+    @Mock private ItemRepository mockItemRepository;
+    @InjectMocks private ItemService mockItemService;
 
-    private static final List<ItemResponse> itemList = new ArrayList<>();
-    private static Long itemId = 0L;
+    @Mock private CategoryService mockCategoryService;
+    @Mock private StoreService mockStoreService;
 
-    void createItem() {
-        itemList.add(
-                ItemResponse.builder()
-                        .itemId(++itemId)
-                        .category("과일")
-                        .store("B마트 인천점")
-                        .name("청동사과")
-                        .description("맛있고 싱싱한 청동사과")
-                        .price(2000)
-                        .quantity(999)
-                        .itemImageResponse(
-                                Arrays.asList(
-                                        ItemImageResponse.builder()
-                                                .url("https://image.thumbnail.com")
-                                                .type("thumb-nail")
-                                                .build(),
-                                        ItemImageResponse.builder()
-                                                .url("https://image.detail.com")
-                                                .type("detail")
-                                                .build()
-                                )
-                        )
-                        .build());
-
-        itemList.add(
-                ItemResponse.builder()
-                        .itemId(++itemId)
-                        .category("유제품")
-                        .store("B마트 인천점")
-                        .name("서울우유 저지방우유 1000ml")
-                        .description("서울 우유 저지방우유 1000ml")
-                        .price(5000)
-                        .quantity(999)
-                        .itemImageResponse(
-                                Arrays.asList(
-                                        ItemImageResponse.builder()
-                                                .url("https://image.thumbnail.com")
-                                                .type("thumbnail")
-                                                .build(),
-                                        ItemImageResponse.builder()
-                                                .url("https://image.detail.com")
-                                                .type("detail")
-                                                .build()
-                                )
-                        )
-                        .build()
-        );
-    }
+    private Item item;
+    private Category firstItemCategory;
+    private Category secondItemCategory;
+    private Category firstStoreCategory;
+    private Store firstStoreEntity;
+    private Store secondStoreEntity;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
-        createItem();
+        // 카테고리 등록
+        firstItemCategory = Category.builder()
+                .categoryId(1L)
+                .code(300)
+                .name("과일")
+                .description("과일")
+                .useYn(true)
+                .parent(null)
+                .build();
+
+        secondItemCategory = Category.builder()
+                .categoryId(2L)
+                .code(400)
+                .name("과자")
+                .description("과자")
+                .useYn(true)
+                .parent(null)
+                .build();
+
+        firstStoreCategory = Category.builder()
+                .categoryId(3L)
+                .code(200)
+                .name("편의점")
+                .description("편의점")
+                .useYn(true)
+                .parent(null)
+                .build();
+
+        // 매장 등록
+        firstStoreEntity = Store.builder()
+                .storeId(1L)
+                .storeCategory(firstStoreCategory)
+                .name("B마트 인천점")
+                .description("B마트 인천점")
+                .owner("점주")
+                .address("인천광역시 계양구")
+                .zipCode("123-456")
+                .phoneNumber("01012345678")
+                .useYn(true)
+                .build();
+
+        secondStoreEntity = Store.builder()
+                .storeId(2L)
+                .storeCategory(firstStoreCategory)
+                .name("B마트 관악점")
+                .description("B마트 관악점")
+                .owner("점주")
+                .address("서울특별시 관악구")
+                .zipCode("456-789")
+                .phoneNumber("01078912345")
+                .useYn(true)
+                .build();
+
+        // 아이템 등록
+        item = Item.builder()
+                .itemId(1L)
+                .itemCategory(firstItemCategory)
+                .itemStore(firstStoreEntity)
+                .name("청동사과")
+                .description("싱싱한 청동사과")
+                .price(2000)
+                .quantity(999)
+                .build();
     }
 
     @Test
-    @DisplayName("아이템 리스트 조회")
-    void 아이템리스트조회() {
+    @DisplayName("아이템_리스트_조회")
+    void 아이템_리스트_조회() {
+        List<Item> itemList = new ArrayList<>();
+        itemList.add(item);
         // when
-        when(itemRepository.findAll()).thenReturn(itemList);
-        List<ItemResponse> itemList = itemService.listItem();
+        when(mockItemRepository.findAll()).thenReturn(itemList);
+        List<Item> findItemList = mockItemService.listItem();
 
         // then
-        assertThat(itemList.get(0).getCategory()).isEqualTo("과일");
-        assertThat(itemList.get(0).getName()).isEqualTo("청동사과");
-        assertThat(itemList.get(0).getPrice()).isEqualTo(2000);
-
-        assertThat(itemList.get(1).getCategory()).isEqualTo("유제품");
-        assertThat(itemList.get(1).getName()).isEqualTo("서울우유 저지방우유 1000ml");
-        assertThat(itemList.get(1).getPrice()).isEqualTo(5000);
+        assertThat(findItemList.get(0).getItemCategory().getName()).isEqualTo("과일");
+        assertThat(findItemList.get(0).getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(findItemList.get(0).getName()).isEqualTo("청동사과");
+        assertThat(findItemList.get(0).getPrice()).isEqualTo(2000);
 
         // verify
-        verify(itemRepository, times(1)).findAll();
-        verify(itemRepository, atLeastOnce()).findAll();
-        verifyNoMoreInteractions(itemRepository);
+        verify(mockItemRepository, times(1)).findAll();
+        verify(mockItemRepository, atLeastOnce()).findAll();
+        verifyNoMoreInteractions(mockItemRepository);
 
-        InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).findAll();
+        InOrder inOrder = inOrder(mockItemRepository);
+        inOrder.verify(mockItemRepository).findAll();
     }
 
     @Test
-    @DisplayName("아이템 상세 조회")
-    void 아이템상세조회() {
+    @DisplayName("아이템_상세_조회")
+    void 아이템_상세_조회() {
         // when
-        when(itemRepository.findById(1L)).thenReturn(itemList.get(0));
-        ItemResponse getItem = itemService.getItem(1L);
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        Item getItem = mockItemService.getItem(item.getItemId());
 
         // then
-        assertThat(getItem.getCategory()).isEqualTo("과일");
+        assertThat(getItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(getItem.getItemStore().getName()).isEqualTo("B마트 인천점");
         assertThat(getItem.getName()).isEqualTo("청동사과");
         assertThat(getItem.getPrice()).isEqualTo(2000);
 
         // verify
-        verify(itemRepository, times(1)).findById(1L);
-        verify(itemRepository, atLeastOnce()).findById(1L);
-        verifyNoMoreInteractions(itemRepository);
+        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
+        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
+        verifyNoMoreInteractions(mockItemRepository);
 
-        InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).findById(1L);
+        InOrder inOrder = inOrder(mockItemRepository);
+        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
     }
 
     @Test
-    @DisplayName("아이템 등록")
-    void 아이템등록() {
+    @DisplayName("아이템_등록")
+    void 아이템_등록() {
         Item item = Item.builder()
-                .categoryId(1L)
-                .storeId(1L)
-                .name("달달한 초코칩")
-                .description("순도 100% 초콜릿 초코칩")
+                .itemCategory(firstItemCategory)
+                .itemStore(firstStoreEntity)
+                .name("복숭아")
+                .description("복숭아")
                 .price(3000)
                 .quantity(999)
-                .itemImageRequest(
-                        Arrays.asList(
-                                Item.ItemImageRequest.builder()
-                                        .itemId(3L)
-                                        .url("https://image.thumbnail.com")
-                                        .type("thumbnail")
-                                        .build(),
-                                Item.ItemImageRequest.builder()
-                                        .itemId(3L)
-                                        .url("https://image.detail.com")
-                                        .type("detail")
-                                        .build()
-                        ))
-                .build();
-
-        ItemResponse createResponse = ItemResponse.builder()
-                .itemId(itemId)
-                .category("과자")
-                .store("B마트 계양점")
-                .name(item.getName())
-                .description(item.getDescription())
-                .price(item.getPrice())
-                .quantity(item.getQuantity())
-                .itemImageResponse(
-                        Arrays.asList(
-                                ItemImageResponse.builder()
-                                        .url("https://image.thumbnail.com")
-                                        .type("thumbnail")
-                                        .build(),
-                                ItemImageResponse.builder()
-                                        .url("https://image.detail.com")
-                                        .type("detail")
-                                        .build()
-                        )
-                )
                 .build();
 
         // when
-        when(itemRepository.save(item)).thenReturn(createResponse);
-        ItemResponse getItem = itemService.createItem(item);
+        when(mockStoreService.getStore(firstStoreEntity.getStoreId())).thenReturn(firstStoreEntity);
+        when(mockCategoryService.getCategory(firstItemCategory.getCategoryId())).thenReturn(firstItemCategory);
+        when(mockItemRepository.save(item)).thenReturn(item);
+        Item saveItem = mockItemService.createItem(item);
 
         // then
-        assertThat(getItem.getName()).isEqualTo("달달한 초코칩");
-        assertThat(getItem.getDescription()).isEqualTo("순도 100% 초콜릿 초코칩");
-        assertThat(getItem.getPrice()).isEqualTo(3000);
+        assertThat(saveItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(saveItem.getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(saveItem.getName()).isEqualTo("복숭아");
+        assertThat(saveItem.getDescription()).isEqualTo("복숭아");
+        assertThat(saveItem.getPrice()).isEqualTo(3000);
 
         // verify
-        verify(itemRepository, times(1)).save(item);
-        verify(itemRepository, atLeastOnce()).save(item);
-        verifyNoMoreInteractions(itemRepository);
+        verify(mockItemRepository, times(1)).save(item);
+        verify(mockItemRepository, atLeastOnce()).save(item);
+        verifyNoMoreInteractions(mockItemRepository);
 
-        InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).save(item);
+        InOrder inOrder = inOrder(mockItemRepository);
+        inOrder.verify(mockItemRepository).save(item);
     }
 
     @Test
-    @DisplayName("아이템 수정")
-    void 아이템수정() {
-        Item item = Item.builder()
-                .categoryId(999L)
-                .storeId(999L)
-                .name("닭고기 100g")
-                .description("닭고기 100g")
+    @DisplayName("아이템_수정")
+    void 아이템_수정() {
+        // 동일 매장 및 동일 카테고리
+        Item firstItem = Item.builder()
+                .itemId(item.getItemId())
+                .itemCategory(firstItemCategory)
+                .itemStore(firstStoreEntity)
+                .name("메론")
+                .description("메론")
                 .price(5000)
                 .quantity(999)
                 .build();
 
-        ItemResponse updateResponse = ItemResponse.builder()
-                .itemId(itemId)
-                .category("과자")
-                .store("B마트 계양점")
-                .name(item.getName())
-                .description(item.getDescription())
-                .price(item.getPrice())
-                .quantity(item.getQuantity())
-                .itemImageResponse(
-                        Arrays.asList(
-                                ItemImageResponse.builder()
-                                        .url("https://image.thumbnail.com")
-                                        .type("thumbnail")
-                                        .build(),
-                                ItemImageResponse.builder()
-                                        .url("https://image.detail.com")
-                                        .type("detail")
-                                        .build()
-                        )
-                )
+        // when
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
+        Item updateItem = mockItemService.updateItem(item.getItemId(), firstItem);
+
+        // then
+        assertThat(updateItem.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(updateItem.getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(updateItem.getName()).isEqualTo("메론");
+        assertThat(updateItem.getDescription()).isEqualTo("메론");
+
+        // verify
+        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
+        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
+        verifyNoMoreInteractions(mockItemRepository);
+
+        InOrder inOrder = inOrder(mockItemRepository);
+        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
+
+        // 다른 매장 및 다른 카테고리
+        Item secondItem = Item.builder()
+                .itemId(item.getItemId())
+                .itemCategory(secondItemCategory)
+                .itemStore(secondStoreEntity)
+                .name("칙촉")
+                .description("칙촉")
+                .price(2500)
+                .quantity(999)
                 .build();
 
         // when
-        when(itemRepository.update(2L, item)).thenReturn(updateResponse);
-        ItemResponse updateItem = itemService.updateItem(2L, item);
+        when(mockCategoryService.getCategory(secondItemCategory.getCategoryId())).thenReturn(secondItemCategory);
+        when(mockStoreService.getStore(secondStoreEntity.getStoreId())).thenReturn(secondStoreEntity);
+        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        Item secondUpdateItem = mockItemService.updateItem(item.getItemId(), secondItem);
 
         // then
-        assertThat(updateItem.getName()).isEqualTo("닭고기 100g");
-        assertThat(updateItem.getDescription()).isEqualTo("닭고기 100g");
-
-        // verify
-        verify(itemRepository, times(1)).update(2L, item);
-        verify(itemRepository, atLeastOnce()).update(2L, item);
-        verifyNoMoreInteractions(itemRepository);
-
-        InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).update(2L, item);
+        assertThat(secondUpdateItem.getItemCategory().getName()).isEqualTo("과자");
+        assertThat(secondUpdateItem.getItemStore().getName()).isEqualTo("B마트 관악점");
+        assertThat(secondUpdateItem.getName()).isEqualTo("칙촉");
+        assertThat(secondUpdateItem.getPrice()).isEqualTo(2500);
+        assertThat(secondUpdateItem.getQuantity()).isEqualTo(999);
     }
 
     @Test
-    @DisplayName("아이템 삭제")
-    void 아이템삭제() {
-        // when
-        when(itemRepository.deleteById(2L)).thenReturn(2L);
-        Long deleteItemId = itemService.deleteItem(2L);
-
-        // then
-        assertThat(deleteItemId).isEqualTo(2L);
-
-        // verify
-        verify(itemRepository, times(1)).deleteById(2L);
-        verify(itemRepository, atLeastOnce()).deleteById(2L);
-        verifyNoMoreInteractions(itemRepository);
-
-        InOrder inOrder = inOrder(itemRepository);
-        inOrder.verify(itemRepository).deleteById(2L);
+    @DisplayName("아이템_삭제")
+    void 아이템_삭제() {
+        Long deleteItemId = mockItemService.deleteItem(item.getItemId());
+        assertThat(deleteItemId).isEqualTo(item.getItemId());
     }
 }

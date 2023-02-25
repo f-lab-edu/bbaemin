@@ -1,20 +1,35 @@
 package org.bbaemin.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.item.controller.request.CreateItemRequest;
-import org.bbaemin.item.controller.request.UpdateItemRequest;
-import org.bbaemin.item.controller.response.ItemResponse;
+import org.bbaemin.category.domain.Category;
+import org.bbaemin.category.service.CategoryService;
+import org.bbaemin.item.domain.Item;
 import org.bbaemin.item.repository.ItemRepository;
-import org.bbaemin.item.vo.Item;
+import org.bbaemin.store.domain.Store;
+import org.bbaemin.store.service.StoreService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
 
+    private final CategoryService categoryService;
+    private final StoreService storeService;
     private final ItemRepository itemRepository;
+
+    public Category getCategory(Long categoryId) {
+        return categoryService.getCategory(categoryId);
+    }
+
+    public Store getStore(Long storeId) {
+        return storeService.getStore(storeId);
+    }
+
 
     /**
      * <pre>
@@ -25,7 +40,8 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public List<ItemResponse> listItem() {
+    @Transactional(readOnly = true)
+    public List<Item> listItem() {
         return itemRepository.findAll();
     }
 
@@ -38,8 +54,9 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse getItem(Long itemId) {
-        return itemRepository.findById(itemId);
+    @Transactional(readOnly = true)
+    public Item getItem(Long itemId) {
+        return itemRepository.findByItemId(itemId).orElseThrow(() -> new NoSuchElementException("itemId : " + itemId));
     }
 
     /**
@@ -51,7 +68,16 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse createItem(Item item) {
+    @Transactional
+    public Item createItem(Item item) {
+        // 아이템 매장 연관관계 설정
+        Store oneStore = getStore(item.getItemStore().getStoreId());
+        item.setItemStore(oneStore);
+        oneStore.getItemList().add(item);
+        // 아이템 카테고리 연관관계 설정
+        Category oneCategory = getCategory(item.getItemCategory().getCategoryId());
+        item.setItemCategory(oneCategory);
+        oneCategory.getItemList().add(item);
         return itemRepository.save(item);
     }
 
@@ -64,8 +90,28 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
-    public ItemResponse updateItem(Long itemId, Item item) {
-        return itemRepository.update(itemId, item);
+    @Transactional
+    public Item updateItem(Long itemId, Item item) {
+        Item oneItem = getItem(itemId);
+        // 카테고리 수정
+        if (!Objects.equals(oneItem.getItemCategory().getCategoryId(), item.getItemCategory().getCategoryId())) {
+            Category getCategory = getCategory(item.getItemCategory().getCategoryId());
+            item.setItemCategory(getCategory);
+            getCategory.getItemList().add(item);
+        }
+
+        // 매장 수정
+        if (!Objects.equals(oneItem.getItemStore().getStoreId(), item.getItemStore().getStoreId())) {
+            Store getStore = getStore(item.getItemStore().getStoreId());
+            item.setItemStore(getStore);
+            getStore.getItemList().add(item);
+        }
+
+        oneItem.setName(item.getName());
+        oneItem.setDescription(item.getDescription());
+        oneItem.setPrice(item.getPrice());
+        oneItem.setQuantity(item.getQuantity());
+        return item;
     }
 
     /**
@@ -77,7 +123,9 @@ public class ItemService {
      * 5. 작성일      : 2023. 02. 07.
      * </pre>
      */
+    @Transactional
     public Long deleteItem(Long itemId) {
-        return itemRepository.deleteById(itemId);
+        itemRepository.deleteById(itemId);
+        return itemId;
     }
 }
