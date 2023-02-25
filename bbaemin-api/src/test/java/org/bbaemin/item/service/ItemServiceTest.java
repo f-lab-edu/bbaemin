@@ -2,7 +2,7 @@ package org.bbaemin.item.service;
 
 import org.bbaemin.category.domain.Category;
 import org.bbaemin.category.service.CategoryService;
-import org.bbaemin.item.domain.Item;
+import org.bbaemin.item.vo.Item;
 import org.bbaemin.item.repository.ItemRepository;
 import org.bbaemin.store.domain.Store;
 import org.bbaemin.store.service.StoreService;

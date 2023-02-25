@@ -30,11 +30,14 @@ public class CartItemService {
                 .orElseThrow(() -> new NoSuchElementException("cartItemId : " + cartItemId));
     }
 
-    // TODO - 만약 똑같은 아이템을 두 번 넣으면 어떻게 되나요?
     public CartItem addItem(Long userId, Long itemId) {
 
         User user = userService.getUser(userId);
         Item item = itemService.getItem(itemId);
+
+        cartItemRepository.findByUserAndItem(user, item).ifPresent(cartItem -> {
+            throw new IllegalArgumentException("Duplicated");
+        });
         CartItem cartItem = CartItem.builder()
                 .item(item)
                 .itemName(item.getName())

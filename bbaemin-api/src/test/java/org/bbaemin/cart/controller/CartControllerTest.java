@@ -9,6 +9,7 @@ import org.bbaemin.cart.vo.CartItem;
 import org.bbaemin.item.vo.Item;
 import org.bbaemin.user.vo.User;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -128,6 +130,28 @@ class CartControllerTest {
         // then
         verify(cartItemService).getCartItemListByUserId(1L);
         verify(deliveryFeeService).getDeliveryFee(cartItemList);
+        verify(cartItemService).addItem(1L, 2L);
+    }
+
+    @DisplayName("똑같은 아이템을 두 번 넣는 경우")
+    @Test
+    void add_existedItem() throws Exception {
+        // given
+        doThrow(new IllegalArgumentException("Duplicated"))
+                .when(cartItemService).addItem(1L, 2L);
+
+        // when
+        CreateCartItemRequest createCartItemRequest = new CreateCartItemRequest(2L);
+        mockMvc.perform(post(BASE_URL + "/items", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createCartItemRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("FAIL"))
+                .andExpect(jsonPath("$.result").exists())
+                .andExpect(jsonPath("$.result.httpStatus").value("INTERNAL_SERVER_ERROR"))
+                .andExpect(jsonPath("$.result.cause").value("Duplicated"));
+        // then
         verify(cartItemService).addItem(1L, 2L);
     }
 
