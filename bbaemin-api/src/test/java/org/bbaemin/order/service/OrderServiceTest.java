@@ -3,7 +3,6 @@ package org.bbaemin.order.service;
 import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
-import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
@@ -20,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.bbaemin.order.enums.OrderStatus.CANCEL_ORDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -131,6 +131,6 @@ class OrderServiceTest {
 
         orderService.cancelOrder(1L, 1L);
 
-        verify(order).setStatus(OrderStatus.CANCEL_ORDER);
+        verify(order).setStatus(CANCEL_ORDER);
     }
 }

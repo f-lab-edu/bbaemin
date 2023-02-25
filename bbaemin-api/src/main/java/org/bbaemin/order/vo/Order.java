@@ -6,16 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.bbaemin.order.enums.OrderStatus;
+import org.bbaemin.order.enums.PaymentMethod;
 import org.bbaemin.user.vo.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
@@ -41,6 +45,7 @@ public class Order {
     private LocalDateTime orderDate;       // 주문일시
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;             // 주문완료, 주문취소 / 배달중, 배달완료, 배달취소
 
     @Column(name = "order_amount", nullable = false)
@@ -52,9 +57,9 @@ public class Order {
     @Column(name = "payment_amount", nullable = false)
     private int paymentAmount;              // 결제 금액 = 주문 금액 + 배달료
 
-    // TODO - enum으로 변경
     @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;           // 결제 수단
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;    // 결제 수단
 
 //    private Long storeId;                 // 가게
 
@@ -68,11 +73,12 @@ public class Order {
     private String email;                   // 주문 내역 발송 메일
 
     @Column(name = "message_to_rider")
+    @Lob
     private String messageToRider;          // 라이더님께
 
     @Builder
     public Order(Long orderId, User user, LocalDateTime orderDate, OrderStatus status, int orderAmount, int deliveryFee, int paymentAmount,
-            String paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider) {
+            PaymentMethod paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider) {
         this.orderId = orderId;
         this.user = user;
         this.orderDate = orderDate;

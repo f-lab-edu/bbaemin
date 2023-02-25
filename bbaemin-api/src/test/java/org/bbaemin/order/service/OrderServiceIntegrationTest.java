@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bbaemin.order.enums.OrderStatus.COMPLETE_ORDER;
+import static org.bbaemin.order.enums.PaymentMethod.CARD;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -72,7 +73,7 @@ class OrderServiceIntegrationTest {
                         .phoneNumber("010-1111-2222")
                         .email("user@email.com")
                         .messageToRider("감사합니다")
-                        .paymentMethod("신용/체크카드")
+                        .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
                 List.of(1L, 2L));
@@ -99,7 +100,7 @@ class OrderServiceIntegrationTest {
                         .phoneNumber("010-1111-2222")
                         .email("user@email.com")
                         .messageToRider("감사합니다")
-                        .paymentMethod("신용/체크카드")
+                        .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
                 List.of(1L, 2L));
@@ -125,7 +126,7 @@ class OrderServiceIntegrationTest {
                         .phoneNumber("010-1111-2222")
                         .email("user@email.com")
                         .messageToRider("감사합니다")
-                        .paymentMethod("신용/체크카드")
+                        .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
                 List.of(1L, 2L));
@@ -151,7 +152,7 @@ class OrderServiceIntegrationTest {
                         .phoneNumber("010-1111-2222")
                         .email("user@email.com")
                         .messageToRider("감사합니다")
-                        .paymentMethod("신용/체크카드")
+                        .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
                 List.of(1L, 2L));
@@ -173,7 +174,7 @@ class OrderServiceIntegrationTest {
                         .phoneNumber("010-1111-2222")
                         .email("user@email.com")
                         .messageToRider("감사합니다")
-                        .paymentMethod("신용/체크카드")
+                        .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
                 List.of(1L, 2L));
