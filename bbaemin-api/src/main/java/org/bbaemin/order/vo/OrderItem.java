@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.bbaemin.item.vo.Item;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,9 +33,10 @@ public class OrderItem {
             nullable = false, foreignKey = @ForeignKey(name = "fk_orderItem_order"))
     private Order order;
 
-    // TODO - Item과 연관관계
-    @Column(name = "item_id", nullable = false)
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", referencedColumnName = "item_id",
+            nullable = false, foreignKey = @ForeignKey(name = "fk_orderItem_item"))
+    private Item item;
 
     @Column(name = "item_name", nullable = false)
     private String itemName;
@@ -49,10 +51,10 @@ public class OrderItem {
     private int orderCount;
 
     @Builder
-    private OrderItem(Long orderItemId, Order order, Long itemId, String itemName, String itemDescription, int orderPrice, int orderCount) {
+    private OrderItem(Long orderItemId, Order order, Item item, String itemName, String itemDescription, int orderPrice, int orderCount) {
         this.orderItemId = orderItemId;
         this.order = order;
-        this.itemId = itemId;
+        this.item = item;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
         this.orderPrice = orderPrice;

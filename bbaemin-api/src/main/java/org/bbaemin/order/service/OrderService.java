@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.item.service.ItemService;
 import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
+import org.bbaemin.user.service.UserService;
+import org.bbaemin.user.vo.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +28,12 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final CartItemService cartItemService;
     private final DeliveryFeeService deliveryFeeService;
+    private final UserService userService;
+    private final ItemService itemService;
 
     public List<Order> getOrderListByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+        User user = userService.getUser(userId);
+        return orderRepository.findByUser(user);
     }
 
     public Order getOrder(Long userId, Long orderId) {
@@ -42,6 +48,9 @@ public class OrderService {
     @Transactional
     public Order order(Long userId, Order order, List<Long> discountCouponIdList) {
 
+        User user = userService.getUser(userId);
+        order.setUser(user);
+
         List<CartItem> cartItemList = cartItemService.getCartItemListByUserId(userId);
         int orderAmount = cartItemList.stream().mapToInt(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount()).sum();
         int deliveryFee = deliveryFeeService.getDeliveryFee(orderAmount);
@@ -49,7 +58,8 @@ public class OrderService {
         // TODO - 어떻게 테스트 하나요?
         List<OrderItem> orderItemList = cartItemList.stream()
                 .map(cartItem -> OrderItem.builder()
-                        .itemId(cartItem.getItemId())
+                        // TODO - cartItem.getItem()으로 변경
+                        .item(itemService.getItem(cartItem.getItemId()))
                         .itemName(cartItem.getItemName())
                         .itemDescription(cartItem.getItemDescription())
                         .orderPrice(cartItem.getOrderPrice())

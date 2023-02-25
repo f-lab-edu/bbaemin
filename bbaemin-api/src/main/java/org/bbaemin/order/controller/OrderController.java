@@ -8,6 +8,7 @@ import org.bbaemin.order.controller.response.OrderSummaryResponse;
 import org.bbaemin.order.service.OrderService;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,9 +51,8 @@ public class OrderController {
 
     // 주문
     @PostMapping
-    public ApiResult<OrderResponse> order(@RequestParam Long userId, @RequestBody CreateOrderRequest createOrderRequest) {
+    public ApiResult<OrderResponse> order(@RequestParam Long userId, @Validated @RequestBody CreateOrderRequest createOrderRequest) {
         Order order = Order.builder()
-                .userId(userId)
                 .orderDate(LocalDateTime.now())
                 .status(COMPLETE_ORDER)
                 .deliveryAddress(createOrderRequest.getDeliveryAddress())

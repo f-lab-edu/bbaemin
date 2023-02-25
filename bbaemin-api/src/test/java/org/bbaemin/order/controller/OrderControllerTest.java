@@ -1,11 +1,13 @@
 package org.bbaemin.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bbaemin.item.vo.Item;
 import org.bbaemin.order.controller.request.CreateOrderRequest;
 import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.service.OrderService;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
+import org.bbaemin.user.vo.User;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,9 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,9 +51,10 @@ class OrderControllerTest {
     @Test
     void listOrder() throws Exception {
         // given
+        User user = mock(User.class);
         Order order = Order.builder()
                 .orderId(1L)
-                .userId(1L)
+                .user(user)
                 .orderDate(LocalDateTime.of(2023, 2, 23, 10, 20, 35))
                 .status(OrderStatus.COMPLETE_ORDER)
                 .orderAmount(20000)
@@ -82,9 +85,10 @@ class OrderControllerTest {
     @Test
     void getOrder() throws Exception {
         // given
+        User user = mock(User.class);
         Order order = Order.builder()
                 .orderId(1L)
-                .userId(1L)
+                .user(user)
                 .orderDate(LocalDateTime.of(2023, 2, 23, 10, 20, 35))
                 .status(OrderStatus.COMPLETE_ORDER)
                 .orderAmount(20000)
@@ -98,10 +102,12 @@ class OrderControllerTest {
                 .build();
         doReturn(order)
                 .when(orderService).getOrder(1L, 1L);
+
+        Item item = mock(Item.class);
         OrderItem orderItem = OrderItem.builder()
                 .orderItemId(1L)
                 .order(order)
-                .itemId(1L)
+                .item(item)
                 .itemName("item_name")
                 .itemDescription("item_desc")
                 .orderPrice(10000)
@@ -136,9 +142,10 @@ class OrderControllerTest {
     @Test
     void order() throws Exception {
         // given
+        User user = mock(User.class);
         Order order = Order.builder()
                 .orderId(1L)
-                .userId(1L)
+                .user(user)
                 .orderDate(LocalDateTime.of(2023, 2, 23, 10, 20, 35))
                 .status(OrderStatus.COMPLETE_ORDER)
                 .orderAmount(20000)
@@ -152,10 +159,12 @@ class OrderControllerTest {
                 .build();
         doReturn(order)
                 .when(orderService).order(anyLong(), ArgumentMatchers.any(Order.class), anyList());
+
+        Item item = mock(Item.class);
         OrderItem orderItem = OrderItem.builder()
                 .orderItemId(1L)
                 .order(order)
-                .itemId(1L)
+                .item(item)
                 .itemName("item_name")
                 .itemDescription("item_desc")
                 .orderPrice(10000)
@@ -215,9 +224,10 @@ class OrderControllerTest {
     @Test
     void cancelOrder() throws Exception {
         // given
+        User user = mock(User.class);
         Order order = Order.builder()
                 .orderId(1L)
-                .userId(1L)
+                .user(user)
                 .orderDate(LocalDateTime.of(2023, 2, 23, 10, 20, 35))
                 .status(OrderStatus.CANCEL_ORDER)
                 .orderAmount(20000)
@@ -231,10 +241,12 @@ class OrderControllerTest {
                 .build();
         doReturn(order)
                 .when(orderService).cancelOrder(1L, 1L);
+
+        Item item = mock(Item.class);
         OrderItem orderItem = OrderItem.builder()
                 .orderItemId(1L)
                 .order(order)
-                .itemId(1L)
+                .item(item)
                 .itemName("item_name")
                 .itemDescription("item_desc")
                 .orderPrice(10000)

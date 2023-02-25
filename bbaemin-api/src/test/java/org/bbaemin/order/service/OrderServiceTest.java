@@ -8,6 +8,8 @@ import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
+import org.bbaemin.user.service.UserService;
+import org.bbaemin.user.vo.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -41,12 +43,17 @@ class OrderServiceTest {
     CartItemService cartItemService;
     @Mock
     DeliveryFeeService deliveryFeeService;
+    @Mock
+    UserService userService;
 
     @Test
     void getOrderListByUserId() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         List<Order> orderList = List.of(mock(Order.class));
         doReturn(orderList)
-                .when(orderRepository).findByUserId(1L);
+                .when(orderRepository).findByUser(user);
 
         assertEquals(orderList, orderService.getOrderListByUserId(1L));
     }
@@ -63,6 +70,8 @@ class OrderServiceTest {
     // TODO - TEST
     @Test
     void order() {
+        fail();
+
         CartItem cartItem1 = mock(CartItem.class);
         doReturn(1000)
                 .when(cartItem1).getOrderPrice();
@@ -101,10 +110,17 @@ class OrderServiceTest {
 
     @Test
     void deleteOrder() {
-        doNothing().when(orderRepository).deleteById(anyLong());
+        Order order = mock(Order.class);
+        doReturn(Optional.of(order))
+                .when(orderRepository).findById(1L);
+        doNothing()
+                .when(orderItemRepository).deleteByOrder(order);
+        doNothing()
+                .when(orderRepository).delete(order);
 
         orderService.deleteOrder(1L, 1L);
-        verify(orderRepository, times(1)).deleteById(1L);
+        verify(orderItemRepository, times(1)).deleteByOrder(order);
+        verify(orderRepository, times(1)).delete(order);
     }
 
     @Test
