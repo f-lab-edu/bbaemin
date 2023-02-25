@@ -1,12 +1,13 @@
 package org.bbaemin.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.category.controller.response.CategoryResponse;
+import org.bbaemin.category.domain.Category;
 import org.bbaemin.category.repository.CategoryRepository;
-import org.bbaemin.category.vo.Category;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,8 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public List<CategoryResponse> listCategory() {
+    @Transactional(readOnly = true)
+    public List<Category> listCategory() {
         return categoryRepository.findAll();
     }
 
@@ -36,8 +38,10 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse getCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId);
+    @Transactional(readOnly = true)
+    public Category getCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NoSuchElementException("categoryId : " + categoryId));
     }
 
     /**
@@ -49,7 +53,12 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse createCategory(Category category) {
+    @Transactional
+    public Category createCategory(Category category) {
+        if (category.getParent() != null) {
+            category.setParent(category.getParent());
+            category.getChildren().add(category);
+        }
         return categoryRepository.save(category);
     }
 
@@ -62,8 +71,17 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
-    public CategoryResponse updateCategory(Long categoryId, Category category) {
-        return categoryRepository.update(categoryId, category);
+    @Transactional
+    public Category updateCategory(Long categoryId, Category category) {
+        Category oneCategory = getCategory(categoryId);
+        oneCategory.setCode(category.getCode());
+        oneCategory.setName(category.getName());
+        oneCategory.setDescription(category.getDescription());
+        if (oneCategory.getParent() != null) {
+            oneCategory.setParent(category.getParent());
+            oneCategory.getChildren().add(category);
+        }
+        return oneCategory;
     }
 
     /**
@@ -75,7 +93,9 @@ public class CategoryService {
      * 5. 작성일      : 2023. 02. 08.
      * </pre>
      */
+    @Transactional
     public Long deleteCategory(Long categoryId) {
-        return categoryRepository.deleteById(categoryId);
+        categoryRepository.deleteById(categoryId);
+        return categoryId;
     }
 }
