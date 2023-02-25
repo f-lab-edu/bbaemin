@@ -30,6 +30,7 @@ public class OrderService {
     private final DeliveryFeeService deliveryFeeService;
     private final UserService userService;
     private final ItemService itemService;
+    private final CouponService couponService;
 
     public List<Order> getOrderListByUserId(Long userId) {
         User user = userService.getUser(userId);
@@ -69,8 +70,8 @@ public class OrderService {
         order.setOrderAmount(orderAmount);
         order.setDeliveryFee(deliveryFee);
 
-        // TODO - discountCouponIdList
-        order.setPaymentAmount(orderAmount + deliveryFee);
+        int totalDiscountAmount = couponService.apply(orderAmount, discountCouponIdList);
+        order.setPaymentAmount(orderAmount + deliveryFee - totalDiscountAmount);
 
         Order saved = orderRepository.save(order);
         orderItemList.forEach(orderItem -> {
