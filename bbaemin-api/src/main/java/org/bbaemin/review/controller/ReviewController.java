@@ -42,10 +42,10 @@ public class ReviewController {
         return ApiResult.ok(new ReviewResponse(review));
     }
 
-    // TODO - CHECK : /api/v1/reviews vs /api/v1/orders/{orderId}/orderItems/{orderItemId}/reviews
     // 리뷰 등록
-    @PostMapping
-    public ApiResult<ReviewResponse> createReview(@Validated @RequestBody CreateReviewRequest createReviewRequest) {
+    @PostMapping("/orders/{orderId}/orderItems/{orderItemId}")
+    public ApiResult<ReviewResponse> createReview(@PathVariable Long orderId, @PathVariable Long orderItemId,
+                                                  @Validated @RequestBody CreateReviewRequest createReviewRequest) {
         Review review = Review.builder()
                 .score(createReviewRequest.getScore())
                 .content(createReviewRequest.getContent())
