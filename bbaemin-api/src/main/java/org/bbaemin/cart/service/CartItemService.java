@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,19 +36,23 @@ public class CartItemService {
         User user = userService.getUser(userId);
         Item item = itemService.getItem(itemId);
 
-        cartItemRepository.findByUserAndItem(user, item).ifPresent(cartItem -> {
-            throw new IllegalArgumentException("Duplicated");
-        });
-        CartItem cartItem = CartItem.builder()
-                .item(item)
-                .itemName(item.getName())
-                .itemDescription(item.getDescription())
-                // TODO - 아이템별 할인
-                .orderPrice(item.getPrice())
-                .orderCount(1)
-                .user(user)
-                .build();
-        cartItemRepository.save(cartItem);
+        Optional<CartItem> optional = cartItemRepository.findByUserAndItem(user, item);
+        CartItem cartItem = null;
+        if (optional.isPresent()) {
+            cartItem = optional.get();
+            cartItem.setOrderCount(cartItem.getOrderCount() + 1);
+        } else {
+            cartItem = CartItem.builder()
+                    .item(item)
+                    .itemName(item.getName())
+                    .itemDescription(item.getDescription())
+                    // TODO - 아이템별 할인
+                    .orderPrice(item.getPrice())
+                    .orderCount(1)
+                    .user(user)
+                    .build();
+            cartItemRepository.save(cartItem);
+        }
         return cartItem;
     }
 
