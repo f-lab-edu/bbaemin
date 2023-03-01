@@ -63,6 +63,36 @@ class CouponServiceTest {
         assertEquals(coupon.getDiscountAmount(), totalDiscountAmount);
     }
 
+    @DisplayName("사용기한이 만료된 쿠폰")
+    @Test
+    void apply_already_expired() {
+        // given
+        User user = mock(User.class);
+        Coupon coupon = Coupon.builder()
+                .couponId(1L)
+                .name("coupon")
+                .code("ABCD")
+                .discountAmount(2000)
+                .minimumOrderAmount(10000)
+                .expireDate(LocalDateTime.of(2021, 5, 10, 23, 59, 59))
+                .build();
+        UserCoupon userCoupon = UserCoupon.builder()
+                .userCouponId(1L)
+                .user(user)
+                .coupon(coupon)
+                .registeredAt(LocalDateTime.of(2023, 2, 25, 10, 34, 33))
+                .used(false)
+                .build();
+        doReturn(Optional.of(userCoupon))
+                .when(userCouponRepository).findById(1L);
+
+        // when
+        // then
+        assertThrows(RuntimeException.class, () -> {
+            couponService.apply(5000, List.of(1L));
+        });
+    }
+
     @DisplayName("쿠폰 적용 - 최소주문금액 미충족")
     @Test
     void apply_coupon_when_orderAmount_is_not_enough() {

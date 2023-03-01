@@ -26,6 +26,11 @@ public class CouponService {
             UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
                     .orElseThrow(() -> new NoSuchElementException("userCouponId : " + userCouponId));
 
+            if (userCoupon.getCoupon().getExpireDate().isBefore(LocalDateTime.now())) {
+                // TODO - 예외 처리
+                throw new RuntimeException();
+            }
+
             if (userCoupon.isUsed()) {
                 // TODO - 예외 처리
                 throw new RuntimeException();
