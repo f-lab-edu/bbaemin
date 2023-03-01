@@ -18,8 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,7 +30,7 @@ class UserServiceTest {
     @Autowired
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
-    @MockBean
+
     JwtTokenProvider tokenProvider;
     AuthenticationManager authenticationManager;
 
@@ -78,7 +77,8 @@ class UserServiceTest {
         User saved = userRepository.save(user);
 
         // when
-        User findUser = userService.getUser(saved.getUserId());
+        User findUser = userRepository.findById(saved.getUserId())
+                .orElseThrow(NoSuchElementException::new);
         // then
         Field[] fields = User.class.getDeclaredFields();
         for (Field field : fields) {
@@ -113,7 +113,8 @@ class UserServiceTest {
         User saved = userRepository.save(user);
 
         // then
-        User findUser = userService.getUser(saved.getUserId());
+        User findUser = userRepository.findById(saved.getUserId())
+                .orElseThrow(NoSuchElementException::new);
         Field[] fields = User.class.getDeclaredFields();
         for (Field field : fields) {
             assertEquals(ReflectionTestUtils.getField(findUser, field.getName()),
@@ -137,7 +138,8 @@ class UserServiceTest {
         // when
         userService.updateUserInfo(saved.getUserId(), "updated_nickname", "image", "010-1111-2222");
         // then
-        User findUser = userService.getUser(saved.getUserId());
+        User findUser = userRepository.findById(saved.getUserId())
+                .orElseThrow(NoSuchElementException::new);
         assertEquals("user@email.com", findUser.getEmail());
         assertEquals("updated_nickname", findUser.getNickname());
         assertEquals("password", findUser.getPassword());
@@ -161,7 +163,8 @@ class UserServiceTest {
         // when
         userService.quit(saved.getUserId());
         // then
-        User findUser = userService.getUser(saved.getUserId());
+        User findUser = userRepository.findById(saved.getUserId())
+                .orElseThrow(NoSuchElementException::new);
         assertTrue(findUser.isDeleted());
         assertNotNull(findUser.getDeletedAt());
     }
