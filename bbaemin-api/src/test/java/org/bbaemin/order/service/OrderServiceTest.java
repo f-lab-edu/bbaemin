@@ -3,11 +3,12 @@ package org.bbaemin.order.service;
 import org.bbaemin.cart.service.CartItemService;
 import org.bbaemin.cart.service.DeliveryFeeService;
 import org.bbaemin.cart.vo.CartItem;
-import org.bbaemin.order.enums.OrderStatus;
 import org.bbaemin.order.repository.OrderItemRepository;
 import org.bbaemin.order.repository.OrderRepository;
 import org.bbaemin.order.vo.Order;
 import org.bbaemin.order.vo.OrderItem;
+import org.bbaemin.user.service.UserService;
+import org.bbaemin.user.vo.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,10 +17,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static org.bbaemin.order.enums.OrderStatus.CANCEL_ORDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -40,12 +43,17 @@ class OrderServiceTest {
     CartItemService cartItemService;
     @Mock
     DeliveryFeeService deliveryFeeService;
+    @Mock
+    UserService userService;
 
     @Test
     void getOrderListByUserId() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         List<Order> orderList = List.of(mock(Order.class));
         doReturn(orderList)
-                .when(orderRepository).findByUserId(1L);
+                .when(orderRepository).findByUser(user);
 
         assertEquals(orderList, orderService.getOrderListByUserId(1L));
     }
@@ -53,14 +61,17 @@ class OrderServiceTest {
     @Test
     void getOrder() {
         Order order = mock(Order.class);
-        doReturn(order)
+        doReturn(Optional.of(order))
                 .when(orderRepository).findById(1L);
 
         assertEquals(order, orderService.getOrder(null, 1L));
     }
 
+    // TODO - TEST
     @Test
     void order() {
+        fail();
+
         CartItem cartItem1 = mock(CartItem.class);
         doReturn(1000)
                 .when(cartItem1).getOrderPrice();
@@ -79,9 +90,10 @@ class OrderServiceTest {
                 .when(deliveryFeeService).getDeliveryFee(10000);
 
         Order saved = mock(Order.class);
-        doReturn(1L).when(saved).getOrderId();
-        doReturn(saved).when(orderRepository).insert(any(Order.class));
-        doNothing().when(cartItemService).clear(1L);
+        doReturn(saved)
+                .when(orderRepository).save(any(Order.class));
+        doNothing()
+                .when(cartItemService).clear(1L);
 
         Order order = mock(Order.class);
         orderService.order(1L, order, Collections.emptyList());
@@ -91,29 +103,34 @@ class OrderServiceTest {
         verify(order).setOrderAmount(10000);
         verify(order).setDeliveryFee(3000);
         verify(order).setPaymentAmount(13000);
-        verify(orderRepository).insert(order);
-        verify(orderItemRepository, times(2)).insert(any(OrderItem.class));
+        verify(orderRepository).save(order);
+        verify(orderItemRepository, times(2)).save(any(OrderItem.class));
         verify(cartItemService).clear(1L);
     }
 
     @Test
     void deleteOrder() {
-        doNothing().when(orderRepository).deleteById(anyLong());
+        Order order = mock(Order.class);
+        doReturn(Optional.of(order))
+                .when(orderRepository).findById(1L);
+        doNothing()
+                .when(orderItemRepository).deleteByOrder(order);
+        doNothing()
+                .when(orderRepository).delete(order);
 
         orderService.deleteOrder(1L, 1L);
-        verify(orderRepository, times(1)).deleteById(1L);
+        verify(orderItemRepository, times(1)).deleteByOrder(order);
+        verify(orderRepository, times(1)).delete(order);
     }
 
     @Test
     void cancelOrder() {
         Order order = mock(Order.class);
-        doReturn(order)
+        doReturn(Optional.of(order))
                 .when(orderRepository).findById(1L);
-        doReturn(order).when(orderRepository).update(order);
 
         orderService.cancelOrder(1L, 1L);
 
-        verify(order).setStatus(OrderStatus.CANCEL_ORDER);
-        verify(orderRepository, times(1)).update(order);
+        verify(order).setStatus(CANCEL_ORDER);
     }
 }
