@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -38,7 +36,7 @@ class CartItemServiceTest {
     UserService userService;
 
     @Test
-    void getCartItemListByUserId() {
+    void getCartItemList() {
         User user = mock(User.class);
         doReturn(user)
                 .when(userService).getUser(1L);
@@ -52,6 +50,25 @@ class CartItemServiceTest {
 
     @Test
     void addItem() {
+        // given
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
+        Item item = mock(Item.class);
+        doReturn(item)
+                .when(itemService).getItem(2L);
+        doReturn(Optional.empty())
+                .when(cartItemRepository).findByUserAndItem(user, item);
+        // when
+        cartItemService.addItem(1L, 2L);
+        // then
+        verify(cartItemRepository).save(any(CartItem.class));
+    }
+
+    @DisplayName("똑같은 아이템을 두 번 넣는 경우")
+    @Test
+    void add_existedItem() {
+        // given
         User user = mock(User.class);
         doReturn(user)
                 .when(userService).getUser(1L);
@@ -59,28 +76,15 @@ class CartItemServiceTest {
         doReturn(item)
                 .when(itemService).getItem(2L);
         CartItem cartItem = mock(CartItem.class);
-        doReturn(cartItem)
-                .when(cartItemRepository).save(any(CartItem.class));
-        cartItemService.addItem(1L, 2L);
-
-        verify(cartItemRepository).save(any(CartItem.class));
-    }
-
-    @DisplayName("똑같은 아이템을 두 번 넣는 경우")
-    @Test
-    void add_existedItem() {
-        User user = mock(User.class);
-        doReturn(user)
-                .when(userService).getUser(1L);
-        Item item = mock(Item.class);
-        doReturn(item)
-                .when(itemService).getItem(2L);
-
-        doThrow(new IllegalArgumentException("Duplicated"))
+        doReturn(1)
+                .when(cartItem).getOrderCount();
+        doReturn(Optional.of(cartItem))
                 .when(cartItemRepository).findByUserAndItem(user, item);
-        assertThrows(IllegalArgumentException.class, () -> {
-            cartItemService.addItem(1L, 2L);
-        });
+
+        // when
+        cartItemService.addItem(1L, 2L);
+        // then
+        verify(cartItem).setOrderCount(2);
     }
 
     @Test
