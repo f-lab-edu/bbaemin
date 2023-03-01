@@ -17,6 +17,10 @@ spring:
         highlight_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  jwt:
+    header: Authorization
+    secret: Q3JlYXRlZEJ5Q2hhbmVlQmJhZW1pbkp3dFNlY3JldEtleQ==
+    token-validity-in-seconds: 1800
 
 logging:
   level:
