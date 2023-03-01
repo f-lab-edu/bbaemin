@@ -44,7 +44,7 @@ public class OrderResponse {
                 .map(OrderItemResponse::new).collect(Collectors.toList());
         this.orderAmount = order.getOrderAmount();
         this.deliveryFee = order.getDeliveryFee();
-        this.paymentMethod = order.getPaymentMethod();
+        this.paymentMethod = order.getPaymentMethod().getName();
         this.deliveryAddress = order.getDeliveryAddress();
         this.phoneNumber = order.getPhoneNumber();
         this.email = order.getEmail();
