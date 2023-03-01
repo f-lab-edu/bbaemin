@@ -18,4 +18,9 @@ public class ControllerExceptionAdvice {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         return ApiResult.badRequest(fieldErrors);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ApiResult<?> handleRuntimeException(RuntimeException e) {
+        return ApiResult.internalServerError(e);
+    }
 }

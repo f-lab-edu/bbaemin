@@ -1,60 +1,25 @@
 package org.bbaemin.cart.repository;
 
 import org.bbaemin.cart.vo.CartItem;
-import org.springframework.stereotype.Component;
+import org.bbaemin.item.vo.Item;
+import org.bbaemin.user.vo.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-@Component
-public class CartItemRepository {
+@Transactional(readOnly = true)
+@Repository
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    private final Map<Long, CartItem> map = new ConcurrentHashMap<>();
-    private Long id = 0L;
+    List<CartItem> findByUser(User user);
 
-    public void clear() {
-        map.clear();
-    }
+    Optional<CartItem> findByUserAndItem(User user, Item item);
 
-    public CartItem findById(Long cartItemId) {
-        return map.get(cartItemId);
-    }
-
-    public List<CartItem> findByUserId(Long userId) {
-        return map.values().stream()
-                .filter(cartItem -> cartItem.getUserId().equals(userId)).collect(Collectors.toList());
-    }
-
-    public CartItem insert(CartItem cartItem) {
-        Long cartItemId = ++id;
-        cartItem.setCartItemId(cartItemId);
-        map.put(cartItemId, cartItem);
-        return cartItem;
-    }
-
-    public CartItem update(CartItem cartItem) {
-        map.put(cartItem.getCartItemId(), cartItem);
-        return cartItem;
-    }
-
-    public void deleteById(Long cartItemId) {
-        map.remove(cartItemId);
-    }
-
-    public void deleteByIds(List<Long> cartItemIds) {
-        cartItemIds.forEach(map::remove);
-    }
-
-    public void deleteByUserId(Long userId) {
-        Iterator<Map.Entry<Long, CartItem>> iterator = map.entrySet().stream().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Long, CartItem> next = iterator.next();
-            if (next.getValue().getUserId().equals(userId)) {
-                map.remove(next.getKey());
-            }
-        }
-    }
+    @Transactional
+    @Modifying
+    void deleteByUser(User user);
 }

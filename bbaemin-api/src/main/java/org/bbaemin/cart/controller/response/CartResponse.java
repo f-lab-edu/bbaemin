@@ -18,13 +18,8 @@ public class CartResponse {
     public CartResponse(List<CartItem> cartItemList, int deliveryFee) {
         this.cartItemList = cartItemList.stream()
                 .map(CartItemResponse::new).collect(Collectors.toList());
-        this.orderAmount = getOrderAmount();
+        this.orderAmount = getCartItemList().stream()
+                .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
         this.deliveryFee = deliveryFee;
     }
-
-    private int getOrderAmount() {
-        return getCartItemList().stream()
-                .mapToInt(CartItemResponse::getTotalOrderPrice).sum();
-    }
-
 }

@@ -2,6 +2,11 @@ package org.bbaemin.cart.service;
 
 import org.bbaemin.cart.repository.CartItemRepository;
 import org.bbaemin.cart.vo.CartItem;
+import org.bbaemin.item.service.ItemService;
+import org.bbaemin.item.vo.Item;
+import org.bbaemin.user.service.UserService;
+import org.bbaemin.user.vo.User;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,41 +30,71 @@ class CartItemServiceTest {
     CartItemService cartItemService;
     @Mock
     CartItemRepository cartItemRepository;
+    @Mock
+    ItemService itemService;
+    @Mock
+    UserService userService;
 
     @Test
-    void getCartItemListByUserId() {
-
+    void getCartItemList() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         CartItem cartItem = mock(CartItem.class);
         List<CartItem> cartItemList = List.of(cartItem);
         doReturn(cartItemList)
-                .when(cartItemRepository).findByUserId(1L);
+                .when(cartItemRepository).findByUser(user);
 
         assertEquals(cartItemList, cartItemService.getCartItemListByUserId(1L));
     }
 
-    // TODO - 만약 똑같은 아이템을 두 번 넣으면 어떻게 되나요? 테스트에 추가해보시면 좋을 것 같네요.
     @Test
     void addItem() {
-
-        CartItem cartItem = mock(CartItem.class);
-        doReturn(cartItem)
-                .when(cartItemRepository).insert(any(CartItem.class));
+        // given
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
+        Item item = mock(Item.class);
+        doReturn(item)
+                .when(itemService).getItem(2L);
+        doReturn(Optional.empty())
+                .when(cartItemRepository).findByUserAndItem(user, item);
+        // when
         cartItemService.addItem(1L, 2L);
+        // then
+        verify(cartItemRepository).save(any(CartItem.class));
+    }
 
-        verify(cartItemRepository).insert(any(CartItem.class));
+    @DisplayName("똑같은 아이템을 두 번 넣는 경우")
+    @Test
+    void add_existedItem() {
+        // given
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
+        Item item = mock(Item.class);
+        doReturn(item)
+                .when(itemService).getItem(2L);
+        CartItem cartItem = mock(CartItem.class);
+        doReturn(1)
+                .when(cartItem).getOrderCount();
+        doReturn(Optional.of(cartItem))
+                .when(cartItemRepository).findByUserAndItem(user, item);
+
+        // when
+        cartItemService.addItem(1L, 2L);
+        // then
+        verify(cartItem).setOrderCount(2);
     }
 
     @Test
     void updateCount() {
         CartItem cartItem = mock(CartItem.class);
-        doReturn(cartItem)
+        doReturn(Optional.of(cartItem))
                 .when(cartItemRepository).findById(1L);
-        doReturn(cartItem)
-                .when(cartItemRepository).update(cartItem);
 
         cartItemService.updateCount(1L, 1L, 2);
         verify(cartItem).setOrderCount(2);
-        verify(cartItemRepository).update(cartItem);
     }
 
     @Test
@@ -73,18 +109,21 @@ class CartItemServiceTest {
     @Test
     void removeItems() {
         doNothing()
-                .when(cartItemRepository).deleteByIds(List.of(1L, 2L));
+                .when(cartItemRepository).deleteAllById(List.of(1L, 2L));
 
         cartItemService.removeItems(1L, List.of(1L, 2L));
-        verify(cartItemRepository).deleteByIds(List.of(1L, 2L));
+        verify(cartItemRepository).deleteAllById(List.of(1L, 2L));
     }
 
     @Test
     void clear() {
+        User user = mock(User.class);
+        doReturn(user)
+                .when(userService).getUser(1L);
         doNothing()
-                .when(cartItemRepository).deleteByUserId(1L);
+                .when(cartItemRepository).deleteByUser(user);
 
         cartItemService.clear(1L);
-        verify(cartItemRepository).deleteByUserId(1L);
+        verify(cartItemRepository).deleteByUser(user);
     }
 }

@@ -1,9 +1,11 @@
 package org.bbaemin.cart.controller.response;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.bbaemin.cart.vo.CartItem;
 
 @ToString
+@Getter
 public class CartItemResponse {
 
     private String itemName;
