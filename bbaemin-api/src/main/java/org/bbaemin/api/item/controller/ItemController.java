@@ -44,7 +44,7 @@ public class ItemController {
                 .build();
 
         Item saveItem = itemService.createItem(item);
-        return ApiResult.ok(new ItemResponse(saveItem));
+        return ApiResult.created(new ItemResponse(saveItem));
     }
 
     @PutMapping("/{itemId}")

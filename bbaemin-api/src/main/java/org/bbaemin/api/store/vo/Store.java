@@ -1,12 +1,25 @@
 package org.bbaemin.api.store.vo;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bbaemin.api.category.vo.Category;
 import org.bbaemin.api.item.vo.Item;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,28 +37,22 @@ public class Store {
     @Column(name = "store_id")
     private Long storeId;
 
-    @NotBlank(message = "매장명 입력은 필수입니다.")
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotBlank(message = "매장 설명 입력은 필수입니다.")
     @Column(name = "description", nullable = false)
     @Lob
     private String description;
 
-    @NotBlank(message = "점주명 입력은 필수입니다.")
     @Column(name = "owner", nullable = false)
     private String owner;
 
-    @NotBlank(message = "매장 주소 입력은 필수입니다.")
     @Column(name = "address", nullable = false)
     private String address;
 
-    @NotBlank(message = "매장 우편번호 입력은 필수입니다.")
     @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
-    @NotBlank(message = "점주 휴대폰 번호 입력은 필수입니다.")
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 

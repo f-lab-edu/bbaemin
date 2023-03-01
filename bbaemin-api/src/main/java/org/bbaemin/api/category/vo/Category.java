@@ -1,13 +1,26 @@
 package org.bbaemin.api.category.vo;
 
-import lombok.*;
-import org.bbaemin.api.store.vo.Store;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bbaemin.api.item.vo.Item;
+import org.bbaemin.api.store.vo.Store;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +38,12 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @NotNull(message = "코드값 입력은 필수입니다.")
     @Column(name = "code", nullable = false, unique = true)
     private Integer code;
 
-    @NotBlank(message = "카테고리명 입력은 필수입니다.")
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "카테고리 상세 내용 입력은 필수입니다.")
     @Column(name = "description")
     @Lob
     private String description;

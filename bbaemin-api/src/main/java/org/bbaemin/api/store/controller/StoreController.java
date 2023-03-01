@@ -45,7 +45,7 @@ public class StoreController {
                 .storeCategory(storeService.getCategory(createStoreRequest.getCategoryId()))
                 .build();
 
-        return ApiResult.ok(storeService.createStore(store));
+        return ApiResult.created(storeService.createStore(store));
     }
 
     @PutMapping("/{storeId}")
