@@ -77,8 +77,7 @@ class UserServiceTest {
         User saved = userRepository.save(user);
 
         // when
-        User findUser = userRepository.findById(saved.getUserId())
-                .orElseThrow(NoSuchElementException::new);
+        User findUser = userService.getUser(saved.getUserId());
         // then
         Field[] fields = User.class.getDeclaredFields();
         for (Field field : fields) {
@@ -110,7 +109,7 @@ class UserServiceTest {
                 .phoneNumber("010-1234-5678")
                 .role(Role.USER)
                 .build();
-        User saved = userRepository.save(user);
+        User saved = userService.join(user);
 
         // then
         User findUser = userRepository.findById(saved.getUserId())
