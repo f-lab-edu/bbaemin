@@ -1,6 +1,7 @@
 package org.bbaemin.review.service;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.order.service.OrderService;
 import org.bbaemin.order.vo.OrderItem;
 import org.bbaemin.review.repository.ReviewRepository;
 import org.bbaemin.review.vo.Review;
@@ -16,6 +17,7 @@ import java.util.NoSuchElementException;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final OrderService orderService;
 
     public List<Review> getReviewList() {
         return reviewRepository.findAll();
@@ -28,9 +30,8 @@ public class ReviewService {
 
     @Transactional
     public Review createReview(Long orderItemId, Review review) {
-        // TODO - orderItem
-        review.setOrderItem(OrderItem.builder()
-                        .orderItemId(orderItemId).build());
+        OrderItem orderItem = orderService.getOrderItem(orderItemId);
+        review.setOrderItem(orderItem);
         return reviewRepository.save(review);
     }
 

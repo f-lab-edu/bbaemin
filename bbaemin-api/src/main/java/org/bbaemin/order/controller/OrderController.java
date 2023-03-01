@@ -32,7 +32,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // TODO - url
     // 주문 내역 리스트
     @GetMapping
     public ApiResult<List<OrderSummaryResponse>> listOrder(@RequestParam Long userId) {
