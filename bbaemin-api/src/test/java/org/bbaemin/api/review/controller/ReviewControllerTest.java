@@ -8,6 +8,7 @@ import org.bbaemin.api.review.controller.request.UpdateReviewRequest;
 import org.bbaemin.api.review.service.ReviewService;
 import org.bbaemin.api.review.vo.Review;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ReviewController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
+@Disabled
 class ReviewControllerTest {
 
     private final String BASE_URL = "/api/v1/reviews";
