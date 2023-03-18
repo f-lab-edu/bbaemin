@@ -86,27 +86,24 @@ class OrderServiceIntegrationTest {
                 .build());
 
         // coupon 등록
-        coupon = Coupon.builder()
+        coupon = couponRepository.save(Coupon.builder()
                 .code("event")
                 .name("이벤트 쿠폰")
                 .minimumOrderAmount(1)
                 .discountAmount(5000)
                 .expireDate(LocalDateTime.of(2099, 5, 10, 23, 59, 59))
-                .build();
-        couponRepository.save(coupon);
+                .build());
 
         // userCoupon 등록
-        userCoupon = UserCoupon.builder()
+        userCoupon = userCouponRepository.save(UserCoupon.builder()
                 .user(user)
                 .coupon(coupon)
-                .build();
-        userCouponRepository.save(userCoupon);
+                .build());
 
-        userCoupon2 = UserCoupon.builder()
+        userCoupon2 = userCouponRepository.save(UserCoupon.builder()
                 .user(user)
                 .coupon(coupon)
-                .build();
-        userCouponRepository.save(userCoupon2);
+                .build());
     }
 
     @Test
