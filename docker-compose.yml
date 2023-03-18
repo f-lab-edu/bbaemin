@@ -1,23 +1,16 @@
-# https://docs.docker.com/compose/gettingstarted/
 version: "3.9"
 
 services:
   mysql:
+    container_name: bbaemin-db
     image: "mysql:latest"
     ports:
       - "3306:3306"
-    volumes:
-      - ./mysql/conf.d:/etc/mysql/conf.d
-    environment:
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      TZ: 'Asia/Seoul'
-    networks:
-      - spring-network
     command:
-      - "--character-set-server=utf8mb4"
-      - "--collation-server=utf8mb4_unicode_ci"
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    env_file:
+      - .env
     restart: always
 
   app:
@@ -27,17 +20,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    # The new volumes key mounts the project directory (current directory) on the host to /code inside the container, allowing you to modify the code on the fly, without having to rebuild the image.
-    volumes:
-      - ./app:/app
     depends_on:
       - mysql
-    environment:
-      SPRING_DATASOURCE_URL: ${MYSQL_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_ROOT_HOST}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    networks:
-      - spring-network
-
-networks:
-  spring-network:
+    env_file:
+      - .env
+    restart: always
