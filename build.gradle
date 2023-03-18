@@ -4,6 +4,10 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
+bootJar {
+    mainClass = 'org.bbaemin'
+}
+
 allprojects {
     group 'org.bbaemin'
     version '1.0-SNAPSHOT'
@@ -14,9 +18,6 @@ allprojects {
 }
 
 subprojects {
-    group 'org.bbaemin'
-    version '1.0-SNAPSHOT'
-
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
