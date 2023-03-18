@@ -1,6 +1,7 @@
 package org.bbaemin.api.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.order.vo.OrderItem;
 import org.bbaemin.api.review.controller.ReviewController;
 import org.bbaemin.api.review.controller.request.CreateReviewRequest;
@@ -35,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ReviewController.class,
         properties = {"spring.config.location=classpath:application-test.yml"})
-@Disabled
 class ReviewControllerTest {
 
     private final String BASE_URL = "/api/v1/reviews";
@@ -102,6 +102,7 @@ class ReviewControllerTest {
     @Test
     void createReview() throws Exception {
         // given
+        Order order = mock(Order.class);
         OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
@@ -120,7 +121,8 @@ class ReviewControllerTest {
                 .content("good")
                 .image(null)
                 .build();
-        ResultActions resultActions = mockMvc.perform(post(BASE_URL)
+        ResultActions resultActions = mockMvc.perform(post(BASE_URL + "/orders/{orderId}/orderItems/{orderItemId}",
+                        order.getOrderId(), orderItem.getOrderItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createReviewRequest)))
                 .andDo(print());

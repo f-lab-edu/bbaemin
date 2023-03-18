@@ -1,10 +1,9 @@
 package org.bbaemin.api.review.service;
 
+import org.bbaemin.api.order.service.OrderService;
 import org.bbaemin.api.order.vo.OrderItem;
 import org.bbaemin.api.review.repository.ReviewRepository;
-import org.bbaemin.api.review.service.ReviewService;
 import org.bbaemin.api.review.vo.Review;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,19 +18,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class ReviewServiceTest {
 
     @InjectMocks
     ReviewService reviewService;
     @Mock
     ReviewRepository reviewRepository;
+    @Mock
+    OrderService orderService;
 
     @Test
     void createReview() {
         // given
         // when
         Review review = mock(Review.class);
+        OrderItem orderItem = mock(OrderItem.class);
+        doReturn(orderItem)
+                .when(orderService).getOrderItem(1L);
         reviewService.createReview(1L, review);
 
         // then

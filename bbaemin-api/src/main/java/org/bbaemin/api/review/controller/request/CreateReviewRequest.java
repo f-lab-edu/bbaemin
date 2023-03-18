@@ -2,8 +2,10 @@ package org.bbaemin.api.review.controller.request;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class CreateReviewRequest {
 
     private Long orderItemId;
