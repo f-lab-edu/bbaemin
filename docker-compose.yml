@@ -4,22 +4,40 @@ version: "3.9"
 services:
   mysql:
     image: "mysql:latest"
-    restart: always
     ports:
       - "3306:3306"
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
     environment:
-      MYSQL_USER: "root"
-      MYSQL_ROOT_PASSWORD: "1234"
-      MYSQL_DATABASE: "database"
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: 'Asia/Seoul'
+    networks:
+      - spring-network
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    restart: always
 
   app:
-    # uses an image that’s built from the Dockerfile in the current directory.
-    build: .
+    container_name: bbaemin-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     # The new volumes key mounts the project directory (current directory) on the host to /code inside the container, allowing you to modify the code on the fly, without having to rebuild the image.
     volumes:
-      - .:/code
-    restart: on-failure
+      - ./app:/app
     depends_on:
       - mysql
+    environment:
+      SPRING_DATASOURCE_URL: ${MYSQL_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_ROOT_HOST}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - spring-network
+
+networks:
+  spring-network:
