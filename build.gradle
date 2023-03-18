@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
     id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
@@ -15,6 +14,9 @@ allprojects {
 }
 
 subprojects {
+    group 'org.bbaemin'
+    version '1.0-SNAPSHOT'
+
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
