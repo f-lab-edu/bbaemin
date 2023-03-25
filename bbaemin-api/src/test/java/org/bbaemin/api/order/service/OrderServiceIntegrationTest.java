@@ -4,14 +4,19 @@ import org.bbaemin.api.cart.repository.CartItemRepository;
 import org.bbaemin.api.cart.service.CartItemService;
 import org.bbaemin.api.cart.service.DeliveryFeeService;
 import org.bbaemin.api.cart.vo.CartItem;
+import org.bbaemin.api.item.repository.ItemRepository;
+import org.bbaemin.api.item.vo.Item;
 import org.bbaemin.api.order.controller.response.OrderResponse;
 import org.bbaemin.api.order.controller.response.OrderSummaryResponse;
 import org.bbaemin.api.order.enums.OrderStatus;
+import org.bbaemin.api.order.repository.CouponRepository;
 import org.bbaemin.api.order.repository.OrderItemRepository;
 import org.bbaemin.api.order.repository.OrderRepository;
-import org.bbaemin.api.order.service.OrderService;
+import org.bbaemin.api.order.repository.UserCouponRepository;
+import org.bbaemin.api.order.vo.Coupon;
 import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.order.vo.OrderItem;
+import org.bbaemin.api.order.vo.UserCoupon;
 import org.bbaemin.api.user.service.UserService;
 import org.bbaemin.api.user.vo.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,12 +51,23 @@ class OrderServiceIntegrationTest {
     OrderService orderService;
     @Autowired
     UserService userService;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    CouponRepository couponRepository;
+    @Autowired
+    UserCouponRepository userCouponRepository;
 
     private User user;
     private Long userId;
+    private Item item;
+    private Coupon coupon;
+    private UserCoupon userCoupon;
+    private UserCoupon userCoupon2;
 
     @BeforeEach
     void beforeEach() {
+        // user 등록
         user = userService.join(User.builder()
                 .email("user@email.com")
                 .nickname("user")
@@ -60,12 +76,40 @@ class OrderServiceIntegrationTest {
                 .phoneNumber("010-1111-2222")
                 .build());
         userId = user.getUserId();
+
+        // item 등록
+        item = itemRepository.save(Item.builder()
+                .name("청동사과")
+                .description("싱싱한 청동사과")
+                .price(2000)
+                .quantity(999)
+                .build());
+
+        // coupon 등록
+        coupon = couponRepository.save(Coupon.builder()
+                .code("event")
+                .name("이벤트 쿠폰")
+                .minimumOrderAmount(1)
+                .discountAmount(5000)
+                .expireDate(LocalDateTime.of(2099, 5, 10, 23, 59, 59))
+                .build());
+
+        // userCoupon 등록
+        userCoupon = userCouponRepository.save(UserCoupon.builder()
+                .user(user)
+                .coupon(coupon)
+                .build());
+
+        userCoupon2 = userCouponRepository.save(UserCoupon.builder()
+                .user(user)
+                .coupon(coupon)
+                .build());
     }
 
     @Test
     void getOrderListByUserId() {
         // given
-        CartItem cartItem = cartItemService.addItem(userId, 1L);
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
         Order order = orderService.order(userId, Order.builder()
                         .user(user)
                         .orderDate(LocalDateTime.now())
@@ -77,7 +121,7 @@ class OrderServiceIntegrationTest {
                         .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
-                List.of(1L, 2L));
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
         // when
         List<Order> orderList = orderService.getOrderListByUserId(userId);
         // then
@@ -92,7 +136,7 @@ class OrderServiceIntegrationTest {
     @Test
     void getOrder() {
         // given
-        CartItem cartItem = cartItemService.addItem(userId, 1L);
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
         Order order = orderService.order(userId, Order.builder()
                         .user(user)
                         .orderDate(LocalDateTime.now())
@@ -104,7 +148,7 @@ class OrderServiceIntegrationTest {
                         .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
-                List.of(1L, 2L));
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
         // when
         Order saved = orderService.getOrder(userId, order.getOrderId());
         // then
@@ -117,7 +161,7 @@ class OrderServiceIntegrationTest {
     @Test
     void order() {
         // given
-        CartItem cartItem = cartItemService.addItem(userId, 1L);
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
         // when
         Order order = orderService.order(userId, Order.builder()
                         .user(user)
@@ -130,7 +174,7 @@ class OrderServiceIntegrationTest {
                         .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
-                List.of(1L, 2L));
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
         // then
         Order saved = orderRepository.findById(order.getOrderId()).orElseThrow(RuntimeException::new);
         List<Order> orderList = orderRepository.findByUser(user);
@@ -144,7 +188,7 @@ class OrderServiceIntegrationTest {
     @Test
     void deleteOrder() {
         // given
-        CartItem cartItem = cartItemService.addItem(userId, 1L);
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
         Order order = orderService.order(userId, Order.builder()
                         .user(user)
                         .orderDate(LocalDateTime.now())
@@ -156,7 +200,7 @@ class OrderServiceIntegrationTest {
                         .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
-                List.of(1L, 2L));
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
         // when
         orderService.deleteOrder(userId, order.getOrderId());
         // then
@@ -166,7 +210,7 @@ class OrderServiceIntegrationTest {
     @Test
     void cancelOrder() {
         // given
-        CartItem cartItem = cartItemService.addItem(userId, 1L);
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
         Order order = orderService.order(userId, Order.builder()
                         .user(user)
                         .orderDate(LocalDateTime.now())
@@ -178,7 +222,7 @@ class OrderServiceIntegrationTest {
                         .paymentMethod(CARD)
                         .build(),
                 // discountCouponIdList
-                List.of(1L, 2L));
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
         // when
         orderService.cancelOrder(userId, order.getOrderId());
         // then

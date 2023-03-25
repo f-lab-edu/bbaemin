@@ -2,11 +2,13 @@ package org.bbaemin.api.order.controller.request;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bbaemin.api.order.enums.PaymentMethod;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class CreateOrderRequest {
 
     private String deliveryAddress;                 // 배달주소

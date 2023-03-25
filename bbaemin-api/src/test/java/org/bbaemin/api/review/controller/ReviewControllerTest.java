@@ -1,6 +1,7 @@
 package org.bbaemin.api.review.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.order.vo.OrderItem;
 import org.bbaemin.api.review.controller.ReviewController;
 import org.bbaemin.api.review.controller.request.CreateReviewRequest;
@@ -8,6 +9,7 @@ import org.bbaemin.api.review.controller.request.UpdateReviewRequest;
 import org.bbaemin.api.review.service.ReviewService;
 import org.bbaemin.api.review.vo.Review;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -100,6 +102,7 @@ class ReviewControllerTest {
     @Test
     void createReview() throws Exception {
         // given
+        Order order = mock(Order.class);
         OrderItem orderItem = mock(OrderItem.class);
         Review review = Review.builder()
                 .reviewId(1L)
@@ -118,7 +121,8 @@ class ReviewControllerTest {
                 .content("good")
                 .image(null)
                 .build();
-        ResultActions resultActions = mockMvc.perform(post(BASE_URL)
+        ResultActions resultActions = mockMvc.perform(post(BASE_URL + "/orders/{orderId}/orderItems/{orderItemId}",
+                        order.getOrderId(), orderItem.getOrderItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createReviewRequest)))
                 .andDo(print());
