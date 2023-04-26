@@ -5,6 +5,7 @@ import org.bbaemin.api.cart.service.CartItemService;
 import org.bbaemin.api.cart.service.DeliveryFeeService;
 import org.bbaemin.api.cart.vo.CartItem;
 import org.bbaemin.api.order.enums.OrderStatus;
+import org.bbaemin.api.order.kafka.OrderCompletedEventProducer;
 import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.user.service.UserService;
 import org.bbaemin.api.user.vo.User;
@@ -14,8 +15,10 @@ import org.bbaemin.api.order.vo.OrderItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -29,6 +32,8 @@ public class OrderService {
     private final DeliveryFeeService deliveryFeeService;
     private final UserService userService;
     private final CouponService couponService;
+
+    private final OrderCompletedEventProducer orderCompletedEventProducer;
 
     public List<Order> getOrderListByUserId(Long userId) {
         User user = userService.getUser(userId);
@@ -82,6 +87,15 @@ public class OrderService {
         });
 
         cartItemService.clear(userId);
+
+        // 주문 완료 메세지
+        OrderCompletedMessage orderCompletedMessage = OrderCompletedMessage.builder()
+                .txId(UUID.randomUUID().toString())
+                .version("1")
+                .completedAt(LocalDateTime.now().toString())
+                .orderId(saved.getOrderId())
+                .build();
+        orderCompletedEventProducer.send(orderCompletedMessage);
         return saved;
     }
 

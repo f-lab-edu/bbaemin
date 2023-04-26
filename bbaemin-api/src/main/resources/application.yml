@@ -21,7 +21,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: group-id
+      # Kafka 서버에 초기 offset이 없거나, 서버에 현재 offset이 더 이상 없는 경우 수행할 작업
+      # - 오류 등으로 인해 offset 정보가 사라졌을 때 어떻게 reset할 것인지를 명시
+      # 1) latest : 가장 최근에 생성된 메시지로 offset reset
+      # 2) earliest : 가장 오래된 메시지로 offset reset
+      # 3) none : offset 정보가 없으면 Exception 발생
       auto-offset-reset: earliest
 
 logging:
