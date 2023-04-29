@@ -1,0 +1,25 @@
+# https://docs.docker.com/compose/gettingstarted/
+version: "3.9"
+
+services:
+  mysql:
+    image: "mysql:latest"
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: "root"
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: "database"
+
+  app:
+    # uses an image that’s built from the Dockerfile in the current directory.
+    build: .
+    ports:
+      - "8080:8080"
+    # The new volumes key mounts the project directory (current directory) on the host to /code inside the container, allowing you to modify the code on the fly, without having to rebuild the image.
+    volumes:
+      - .:/code
+    restart: on-failure
+    depends_on:
+      - mysql
