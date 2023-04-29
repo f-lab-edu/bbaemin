@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  mysql:
+    container_name: bbaemin-db
+    image: "mysql:latest"
+    ports:
+      - "3306:3306"
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    env_file:
+      - .env
+    restart: always
+
+  app:
+    container_name: bbaemin-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+    restart: always
