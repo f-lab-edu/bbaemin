@@ -2,8 +2,8 @@ package org.bbaemin.api.order.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.bbaemin.api.order.service.OrderCompletedMessage;
-import org.springframework.beans.factory.annotation.Value;
+import org.bbaemin.api.order.kafka.message.OrderCompletedMessage;
+import org.bbaemin.api.order.kafka.message.OrderMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -19,22 +19,32 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapAddress;
+//    @Value("${spring.kafka.bootstrap-servers}")
+//    private String bootstrapAddress;
+
+    @Bean
+    public ConsumerFactory<String, OrderMessage> orderMessageConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
+        // 컨슈머 그룹을 식별하는 고유 아이디
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "order-message-consumers");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(OrderMessage.class));
+    }
 
     @Bean
     public ConsumerFactory<String, OrderCompletedMessage> orderCompletedMessageConsumerFactory() {
-
-        JsonDeserializer<OrderCompletedMessage> orderCompletedMessageJsonDeserializer = new JsonDeserializer<>(OrderCompletedMessage.class);
-        orderCompletedMessageJsonDeserializer.setRemoveTypeHeaders(false);
-        orderCompletedMessageJsonDeserializer.addTrustedPackages("*");
-        orderCompletedMessageJsonDeserializer.setUseTypeMapperForKey(true);
-
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         // 컨슈머 그룹을 식별하는 고유 아이디
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "order-completed-consumers");
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), orderCompletedMessageJsonDeserializer);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "order-completed-message-consumers");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(OrderCompletedMessage.class));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, OrderMessage> orderMessageConcurrentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(orderMessageConsumerFactory());
+        return factory;
     }
 
     @Bean

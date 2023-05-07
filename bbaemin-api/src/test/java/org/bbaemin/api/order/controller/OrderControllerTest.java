@@ -2,7 +2,6 @@ package org.bbaemin.api.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bbaemin.api.item.vo.Item;
-import org.bbaemin.api.order.controller.OrderController;
 import org.bbaemin.api.order.controller.request.CreateOrderRequest;
 import org.bbaemin.api.order.enums.OrderStatus;
 import org.bbaemin.api.order.service.OrderService;
@@ -10,7 +9,6 @@ import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.order.vo.OrderItem;
 import org.bbaemin.api.user.vo.User;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,12 +23,12 @@ import static org.bbaemin.api.order.enums.OrderStatus.CANCEL_ORDER;
 import static org.bbaemin.api.order.enums.OrderStatus.COMPLETE_ORDER;
 import static org.bbaemin.api.order.enums.PaymentMethod.CARD;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -161,8 +159,10 @@ class OrderControllerTest {
                 .email("user@email.com")
                 .messageToRider("감사합니다!")
                 .build();
-        doReturn(order)
-                .when(orderService).order(anyLong(), ArgumentMatchers.any(Order.class), anyList());
+
+        doNothing().when(orderService).order(any());
+//        doReturn(order)
+//                .when(orderService).order(anyLong(), ArgumentMatchers.any(Order.class), anyList());
 
         Item item = mock(Item.class);
         OrderItem orderItem = OrderItem.builder()
@@ -206,8 +206,9 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.result.email").value("user@email.com"))
                 .andExpect(jsonPath("$.result.messageToRider").value("감사합니다!"));
         // then
-        verify(orderService).order(anyLong(), ArgumentMatchers.any(Order.class), anyList());
-        verify(orderService).getOrderItemListByOrder(order);
+        verifyNoInteractions(orderService);
+//        verify(orderService).order(anyLong(), ArgumentMatchers.any(Order.class), anyList());
+//        verify(orderService).getOrderItemListByOrder(order);
     }
 
     @Test

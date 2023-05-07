@@ -1,4 +1,4 @@
-package org.bbaemin.api.order.service;
+package org.bbaemin.api.order.kafka.message;
 
 import lombok.Builder;
 import lombok.Data;

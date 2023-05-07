@@ -19,7 +19,7 @@ spring:
 
   # kafka
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 192.168.56.101:9092
     consumer:
       # Kafka 서버에 초기 offset이 없거나, 서버에 현재 offset이 더 이상 없는 경우 수행할 작업
       # - 오류 등으로 인해 offset 정보가 사라졌을 때 어떻게 reset할 것인지를 명시

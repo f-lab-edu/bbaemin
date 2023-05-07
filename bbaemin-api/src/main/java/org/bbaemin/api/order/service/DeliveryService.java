@@ -1,6 +1,7 @@
 package org.bbaemin.api.order.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bbaemin.api.order.kafka.message.OrderCompletedMessage;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Service;
 public class DeliveryService {
 
     @KafkaListener(
-            topics = "order-completed-message-v1",
-            groupId = "${spring.kafka.consumer.group-id}",
+            topics = "order-completed-message",
+            groupId = "order-completed-message-consumers",
             containerFactory = "orderCompletedMessageConcurrentKafkaListenerContainerFactory"
     )
     public void listen(@Payload OrderCompletedMessage orderCompletedMessage) {
