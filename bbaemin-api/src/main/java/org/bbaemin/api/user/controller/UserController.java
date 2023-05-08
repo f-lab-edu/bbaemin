@@ -1,12 +1,16 @@
 package org.bbaemin.api.user.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.api.user.controller.request.JoinRequest;
 import org.bbaemin.api.user.controller.request.UpdateUserInfoRequest;
 import org.bbaemin.api.user.controller.response.UserResponse;
 import org.bbaemin.api.user.service.UserService;
 import org.bbaemin.api.user.vo.User;
 import org.bbaemin.config.response.ApiResult;
-import org.bbaemin.api.user.controller.request.JoinRequest;
+import org.bbaemin.jwt.JwtResponse;
+import org.bbaemin.user.controller.request.LoginRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,9 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -70,5 +71,10 @@ public class UserController {
     public ApiResult<Void> quit(@PathVariable Long userId) {
         userService.quit(userId);
         return ApiResult.ok();
+    }
+
+    @PostMapping("/login")
+    public JwtResponse login(@Validated @RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest);
     }
 }

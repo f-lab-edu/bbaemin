@@ -1,25 +1,26 @@
 package org.bbaemin.api.user.service;
 
-import org.bbaemin.api.user.repository.UserRepository;
-import org.bbaemin.api.user.service.UserService;
-import org.bbaemin.api.user.vo.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.NoSuchElementException;
-
+import javax.annotation.PostConstruct;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.bbaemin.api.user.repository.UserRepository;
+import org.bbaemin.api.user.vo.User;
+import org.bbaemin.jwt.JwtTokenProvider;
+import org.bbaemin.user.enums.Role;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.authentication.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest(properties = {"spring.config.location=classpath:application-test.yml"})
@@ -28,10 +29,14 @@ class UserServiceTest {
     UserService userService;
     @Autowired
     UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+
+    JwtTokenProvider tokenProvider;
+    AuthenticationManager authenticationManager;
 
     @PostConstruct
     void init() {
-        userService = new UserService(userRepository);
+        userService = new UserService(userRepository, passwordEncoder, authenticationManager, tokenProvider);
     }
 
     @AfterEach
@@ -48,6 +53,7 @@ class UserServiceTest {
                 .password("password")
                 .image(null)
                 .phoneNumber("010-1234-5678")
+                .role(Role.USER)
                 .build();
         User saved = userRepository.save(user);
 
@@ -66,6 +72,7 @@ class UserServiceTest {
                 .password("password")
                 .image(null)
                 .phoneNumber("010-1234-5678")
+                .role(Role.USER)
                 .build();
         User saved = userRepository.save(user);
 
@@ -100,6 +107,7 @@ class UserServiceTest {
                 .password("password")
                 .image(null)
                 .phoneNumber("010-1234-5678")
+                .role(Role.USER)
                 .build();
         User saved = userService.join(user);
 
@@ -122,6 +130,7 @@ class UserServiceTest {
                 .password("password")
                 .image(null)
                 .phoneNumber("010-1234-5678")
+                .role(Role.USER)
                 .build();
         User saved = userRepository.save(user);
 
@@ -139,7 +148,6 @@ class UserServiceTest {
 
     @Test
     void quit() {
-
         // given
         User user = User.builder()
                 .email("user@email.com")
@@ -147,6 +155,7 @@ class UserServiceTest {
                 .password("password")
                 .image(null)
                 .phoneNumber("010-1234-5678")
+                .role(Role.USER)
                 .build();
         User saved = userRepository.save(user);
 
