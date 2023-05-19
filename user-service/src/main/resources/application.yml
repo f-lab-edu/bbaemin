@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/bbaemin?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password: 1234
+    pool:
+      max-size: 100
+      validation-query: SELECT 1
+logging:
+  level:
+    org.springframework.r2dbc: debug

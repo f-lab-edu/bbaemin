@@ -1,0 +1,202 @@
+package org.bbaemin.user.order.service;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@Transactional
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
+class OrderServiceIntegrationTest {
+/*
+    @Autowired
+    DeliveryFeeService deliveryFeeService;
+    @Autowired
+    CartItemRepository cartItemRepository;
+    @Autowired
+    CartItemService cartItemService;
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    OrderItemRepository orderItemRepository;
+    @Autowired
+    OrderService orderService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    CouponRepository couponRepository;
+    @Autowired
+    UserCouponRepository userCouponRepository;
+
+    private User user;
+    private Long userId;
+    private Item item;
+    private Coupon coupon;
+    private UserCoupon userCoupon;
+    private UserCoupon userCoupon2;
+
+    @BeforeEach
+    void beforeEach() {
+        // user 등록
+        user = userService.join(User.builder()
+                .email("user@email.com")
+                .nickname("user")
+                .image(null)
+                .password("password")
+                .phoneNumber("010-1111-2222")
+                .build());
+        userId = user.getUserId();
+
+        // item 등록
+        item = itemRepository.save(Item.builder()
+                .name("청동사과")
+                .description("싱싱한 청동사과")
+                .price(2000)
+                .quantity(999)
+                .build());
+
+        // coupon 등록
+        coupon = couponRepository.save(Coupon.builder()
+                .code("event")
+                .name("이벤트 쿠폰")
+                .minimumOrderAmount(1)
+                .discountAmount(5000)
+                .expireDate(LocalDateTime.of(2099, 5, 10, 23, 59, 59))
+                .build());
+
+        // userCoupon 등록
+        userCoupon = userCouponRepository.save(UserCoupon.builder()
+                .user(user)
+                .coupon(coupon)
+                .build());
+
+        userCoupon2 = userCouponRepository.save(UserCoupon.builder()
+                .user(user)
+                .coupon(coupon)
+                .build());
+    }
+
+    @Test
+    void getOrderListByUserId() {
+        // given
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
+        Order order = orderService.order(userId, Order.builder()
+                        .user(user)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod(CARD)
+                        .build(),
+                // discountCouponIdList
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
+        // when
+        List<Order> orderList = orderService.getOrderListByUserId(userId);
+        // then
+        assertThat(orderList.size()).isEqualTo(1);
+        Order saved = orderList.get(0);
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
+        System.out.println(saved);
+        System.out.println(new OrderSummaryResponse(saved));
+        System.out.println(new OrderResponse(saved, orderItemList));
+    }
+
+    @Test
+    void getOrder() {
+        // given
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
+        Order order = orderService.order(userId, Order.builder()
+                        .user(user)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod(CARD)
+                        .build(),
+                // discountCouponIdList
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
+        // when
+        Order saved = orderService.getOrder(userId, order.getOrderId());
+        // then
+        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
+        System.out.println(saved);
+        System.out.println(new OrderSummaryResponse(saved));
+        System.out.println(new OrderResponse(saved, orderItemList));
+    }
+
+    @Test
+    void order() {
+        // given
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
+        // when
+        Order order = orderService.order(userId, Order.builder()
+                        .user(user)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod(CARD)
+                        .build(),
+                // discountCouponIdList
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
+        // then
+        Order saved = orderRepository.findById(order.getOrderId()).orElseThrow(RuntimeException::new);
+        List<Order> orderList = orderRepository.findByUser(user);
+        assertAll(
+                () -> assertThat(saved).isEqualTo(order),
+                () -> assertThat(orderList.get(0)).isEqualTo(order),
+                () -> assertThat(cartItemService.getCartItemListByUserId(userId)).isEmpty()
+        );
+    }
+
+    @Test
+    void deleteOrder() {
+        // given
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
+        Order order = orderService.order(userId, Order.builder()
+                        .user(user)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod(CARD)
+                        .build(),
+                // discountCouponIdList
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
+        // when
+        orderService.deleteOrder(userId, order.getOrderId());
+        // then
+        assertThat(orderRepository.findByUser(user)).isEmpty();
+    }
+
+    @Test
+    void cancelOrder() {
+        // given
+        CartItem cartItem = cartItemService.addItem(userId, item.getItemId());
+        Order order = orderService.order(userId, Order.builder()
+                        .user(user)
+                        .orderDate(LocalDateTime.now())
+                        .status(COMPLETE_ORDER)
+                        .deliveryAddress("서울시 강동구")
+                        .phoneNumber("010-1111-2222")
+                        .email("user@email.com")
+                        .messageToRider("감사합니다")
+                        .paymentMethod(CARD)
+                        .build(),
+                // discountCouponIdList
+                List.of(userCoupon.getUserCouponId(), userCoupon2.getUserCouponId()));
+        // when
+        orderService.cancelOrder(userId, order.getOrderId());
+        // then
+        Order canceled = orderRepository.findById(order.getOrderId()).orElseThrow(RuntimeException::new);
+        assertThat(canceled.getStatus()).isEqualTo(OrderStatus.CANCEL_ORDER);
+    }*/
+}
