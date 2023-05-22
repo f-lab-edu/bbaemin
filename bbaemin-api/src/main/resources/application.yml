@@ -5,12 +5,12 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(cM40n/n0wRKMQQMbT3Otp0M/+KndsxYgQD/dlhOdWZ2lm/R1hhVPsrLeAYdS1P5b) # TODO
+    url: ENC(yZPjt2baca2Vutz1vIVH2+0x3MNVsK7xm9/jmsQkxt9uCEaoU5UaNwU5+wWywIyR) # TODO
     username: ENC(Sa+vCLa0EA1/X7y4ZCH5dw==) # TODO
     password: ENC(YgT7gwhtz7NJ9sS9Xzkl/LXmBybu7h8H) # TODO
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -19,7 +19,7 @@ spring:
 
   # kafka
   kafka:
-    bootstrap-servers: 192.168.56.101:9092
+    bootstrap-servers: 192.168.219.101:9092
     consumer:
       # Kafka 서버에 초기 offset이 없거나, 서버에 현재 offset이 더 이상 없는 경우 수행할 작업
       # - 오류 등으로 인해 offset 정보가 사라졌을 때 어떻게 reset할 것인지를 명시

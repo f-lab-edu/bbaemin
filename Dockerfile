@@ -1,17 +1,13 @@
-# build
-FROM openjdk:11 as builder
-WORKDIR /app
+FROM openjdk:11 AS BUILD_IMAGE
+WORKDIR /usr/app/
+COPY settings.gradle gradlew /usr/app/
+COPY gradle /usr/app/gradle
+RUN ./gradlew -x test build || return 0
+COPY ../../../Downloads .
+RUN ./gradlew -x test build
 
-# gradle 파일이 변경되었을 경우에 새롭게 의존 패키지 다운로드
-COPY build.gradle settings.gradle gradlew /app/
-COPY gradle /app/gradle
-RUN ./gradlew build -x test --parallel --continue > /dev/null 2>&1 || true
-
-# builder image에서 application build
-COPY . /app/src
-RUN ./gradlew clean build -x test --parallel
-
-# stage
 FROM openjdk:11
-COPY --from=builder app/bbaemin-api/build/libs/*.jar .
-ENTRYPOINT ["java","-jar","/bbaemin.jar"]
+WORKDIR /usr/app/
+EXPOSE 8080
+COPY --from=BUILD_IMAGE /usr/app/bbaemin-api/build/libs/bbaemin-api-1.0-SNAPSHOT.jar .
+ENTRYPOINT ["java","-jar", "-Dspring.profiles.active=dev", "bbaemin-api-1.0-SNAPSHOT.jar"]

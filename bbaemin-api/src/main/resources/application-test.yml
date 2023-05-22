@@ -18,7 +18,7 @@ spring:
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   kafka:
-    bootstrap-servers: 192.168.56.101:9092
+    bootstrap-servers: 192.168.219.101:9092
     consumer:
       auto-offset-reset: earliest
 
