@@ -3,11 +3,13 @@ package org.bbaemin.api.order.controller;
 import lombok.RequiredArgsConstructor;
 import org.bbaemin.api.order.controller.request.CreateOrderRequest;
 import org.bbaemin.api.order.controller.response.OrderResponse;
-import org.bbaemin.config.response.ApiResult;
 import org.bbaemin.api.order.controller.response.OrderSummaryResponse;
+import org.bbaemin.api.order.kafka.OrderEventProducer;
+import org.bbaemin.api.order.kafka.message.OrderMessage;
 import org.bbaemin.api.order.service.OrderService;
 import org.bbaemin.api.order.vo.Order;
 import org.bbaemin.api.order.vo.OrderItem;
+import org.bbaemin.config.response.ApiResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +33,7 @@ import static org.bbaemin.api.order.enums.OrderStatus.COMPLETE_ORDER;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OrderEventProducer orderEventProducer;
 
     // 주문 내역 리스트
     @GetMapping
@@ -50,7 +53,7 @@ public class OrderController {
 
     // 주문
     @PostMapping
-    public ApiResult<OrderResponse> order(@RequestParam Long userId, @Validated @RequestBody CreateOrderRequest createOrderRequest) {
+    public ApiResult<Void> order(@RequestParam Long userId, @Validated @RequestBody CreateOrderRequest createOrderRequest) {
         Order order = Order.builder()
                 .orderDate(LocalDateTime.now())
                 .status(COMPLETE_ORDER)
@@ -60,9 +63,8 @@ public class OrderController {
                 .messageToRider(createOrderRequest.getMessageToRider())
                 .paymentMethod(createOrderRequest.getPaymentMethod())
                 .build();
-        Order saved = orderService.order(userId, order, createOrderRequest.getDiscountCouponIdList());
-        List<OrderItem> orderItemList = orderService.getOrderItemListByOrder(saved);
-        return ApiResult.created(new OrderResponse(saved, orderItemList));
+        orderEventProducer.send(new OrderMessage(userId, order, createOrderRequest.getDiscountCouponIdList()));
+        return ApiResult.ok();
     }
 
     // 주문 내역 삭제

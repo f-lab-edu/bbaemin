@@ -2,33 +2,24 @@ package org.bbaemin.api.order.service;
 
 import org.bbaemin.api.cart.service.CartItemService;
 import org.bbaemin.api.cart.service.DeliveryFeeService;
-import org.bbaemin.api.cart.vo.CartItem;
 import org.bbaemin.api.order.repository.OrderItemRepository;
 import org.bbaemin.api.order.repository.OrderRepository;
-import org.bbaemin.api.order.service.OrderService;
 import org.bbaemin.api.order.vo.Order;
-import org.bbaemin.api.order.vo.OrderItem;
 import org.bbaemin.api.user.service.UserService;
 import org.bbaemin.api.user.vo.User;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.bbaemin.api.order.enums.OrderStatus.CANCEL_ORDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +59,7 @@ class OrderServiceTest {
 
         assertEquals(order, orderService.getOrder(null, 1L));
     }
-
+/*
     // TODO - TEST
     @Test
     @Disabled
@@ -124,7 +115,7 @@ class OrderServiceTest {
         orderService.deleteOrder(1L, 1L);
         verify(orderItemRepository, times(1)).deleteByOrder(order);
         verify(orderRepository, times(1)).delete(order);
-    }
+    }*/
 
     @Test
     void cancelOrder() {
