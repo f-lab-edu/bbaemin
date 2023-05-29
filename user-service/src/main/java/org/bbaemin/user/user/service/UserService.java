@@ -19,20 +19,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Flux<User> getUserList() {
-        return userRepository.findAll()
-                .log();
+        return userRepository.findAll();
     }
 
     public Mono<User> getUser(Long userId) {
         return userRepository.findById(userId)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("userId : " + userId)))
-                .log();
+                .switchIfEmpty(Mono.error(new NoSuchElementException("userId : " + userId)));
     }
 
     @Transactional
     public Mono<User> createUser(User user) {
-        return userRepository.save(user)
-                .log();
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -44,8 +41,7 @@ public class UserService {
                     user.setPhoneNumber(phoneNumber);
                     return user;
                 })
-                .flatMap(userRepository::save)
-                .log();
+                .flatMap(userRepository::save);
     }
 
     @Transactional
@@ -56,8 +52,6 @@ public class UserService {
                     user.setDeletedAt(LocalDateTime.now());
                     return user;
                 })
-                .flatMap(userRepository::save)
-                .log();
+                .flatMap(userRepository::save);
     }
-
 }

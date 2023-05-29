@@ -18,21 +18,18 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     public Flux<Review> getReviewList() {
-        return reviewRepository.findAll()
-                .log();
+        return reviewRepository.findAll();
     }
 
     public Mono<Review> getReview(Long reviewId) {
         return reviewRepository.findById(reviewId)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("reviewId : " + reviewId)))
-                .log();
+                .switchIfEmpty(Mono.error(new NoSuchElementException("reviewId : " + reviewId)));
     }
 
     @Transactional
     public Mono<Review> createReview(Long orderItemId, Review review) {
         review.setOrderItemId(orderItemId);
-        return reviewRepository.save(review)
-                .log();
+        return reviewRepository.save(review);
     }
 
     @Transactional
@@ -44,13 +41,11 @@ public class ReviewService {
                     review.setImage(image);
                     return review;
                 })
-                .flatMap(reviewRepository::save)
-                .log();
+                .flatMap(reviewRepository::save);
     }
 
     @Transactional
     public Mono<Void> deleteReview(Long reviewId) {
-        return reviewRepository.deleteById(reviewId)
-                .log();
+        return reviewRepository.deleteById(reviewId);
     }
 }

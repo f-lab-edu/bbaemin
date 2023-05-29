@@ -2,6 +2,7 @@ package org.bbaemin.config.response;
 
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import static org.bbaemin.config.response.ApiResult.ResultCode.CREATED;
 import static org.bbaemin.config.response.ApiResult.ResultCode.FAIL;
@@ -27,11 +28,11 @@ public class ApiResult<T> {
     @Getter
     public static class Error<R> {
 
-        private Integer statusCode;
+        private HttpStatus status;
         private R cause;
 
-        public Error(Integer statusCode, R cause) {
-            this.statusCode = statusCode;
+        public Error(HttpStatus status, R cause) {
+            this.status = status;
             this.cause = cause;
         }
     }
@@ -49,15 +50,15 @@ public class ApiResult<T> {
     }
 
     public static ApiResult<Error<String>> internalServerError(Exception e) {
-        return ApiResult.error(500, String.format("[%s] %s", e.getClass().getSimpleName(), e.getMessage()));
+        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR, String.format("[%s] %s", e.getClass().getSimpleName(), e.getMessage()));
     }
 
     public static <R> ApiResult<Error<R>> badRequest(R cause) {
-        return ApiResult.error(400, cause);
+        return ApiResult.error(HttpStatus.BAD_REQUEST, cause);
     }
 
-    private static <R> ApiResult<Error<R>> error(Integer statusCode, R cause) {
-        return new ApiResult<>(FAIL, new Error<>(statusCode, cause));
+    private static <R> ApiResult<Error<R>> error(HttpStatus status, R cause) {
+        return new ApiResult<>(FAIL, new Error<>(status, cause));
     }
 
     public static ApiResult<Void> ok() {

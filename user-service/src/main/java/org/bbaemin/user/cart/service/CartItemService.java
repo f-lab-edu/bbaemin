@@ -24,14 +24,12 @@ public class CartItemService {
     private WebClient client = WebClient.create();
 
     public Flux<CartItem> getCartItemListByUserId(Long userId) {
-        return cartItemRepository.findByUserId(userId)
-                .log();
+        return cartItemRepository.findByUserId(userId);
     }
 
     public Mono<CartItem> getCartItem(Long cartItemId) {
         return cartItemRepository.findById(cartItemId)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("cartItemId : " + cartItemId)))
-                .log();
+                .switchIfEmpty(Mono.error(new NoSuchElementException("cartItemId : " + cartItemId)));
     }
 
     public Mono<ItemResponse> getItem(Long itemId) {
@@ -42,8 +40,7 @@ public class CartItemService {
                         .path("/api/v1/items/{itemId}").build(itemId))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ItemResponse.class)
-                .log();
+                .bodyToMono(ItemResponse.class);
     }
 
     public Mono<CartItem> addItem(Long userId, Long itemId) {
@@ -58,13 +55,11 @@ public class CartItemService {
                                 .userId(userId)
                                 .build())
                 )
-                .log()
                 .map(cartItem -> {
                     cartItem.setOrderCount(cartItem.getOrderCount() + 1);
                     return cartItem;
                 })
-                .flatMap(cartItemRepository::save)
-                .log();
+                .flatMap(cartItemRepository::save);
     }
 
     public Mono<CartItem> updateCount(Long userId, Long cartItemId, int orderCount) {
@@ -73,23 +68,18 @@ public class CartItemService {
                     cartItem.setOrderCount(orderCount);
                     return cartItem;
                 })
-                .log()
-                .flatMap(cartItemRepository::save)
-                .log();
+                .flatMap(cartItemRepository::save);
     }
 
     public Mono<Void> removeItem(Long userId, Long cartItemId) {
-        return cartItemRepository.deleteById(cartItemId)
-                .log();
+        return cartItemRepository.deleteById(cartItemId);
     }
 
     public Mono<Void> removeItems(Long userId, List<Long> cartItemIdList) {
-        return cartItemRepository.deleteAllById(cartItemIdList)
-                .log();
+        return cartItemRepository.deleteAllById(cartItemIdList);
     }
 
     public Mono<Void> clear(Long userId) {
-        return cartItemRepository.deleteByUserId(userId)
-                .log();
+        return cartItemRepository.deleteByUserId(userId);
     }
 }

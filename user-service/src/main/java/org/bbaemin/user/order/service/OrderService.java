@@ -32,25 +32,21 @@ public class OrderService {
     private WebClient client = WebClient.create();
 
     public Flux<Order> getOrderListByUserId(Long userId) {
-        return orderRepository.findByUserId(userId)
-                .log();
+        return orderRepository.findByUserId(userId);
     }
 
     public Mono<Order> getOrder(Long userId, Long orderId) {
         return orderRepository.findById(orderId)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("orderId : " + orderId)))
-                .log();
+                .switchIfEmpty(Mono.error(new NoSuchElementException("orderId : " + orderId)));
     }
 
     public Flux<OrderItem> getOrderItemListByOrderId(Long orderId) {
-        return orderItemRepository.findByOrderId(orderId)
-                .log();
+        return orderItemRepository.findByOrderId(orderId);
     }
 
     public Mono<OrderItem> getOrderItem(Long orderItemId) {
         return orderItemRepository.findById(orderItemId)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("orderItemId : " + orderItemId)))
-                .log();
+                .switchIfEmpty(Mono.error(new NoSuchElementException("orderItemId : " + orderItemId)));
     }
 
     public Mono<Integer> applyCouponList(int orderAmount, List<Long> discountCouponIdList) {
@@ -61,15 +57,13 @@ public class OrderService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new ApplyCouponRequest(orderAmount, discountCouponIdList))
                 .retrieve()
-                .bodyToMono(Integer.class)
-                .log();
+                .bodyToMono(Integer.class);
     }
 
     @Transactional
     public Mono<Order> order(Long userId, Order order, List<Long> discountCouponIdList) {
 
         Flux<CartItem> cartItemFlux = cartItemService.getCartItemListByUserId(userId);
-//                .log();
         Flux<OrderItem> orderItemFlux = cartItemFlux
                 .map(cartItem -> OrderItem.builder()
                         .itemId(cartItem.getItemId())
@@ -78,26 +72,21 @@ public class OrderService {
                         .orderPrice(cartItem.getOrderPrice())
                         .orderCount(cartItem.getOrderCount())
                         .build());
-//                .log();
-        
+
         // 주문금액
         Mono<Integer> orderAmount = cartItemFlux
                 .map(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount())
                 .reduce(Integer::sum);
-//                .log();
         // 배달비
         Mono<Integer> deliveryFee = orderAmount
                 .flatMap(deliveryFeeService::getDeliveryFee);
-//                .log();
         // 할인금액
         Mono<Integer> totalDiscountAmount = orderAmount
                 .flatMap(amount -> applyCouponList(amount, discountCouponIdList));
-//                .log();
         // 총 금액
         Mono<Integer> paymentAmount = orderAmount
                 .zipWith(deliveryFee, Integer::sum)
                 .zipWith(totalDiscountAmount, (sum, discount) -> sum - discount);
-//                .log();
 
         Mono<Order> orderMono = Mono.zip(Mono.just(order), orderAmount, deliveryFee, paymentAmount)
                 .map(tuple -> {
@@ -115,7 +104,6 @@ public class OrderService {
                     return o;
                 })
                 .flatMap(orderRepository::save);
-//                .log();
 
         // TODO - TEST
 ///////////////////////////////////// TEST /////////////////////////////////////
@@ -126,8 +114,7 @@ public class OrderService {
                             return orderItem;
                         }))
                 .doOnNext(orderItemRepository::save)
-                .doAfterTerminate(() -> cartItemService.clear(userId))
-                .log();
+                .doAfterTerminate(() -> cartItemService.clear(userId));
 ///////////////////////////////////////////////////////////////////////////////
         return orderMono;
     }
@@ -135,8 +122,7 @@ public class OrderService {
     @Transactional
     public Mono<Void> deleteOrder(Long userId, Long orderId) {
         return orderItemRepository.deleteByOrderId(orderId)
-                .thenEmpty(orderRepository.deleteById(orderId))
-                .log();
+                .thenEmpty(orderRepository.deleteById(orderId));
     }
 
     @Transactional
@@ -146,7 +132,6 @@ public class OrderService {
                     order.setStatus(OrderStatus.CANCEL_ORDER);
                     return order;
                 })
-                .flatMap(orderRepository::save)
-                .log();
+                .flatMap(orderRepository::save);
     }
 }

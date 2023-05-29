@@ -24,7 +24,6 @@ public class DeliveryFeeService {
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(Integer.class)
-                .log();
+                .bodyToMono(Integer.class);
     }
 }

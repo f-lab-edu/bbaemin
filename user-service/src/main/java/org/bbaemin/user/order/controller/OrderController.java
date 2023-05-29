@@ -46,8 +46,7 @@ public class OrderController {
                         .orderDate(order.getOrderDate())
                         .build())
                 .collectList()
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 주문 내역 상세보기
@@ -56,8 +55,8 @@ public class OrderController {
 
         Flux<OrderItem> orderItemFlux = orderService.getOrderItemListByOrderId(orderId);
 
-        Mono<Order> orderMono = orderService.getOrder(userId, orderId).log();
-        Mono<List<OrderItem>> orderItemListMono = orderItemFlux.collectList().log();
+        Mono<Order> orderMono = orderService.getOrder(userId, orderId);
+        Mono<List<OrderItem>> orderItemListMono = orderItemFlux.collectList();
         return Mono.zip(orderMono, orderItemListMono)
                 .map(tuple -> {
                     Order order = tuple.getT1();
@@ -77,8 +76,7 @@ public class OrderController {
                             .orderItemList(orderItemList)
                             .build();
                 })
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 주문
@@ -96,15 +94,13 @@ public class OrderController {
                         .messageToRider(createOrderRequest.getMessageToRider())
                         .paymentMethod(createOrderRequest.getPaymentMethod())
                         .build(),
-                createOrderRequest.getDiscountCouponIdList())
-                .log();
+                createOrderRequest.getDiscountCouponIdList());
 
         Mono<List<OrderItem>> orderItemListMono = savedMono
                 .flatMap(saved -> {
                     Long orderId = saved.getOrderId();
                     return orderService.getOrderItemListByOrderId(orderId).collectList();
-                })
-                .log();
+                });
 
         return Mono.zip(savedMono, orderItemListMono)
                 .map(tuple -> {
@@ -125,25 +121,23 @@ public class OrderController {
                             .orderItemList(orderItemList)
                             .build();
                 })
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 주문 내역 삭제
     @DeleteMapping("/{orderId}")
     public Mono<ApiResult<Void>> deleteOrder(@RequestParam Long userId, @PathVariable Long orderId) {
         return orderService.deleteOrder(userId, orderId)
-                .thenReturn(ApiResult.ok())
-                .log();
+                .thenReturn(ApiResult.ok());
     }
 
     // 주문 취소
     @PatchMapping("/{orderId}")
     public Mono<ApiResult<OrderResponse>> cancelOrder(@RequestParam Long userId, @PathVariable Long orderId) {
 
-        Flux<OrderItem> orderItemFlux = orderService.getOrderItemListByOrderId(orderId).log();
+        Flux<OrderItem> orderItemFlux = orderService.getOrderItemListByOrderId(orderId);
 
-        Mono<List<OrderItem>> orderItemListMono = orderItemFlux.collectList().log();
+        Mono<List<OrderItem>> orderItemListMono = orderItemFlux.collectList();
         Mono<Order> orderMono = orderService.cancelOrder(userId, orderId);
         return Mono.zip(orderMono, orderItemListMono)
                 .map(tuple -> {
@@ -164,10 +158,8 @@ public class OrderController {
                             .orderItemList(orderItemList)
                             .build();
                 })
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
 //        return orderService.cancelOrder(userId, orderId)
-//                .log()
 //                .flatMap(_order -> Mono.zip(Mono.just(_order), orderItemListMono)
 //                        .map(tuple -> {
 //                            Order order = tuple.getT1();
@@ -188,7 +180,6 @@ public class OrderController {
 //                                    .build();
 //                        })
 //                        .map(ApiResult::ok)
-//                        .log())
 //                // TODO - CHECK : 예외 처리
 //                // + ControllerExceptionAdvice
 //                .onErrorMap(th -> {

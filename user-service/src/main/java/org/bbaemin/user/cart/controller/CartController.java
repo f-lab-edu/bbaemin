@@ -38,19 +38,18 @@ public class CartController {
 
         Flux<CartItem> cartItemFlux = cartItemService.getCartItemListByUserId(userId);
 
-        Mono<List<CartItem>> cartItemList = cartItemFlux.collectList().log();
+        Mono<List<CartItem>> cartItemList = cartItemFlux.collectList();
         Mono<Integer> orderAmount = cartItemFlux
                 .map(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount())
-                .reduce(0, Integer::sum).log();
-        Mono<Integer> deliveryFee = orderAmount.flatMap(deliveryFeeService::getDeliveryFee).log();
+                .reduce(0, Integer::sum);
+        Mono<Integer> deliveryFee = orderAmount.flatMap(deliveryFeeService::getDeliveryFee);
         return Mono.zip(cartItemList, orderAmount, deliveryFee)
                 .map(tuple -> CartResponse.builder()
                         .cartItemList(tuple.getT1())
                         .orderAmount(tuple.getT2())
                         .deliveryFee(tuple.getT3())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 장바구니에 추가
@@ -63,8 +62,7 @@ public class CartController {
                         .orderPrice(cartItem.getOrderPrice())
                         .orderCount(cartItem.getOrderCount())
                         .build())
-                .map(ApiResult::created)
-                .log();
+                .map(ApiResult::created);
     }
 
     // 수량 변경
@@ -77,31 +75,27 @@ public class CartController {
                         .orderPrice(cartItem.getOrderPrice())
                         .orderCount(cartItem.getOrderCount())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 장바구니에서 삭제
     @DeleteMapping("/items/{cartItemId}")
     public Mono<ApiResult<Void>> removeItem(@PathVariable Long cartItemId, @RequestParam(name = "userId") Long userId) {
         return cartItemService.removeItem(userId, cartItemId)
-                .thenReturn(ApiResult.ok())
-                .log();
+                .thenReturn(ApiResult.ok());
     }
 
     // 장바구니에서 선택 삭제
     @DeleteMapping("/items")
     public Mono<ApiResult<Void>> removeItems(@RequestParam(name = "userId") Long userId, @RequestParam(value = "cartItemIds") List<Long> cartItemIdList) {
         return cartItemService.removeItems(userId, cartItemIdList)
-                .thenReturn(ApiResult.ok())
-                .log();
+                .thenReturn(ApiResult.ok());
     }
 
     // 장바구니 비우기
     @DeleteMapping
     public Mono<ApiResult<Void>> clear(@RequestParam(name = "userId") Long userId) {
         return cartItemService.clear(userId)
-                .thenReturn(ApiResult.ok())
-                .log();
+                .thenReturn(ApiResult.ok());
     }
 }

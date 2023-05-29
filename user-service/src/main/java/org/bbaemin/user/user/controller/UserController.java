@@ -30,7 +30,6 @@ public class UserController {
     @GetMapping
     public Mono<ApiResult<List<UserResponse>>> listUser() {
         return userService.getUserList()
-//                .log()
                 .map(user -> UserResponse.builder()
                         .userId(user.getUserId())
                         .email(user.getEmail())
@@ -38,11 +37,8 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-//                .log()
                 .collectList()
-//                .log()
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 /*
     @GetMapping("/flux")
@@ -55,9 +51,7 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-                .log()
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }*/
 
     // 회원 조회
@@ -71,8 +65,7 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 회원 등록
@@ -93,8 +86,7 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-                .map(ApiResult::created)
-                .log();
+                .map(ApiResult::created);
     }
 
     // 회원정보 수정
@@ -108,8 +100,7 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 회원 탈퇴
@@ -123,7 +114,6 @@ public class UserController {
                         .image(user.getImage())
                         .phoneNumber(user.getPhoneNumber())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 }

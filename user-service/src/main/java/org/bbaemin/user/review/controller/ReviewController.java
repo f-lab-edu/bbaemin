@@ -36,8 +36,7 @@ public class ReviewController {
                         .image(review.getImage())
                         .build())
                 .collectList()
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 리뷰 조회
@@ -49,8 +48,7 @@ public class ReviewController {
                         .content(review.getContent())
                         .image(review.getImage())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 리뷰 등록
@@ -67,8 +65,7 @@ public class ReviewController {
                         .content(review.getContent())
                         .image(review.getImage())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 리뷰 수정
@@ -81,15 +78,13 @@ public class ReviewController {
                         .content(review.getContent())
                         .image(review.getImage())
                         .build())
-                .map(ApiResult::ok)
-                .log();
+                .map(ApiResult::ok);
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{reviewId}")
     public Mono<ApiResult<Void>> deleteReview(@PathVariable Long reviewId) {
         return reviewService.deleteReview(reviewId)
-                .thenReturn(ApiResult.ok())
-                .log();
+                .thenReturn(ApiResult.ok());
     }
 }
