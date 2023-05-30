@@ -52,6 +52,7 @@ public class CategoryController {
 
     @PostMapping
     public ApiResult<CategoryResponse> createCategory(@Validated @RequestBody CreateCategoryRequest createCategoryRequest) {
+
         Category category = Category.builder()
                 .code(createCategoryRequest.getCode())
                 .name(createCategoryRequest.getName())
@@ -72,15 +73,13 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     public ApiResult<CategoryResponse> updateCategory(@PathVariable Long categoryId, @Validated @RequestBody UpdateCategoryRequest updateCategoryRequest) {
-        Category category = Category.builder()
-                .code(updateCategoryRequest.getCode())
-                .name(updateCategoryRequest.getName())
-                .description(updateCategoryRequest.getDescription())
-                .parent(updateCategoryRequest.getParentId() != null ?
-                        categoryService.getCategory(updateCategoryRequest.getParentId()) :
-                        null)
-                .build();
-        Category updated = categoryService.updateCategory(categoryId, category);
+
+        Category updated = categoryService.updateCategory(categoryId,
+                updateCategoryRequest.getCode(),
+                updateCategoryRequest.getName(),
+                updateCategoryRequest.getDescription(),
+                updateCategoryRequest.getParentId());
+
         CategoryResponse categoryResponse = CategoryResponse.builder()
                 .code(updated.getCode())
                 .name(updated.getName())

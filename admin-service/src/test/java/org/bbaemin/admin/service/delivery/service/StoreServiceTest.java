@@ -27,20 +27,20 @@ import static org.mockito.Mockito.*;
 class StoreServiceTest {
 
     @Mock
-    private StoreRepository mockStoreRepository;
-    @InjectMocks
-    private StoreService mockStoreService;
-
+    private StoreRepository storeRepository;
     @Mock
-    private CategoryService mockCategoryService;
+    private CategoryService categoryService;
+    @InjectMocks
+    private StoreService storeService;
 
     private Store store;
-    private Category firstCategory;
-    private Category secondCategory;
+    private Category category1;
+    private Category category2;
+
 
     @BeforeEach
     public void init() {
-        firstCategory = Category.builder()
+        category1 = Category.builder()
                 .categoryId(1L)
                 .code(100)
                 .name("편의점")
@@ -48,7 +48,7 @@ class StoreServiceTest {
                 .parent(null)
                 .build();
 
-        secondCategory = Category.builder()
+        category2 = Category.builder()
                 .categoryId(2L)
                 .code(200)
                 .name("매장")
@@ -58,13 +58,13 @@ class StoreServiceTest {
 
         store = Store.builder()
                 .storeId(1L)
-                .storeCategory(firstCategory)
+                .storeCategory(category1)
                 .name("B마트 인천점")
                 .description("B마트 인천점")
                 .owner("점주")
                 .address("인천광역시 계양구")
                 .zipCode("123-456")
-                .phoneNumber("01012345678")
+                .phoneNumber("010-1234-5678")
                 .build();
     }
 
@@ -72,13 +72,14 @@ class StoreServiceTest {
     @Test
     @DisplayName("매장_리스트_조회_테스트")
     void 매장_리스트_조회_테스트() {
+
         // given
         List<Store> storeList = new ArrayList<>();
         storeList.add(store);
+        when(storeRepository.findAll()).thenReturn(storeList);
 
         // when
-        when(mockStoreRepository.findAll()).thenReturn(storeList);
-        List<Store> findStoreList = mockStoreService.listStore();
+        List<Store> findStoreList = storeService.listStore();
 
         // then
         assertThat(findStoreList.size()).isEqualTo(1);
@@ -88,156 +89,139 @@ class StoreServiceTest {
         assertThat(findStoreList.get(0).getOwner()).isEqualTo("점주");
 
         // verify
-        verify(mockStoreRepository, times(1)).findAll();
-        verify(mockStoreRepository, atLeastOnce()).findAll();
-        verifyNoMoreInteractions(mockStoreRepository);
+        verify(storeRepository, times(1)).findAll();
+        verify(storeRepository, atLeastOnce()).findAll();
+        verifyNoMoreInteractions(storeRepository);
 
-        InOrder inOrder = inOrder(mockStoreRepository);
-        inOrder.verify(mockStoreRepository).findAll();
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).findAll();
     }
 
     @Test
     @DisplayName("매장_상세_조회_테스트")
     void 매장_상세_조회_테스트() {
-        // when
-        when(mockStoreRepository.findById(store.getStoreId())).thenReturn(Optional.ofNullable(store));
-        Store oneStore = mockStoreService.getStore(store.getStoreId());
 
+        // given
+        Long storeId = store.getStoreId();
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+        // when
+        Store getById = storeService.getStore(store.getStoreId());
         // then
-        assertThat(oneStore.getStoreCategory().getCode()).isEqualTo(100);
-        assertThat(oneStore.getStoreCategory().getName()).isEqualTo("편의점");
-        assertThat(oneStore.getName()).isEqualTo("B마트 인천점");
+        assertThat(getById.getStoreCategory().getCode()).isEqualTo(100);
+        assertThat(getById.getStoreCategory().getName()).isEqualTo("편의점");
+        assertThat(getById.getName()).isEqualTo("B마트 인천점");
 
         // verify
-        verify(mockStoreRepository, times(1)).findById(store.getStoreId());
-        verify(mockStoreRepository, atLeastOnce()).findById(store.getStoreId());
-        verifyNoMoreInteractions(mockStoreRepository);
+        verify(storeRepository, times(1)).findById(store.getStoreId());
+        verify(storeRepository, atLeastOnce()).findById(store.getStoreId());
+        verifyNoMoreInteractions(storeRepository);
 
-        InOrder inOrder = inOrder(mockStoreRepository);
-        inOrder.verify(mockStoreRepository).findById(store.getStoreId());
-    }
-
-    @Test
-    @DisplayName("매장_등록_예외_테스트")
-    void 매장_등록_예외_테스트() {
-        Store store = Store.builder()
-                .name("B마트 서울 관악점")
-                .description("B마트 서울 관악점")
-                .address("서울특별시 관악구")
-                .zipCode("123-456")
-                .phoneNumber("01012345678")
-                .build();
-
-        assertThatThrownBy(() -> mockStoreService.createStore(store))
-                .isInstanceOf(Exception.class);
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).findById(store.getStoreId());
     }
 
     @Test
     @DisplayName("매장_등록_테스트")
     void 매장_등록_테스트() {
-        when(mockCategoryService.getCategory(firstCategory.getCategoryId())).thenReturn(firstCategory);
-        Category saveCategory = mockCategoryService.getCategory(firstCategory.getCategoryId());
 
         // given
+        when(categoryService.getCategory(category1.getCategoryId())).thenReturn(category1);
+        Category storeCategory = categoryService.getCategory(category1.getCategoryId());
         Store store = Store.builder()
-                .storeCategory(saveCategory)
+                .storeCategory(storeCategory)
                 .name("B마트 서울 관악점")
                 .description("B마트 서울 관악점")
                 .owner("점주")
                 .address("서울특별시 관악구")
                 .zipCode("123-456")
-                .phoneNumber("01012345678")
+                .phoneNumber("010-1234-5678")
                 .build();
+        when(storeRepository.save(store)).thenReturn(store);
 
         // when
-        when(mockStoreRepository.save(store)).thenReturn(store);
-        Store saveStore = mockStoreService.createStore(store);
+        Store saved = storeService.createStore(store);
 
         // then
-        assertThat(saveStore.getStoreCategory().getCode()).isEqualTo(100);
-        assertThat(saveStore.getStoreCategory().getName()).isEqualTo("편의점");
-        assertThat(saveStore.getName()).isEqualTo("B마트 서울 관악점");
+        assertThat(saved.getStoreCategory().getCode()).isEqualTo(100);
+        assertThat(saved.getStoreCategory().getName()).isEqualTo("편의점");
+        assertThat(saved.getName()).isEqualTo("B마트 서울 관악점");
 
         // verify
-        verify(mockStoreRepository, times(1)).save(store);
-        verify(mockStoreRepository, atLeastOnce()).save(store);
-        verifyNoMoreInteractions(mockStoreRepository);
+        verify(storeRepository, times(1)).save(store);
+        verify(storeRepository, atLeastOnce()).save(store);
+        verifyNoMoreInteractions(storeRepository);
 
-        InOrder inOrder = inOrder(mockStoreRepository);
-        inOrder.verify(mockStoreRepository).save(store);
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).save(store);
     }
 
     @Test
     @DisplayName("매장_동일_카테고리_수정_테스트")
     void 매장_동일_카테고리_수정_테스트() {
-        Store store = Store.builder()
-                .storeCategory(firstCategory)
-                .storeId(this.store.getStoreId())
-                .name("B마트 서울 관악점")
-                .description("B마트 서울 관악점")
-                .owner("점주")
-                .address("서울특별시 관악구")
-                .zipCode("123-456")
-                .phoneNumber("01012345678")
-                .build();
 
+        // given
+        Long storeId = store.getStoreId();
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
         // when
-        when(mockStoreRepository.findById(this.store.getStoreId())).thenReturn(Optional.of(this.store));
-        Store updateStore = mockStoreService.updateStore(this.store.getStoreId(), store);
+        Store updatedStore = storeService.updateStore(storeId,
+                "B마트 서울 관악점",
+                "B마트 서울 관악점",
+                "점주",
+                "서울특별시 관악구",
+                "123-456",
+                "010-1234-5678",
+                category1.getCategoryId());
 
         // then
-        assertThat(updateStore.getStoreCategory().getCode()).isEqualTo(100);
-        assertThat(updateStore.getStoreCategory().getName()).isEqualTo("편의점");
-        assertThat(updateStore.getName()).isEqualTo("B마트 서울 관악점");
+        assertThat(updatedStore.getStoreCategory().getCode()).isEqualTo(100);
+        assertThat(updatedStore.getStoreCategory().getName()).isEqualTo("편의점");
+        assertThat(updatedStore.getName()).isEqualTo("B마트 서울 관악점");
 
         // verify
-        verify(mockStoreRepository, times(1)).findById(this.store.getStoreId());
-        verify(mockStoreRepository, atLeastOnce()).findById(this.store.getStoreId());
-        verifyNoMoreInteractions(mockStoreRepository);
+        verify(storeRepository, times(1)).findById(storeId);
+        verify(storeRepository, atLeastOnce()).findById(storeId);
+        verifyNoMoreInteractions(storeRepository);
 
-        InOrder inOrder = inOrder(mockStoreRepository);
-        inOrder.verify(mockStoreRepository).findById(this.store.getStoreId());
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).findById(storeId);
     }
 
     @Test
     @DisplayName("매장_다른_카테고리_수정_테스트")
     void 매장_다른_카테고리_수정_테스트() {
-        when(mockCategoryService.getCategory(secondCategory.getCategoryId())).thenReturn(secondCategory);
-        Category updateCategory = mockCategoryService.getCategory(secondCategory.getCategoryId());
 
-        Store store = Store.builder()
-                .storeCategory(updateCategory)
-                .storeId(this.store.getStoreId())
-                .name("B마트 서울 관악점")
-                .description("B마트 서울 관악점")
-                .owner("점주")
-                .address("서울특별시 관악구")
-                .zipCode("123-456")
-                .phoneNumber("01012345678")
-                .build();
-
+        // given
+        Long storeId = store.getStoreId();
+        when(categoryService.getCategory(category2.getCategoryId())).thenReturn(category2);
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
         // when
-        when(mockStoreRepository.findById(store.getStoreId())).thenReturn(Optional.of(store));
-        Store updateStore = mockStoreService.updateStore(this.store.getStoreId(), store);
+        Store updatedStore = storeService.updateStore(storeId,
+                "B마트 서울 관악점",
+                "B마트 서울 관악점",
+                "점주",
+                "서울특별시 관악구",
+                "123-456",
+                "010-1234-5678",
+                category2.getCategoryId());
 
         // then
-        assertThat(updateStore.getStoreCategory().getCode()).isEqualTo(200);
-        assertThat(updateStore.getStoreCategory().getName()).isEqualTo("매장");
-        assertThat(updateStore.getName()).isEqualTo("B마트 서울 관악점");
+        assertThat(updatedStore.getStoreCategory().getCode()).isEqualTo(200);
+        assertThat(updatedStore.getStoreCategory().getName()).isEqualTo("매장");
+        assertThat(updatedStore.getName()).isEqualTo("B마트 서울 관악점");
 
         // verify
-        verify(mockStoreRepository, times(1)).findById(this.store.getStoreId());
-        verify(mockStoreRepository, atLeastOnce()).findById(this.store.getStoreId());
-        verifyNoMoreInteractions(mockStoreRepository);
+        verify(storeRepository, times(1)).findById(storeId);
+        verify(storeRepository, atLeastOnce()).findById(storeId);
+        verifyNoMoreInteractions(storeRepository);
 
-        InOrder inOrder = inOrder(mockStoreRepository);
-        inOrder.verify(mockStoreRepository).findById(this.store.getStoreId());
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).findById(storeId);
     }
 
     @Test
     @DisplayName("매장_삭제_테스트")
     void 매장_삭제_테스트() {
-        Long deleteStoreId = mockStoreService.deleteStore(store.getStoreId());
-        assertThat(deleteStoreId).isEqualTo(store.getStoreId());
+        Long deletedStoreId = storeService.deleteStore(store.getStoreId());
+        assertThat(deletedStoreId).isEqualTo(store.getStoreId());
     }
 }

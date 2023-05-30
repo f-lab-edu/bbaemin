@@ -1,19 +1,26 @@
 package org.bbaemin.admin.item.vo;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bbaemin.admin.category.vo.Category;
 import org.bbaemin.admin.delivery.vo.Store;
-import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
 @Getter
-@Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@DynamicUpdate
 public class Item {
 
     @Id
@@ -41,4 +48,53 @@ public class Item {
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Category itemCategory;
+
+    @Builder
+    private Item(Long itemId, String name, String description, int price, int quantity, Store itemStore, Category itemCategory) {
+        this.itemId = itemId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+        if (!Objects.isNull(itemStore)) {
+            this.itemStore = itemStore;
+            // 아이템-매장 연관관계 설정
+            itemStore.getItemList().add(this);
+        }
+        if (!Objects.isNull(itemCategory)) {
+            this.itemCategory = itemCategory;
+            // 아이템-카테고리 연관관계 설정
+            itemCategory.getItemList().add(this);
+        }
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setItemStore(Store itemStore) {
+        this.itemStore = itemStore;
+        itemStore.getItemList().add(this);
+    }
+
+    public void setItemCategory(Category itemCategory) {
+        this.itemCategory = itemCategory;
+        itemCategory.getItemList().add(this);
+    }
 }

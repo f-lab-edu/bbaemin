@@ -35,14 +35,13 @@ import static org.mockito.Mockito.when;
 class ItemServiceTest {
 
     @Mock
-    private ItemRepository mockItemRepository;
-    @InjectMocks
-    private ItemService mockItemService;
-
+    private ItemRepository itemRepository;
     @Mock
     private CategoryService mockCategoryService;
     @Mock
     private StoreService mockStoreService;
+    @InjectMocks
+    private ItemService itemService;
 
     private Item item;
     private Category firstItemCategory;
@@ -88,7 +87,7 @@ class ItemServiceTest {
                 .owner("점주")
                 .address("인천광역시 계양구")
                 .zipCode("123-456")
-                .phoneNumber("01012345678")
+                .phoneNumber("010-1234-5678")
                 .build();
 
         secondStoreEntity = Store.builder()
@@ -99,7 +98,7 @@ class ItemServiceTest {
                 .owner("점주")
                 .address("서울특별시 관악구")
                 .zipCode("456-789")
-                .phoneNumber("01078912345")
+                .phoneNumber("010-7891-2345")
                 .build();
 
         // 아이템 등록
@@ -120,8 +119,8 @@ class ItemServiceTest {
         List<Item> itemList = new ArrayList<>();
         itemList.add(item);
         // when
-        when(mockItemRepository.findAll()).thenReturn(itemList);
-        List<Item> findItemList = mockItemService.listItem();
+        when(itemRepository.findAll()).thenReturn(itemList);
+        List<Item> findItemList = itemService.listItem();
 
         // then
         assertThat(findItemList.get(0).getItemCategory().getName()).isEqualTo("과일");
@@ -130,20 +129,20 @@ class ItemServiceTest {
         assertThat(findItemList.get(0).getPrice()).isEqualTo(2000);
 
         // verify
-        verify(mockItemRepository, times(1)).findAll();
-        verify(mockItemRepository, atLeastOnce()).findAll();
-        verifyNoMoreInteractions(mockItemRepository);
+        verify(itemRepository, times(1)).findAll();
+        verify(itemRepository, atLeastOnce()).findAll();
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).findAll();
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).findAll();
     }
 
     @Test
     @DisplayName("아이템_상세_조회")
     void 아이템_상세_조회() {
         // when
-        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
-        Item getItem = mockItemService.getItem(item.getItemId());
+        when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        Item getItem = itemService.getItem(item.getItemId());
 
         // then
         assertThat(getItem.getItemCategory().getName()).isEqualTo("과일");
@@ -152,12 +151,12 @@ class ItemServiceTest {
         assertThat(getItem.getPrice()).isEqualTo(2000);
 
         // verify
-        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
-        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
-        verifyNoMoreInteractions(mockItemRepository);
+        verify(itemRepository, times(1)).findByItemId(item.getItemId());
+        verify(itemRepository, atLeastOnce()).findByItemId(item.getItemId());
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).findByItemId(item.getItemId());
     }
 
     @Test
@@ -175,8 +174,8 @@ class ItemServiceTest {
         // when
         when(mockStoreService.getStore(firstStoreEntity.getStoreId())).thenReturn(firstStoreEntity);
         when(mockCategoryService.getCategory(firstItemCategory.getCategoryId())).thenReturn(firstItemCategory);
-        when(mockItemRepository.save(item)).thenReturn(item);
-        Item saveItem = mockItemService.createItem(item);
+        when(itemRepository.save(item)).thenReturn(item);
+        Item saveItem = itemService.createItem(item);
 
         // then
         assertThat(saveItem.getItemCategory().getName()).isEqualTo("과일");
@@ -186,31 +185,22 @@ class ItemServiceTest {
         assertThat(saveItem.getPrice()).isEqualTo(3000);
 
         // verify
-        verify(mockItemRepository, times(1)).save(item);
-        verify(mockItemRepository, atLeastOnce()).save(item);
-        verifyNoMoreInteractions(mockItemRepository);
+        verify(itemRepository, times(1)).save(item);
+        verify(itemRepository, atLeastOnce()).save(item);
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).save(item);
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).save(item);
     }
 
     @Test
     @DisplayName("아이템_수정")
     void 아이템_수정() {
-        // 동일 매장 및 동일 카테고리
-        Item firstItem = Item.builder()
-                .itemId(item.getItemId())
-                .itemCategory(firstItemCategory)
-                .itemStore(firstStoreEntity)
-                .name("메론")
-                .description("메론")
-                .price(5000)
-                .quantity(999)
-                .build();
 
+        // given
+        when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
         // when
-        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
-        Item updateItem = mockItemService.updateItem(item.getItemId(), firstItem);
+        Item updateItem = itemService.updateItem(item.getItemId(), "메론", "메론", 5000, 999, firstItemCategory.getCategoryId(), firstStoreEntity.getStoreId());
 
         // then
         assertThat(updateItem.getItemCategory().getName()).isEqualTo("과일");
@@ -219,29 +209,19 @@ class ItemServiceTest {
         assertThat(updateItem.getDescription()).isEqualTo("메론");
 
         // verify
-        verify(mockItemRepository, times(1)).findByItemId(item.getItemId());
-        verify(mockItemRepository, atLeastOnce()).findByItemId(item.getItemId());
-        verifyNoMoreInteractions(mockItemRepository);
+        verify(itemRepository, times(1)).findByItemId(item.getItemId());
+        verify(itemRepository, atLeastOnce()).findByItemId(item.getItemId());
+        verifyNoMoreInteractions(itemRepository);
 
-        InOrder inOrder = inOrder(mockItemRepository);
-        inOrder.verify(mockItemRepository).findByItemId(item.getItemId());
+        InOrder inOrder = inOrder(itemRepository);
+        inOrder.verify(itemRepository).findByItemId(item.getItemId());
 
-        // 다른 매장 및 다른 카테고리
-        Item secondItem = Item.builder()
-                .itemId(item.getItemId())
-                .itemCategory(secondItemCategory)
-                .itemStore(secondStoreEntity)
-                .name("칙촉")
-                .description("칙촉")
-                .price(2500)
-                .quantity(999)
-                .build();
-
-        // when
+        // given
         when(mockCategoryService.getCategory(secondItemCategory.getCategoryId())).thenReturn(secondItemCategory);
         when(mockStoreService.getStore(secondStoreEntity.getStoreId())).thenReturn(secondStoreEntity);
-        when(mockItemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
-        Item secondUpdateItem = mockItemService.updateItem(item.getItemId(), secondItem);
+        when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
+        // when
+        Item secondUpdateItem = itemService.updateItem(item.getItemId(), "칙촉", "칙촉", 2500, 999, secondItemCategory.getCategoryId(), secondStoreEntity.getStoreId());
 
         // then
         assertThat(secondUpdateItem.getItemCategory().getName()).isEqualTo("과자");
@@ -254,7 +234,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템_삭제")
     void 아이템_삭제() {
-        Long deleteItemId = mockItemService.deleteItem(item.getItemId());
+        Long deleteItemId = itemService.deleteItem(item.getItemId());
         assertThat(deleteItemId).isEqualTo(item.getItemId());
     }
 }

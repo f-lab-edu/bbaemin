@@ -1,14 +1,11 @@
 package org.bbaemin.admin.delivery.vo;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.bbaemin.admin.category.vo.Category;
 import org.bbaemin.admin.item.vo.Item;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,14 +19,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
-@Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@DynamicUpdate
 public class Store {
 
     @Id
@@ -60,7 +54,52 @@ public class Store {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category storeCategory;
 
-    @Builder.Default
     @OneToMany(mappedBy = "itemStore")
     private List<Item> itemList = new ArrayList<>();
+
+    @Builder
+    private Store(Long storeId, String name, String description, String owner, String address, String zipCode, String phoneNumber, Category storeCategory, List<Item> itemList) {
+        this.storeId = storeId;
+        this.name = name;
+        this.description = description;
+        this.owner = owner;
+        this.address = address;
+        this.zipCode = zipCode;
+        this.phoneNumber = phoneNumber;
+        if (!Objects.isNull(storeCategory)) {
+            this.storeCategory = storeCategory;
+            storeCategory.getStoreList().add(this);
+        }
+        this.itemList = itemList;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setStoreCategory(Category storeCategory) {
+        this.storeCategory = storeCategory;
+        // 매장-카테고리 연관관계 설정
+        storeCategory.getStoreList().add(this);
+    }
 }

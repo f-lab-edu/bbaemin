@@ -24,15 +24,15 @@ import static org.mockito.Mockito.*;
 class CategoryServiceTest {
 
     @Mock
-    private CategoryRepository mockCategoryRepository;
+    private CategoryRepository categoryRepository;
     @InjectMocks
-    private CategoryService mockCategoryService;
-    private Category firstCategory;
-    private Category secondCategory;
+    private CategoryService categoryService;
+    private Category category1;
+    private Category category2;
 
     @BeforeEach
     public void init() {
-        firstCategory = Category.builder()
+        category1 = Category.builder()
                 .categoryId(1L)
                 .code(100)
                 .name("편의점")
@@ -40,12 +40,12 @@ class CategoryServiceTest {
                 .parent(null)
                 .build();
 
-        secondCategory = Category.builder()
+        category2 = Category.builder()
                 .categoryId(2L)
                 .code(101)
                 .name("인천 계양편의점")
                 .description("인천 계양편의점")
-                .parent(firstCategory)
+                .parent(category1)
                 .build();
     }
 
@@ -54,12 +54,12 @@ class CategoryServiceTest {
     void 카테고리_리스트_조회() {
         // given
         List<Category> categoryList = new ArrayList<>();
-        categoryList.add(firstCategory);
-        categoryList.add(secondCategory);
+        categoryList.add(category1);
+        categoryList.add(category2);
 
         // when
-        when(mockCategoryRepository.findAll()).thenReturn(categoryList);
-        List<Category> findCategoryList = mockCategoryService.listCategory();
+        when(categoryRepository.findAll()).thenReturn(categoryList);
+        List<Category> findCategoryList = categoryService.listCategory();
 
         // then
         assertThat(findCategoryList.get(0).getCode()).isEqualTo(100);
@@ -70,23 +70,23 @@ class CategoryServiceTest {
         assertThat(findCategoryList.get(1).getCode()).isEqualTo(101);
         assertThat(findCategoryList.get(1).getName()).isEqualTo("인천 계양편의점");
         assertThat(findCategoryList.get(1).getDescription()).isEqualTo("인천 계양편의점");
-        assertThat(findCategoryList.get(1).getParent().getCode()).isEqualTo(firstCategory.getCode());
+        assertThat(findCategoryList.get(1).getParent().getCode()).isEqualTo(category1.getCode());
 
         // verify
-        verify(mockCategoryRepository, times(1)).findAll();
-        verify(mockCategoryRepository, atLeastOnce()).findAll();
-        verifyNoMoreInteractions(mockCategoryRepository);
+        verify(categoryRepository, times(1)).findAll();
+        verify(categoryRepository, atLeastOnce()).findAll();
+        verifyNoMoreInteractions(categoryRepository);
 
-        InOrder inOrder = inOrder(mockCategoryRepository);
-        inOrder.verify(mockCategoryRepository).findAll();
+        InOrder inOrder = inOrder(categoryRepository);
+        inOrder.verify(categoryRepository).findAll();
     }
 
     @Test
     @DisplayName("카테고리_상세_조회")
     void 카테고리_상세_조회() {
         // when
-        when(mockCategoryRepository.findById(firstCategory.getCategoryId())).thenReturn(Optional.ofNullable(firstCategory));
-        Category getCategory = mockCategoryService.getCategory(firstCategory.getCategoryId());
+        when(categoryRepository.findById(category1.getCategoryId())).thenReturn(Optional.ofNullable(category1));
+        Category getCategory = categoryService.getCategory(category1.getCategoryId());
 
         // then
         assertThat(getCategory.getCode()).isEqualTo(100);
@@ -94,12 +94,12 @@ class CategoryServiceTest {
         assertThat(getCategory.getDescription()).isEqualTo("최상위 편의점");
 
         // verify
-        verify(mockCategoryRepository, times(1)).findById(firstCategory.getCategoryId());
-        verify(mockCategoryRepository, atLeastOnce()).findById(firstCategory.getCategoryId());
-        verifyNoMoreInteractions(mockCategoryRepository);
+        verify(categoryRepository, times(1)).findById(category1.getCategoryId());
+        verify(categoryRepository, atLeastOnce()).findById(category1.getCategoryId());
+        verifyNoMoreInteractions(categoryRepository);
 
-        InOrder inOrder = inOrder(mockCategoryRepository);
-        inOrder.verify(mockCategoryRepository).findById(firstCategory.getCategoryId());
+        InOrder inOrder = inOrder(categoryRepository);
+        inOrder.verify(categoryRepository).findById(category1.getCategoryId());
     }
 
     @Test
@@ -115,8 +115,8 @@ class CategoryServiceTest {
                 .build();
 
         // when
-        when(mockCategoryRepository.save(parent)).thenReturn(parent);
-        Category saveParent = mockCategoryService.createCategory(parent);
+        when(categoryRepository.save(parent)).thenReturn(parent);
+        Category saveParent = categoryService.createCategory(parent);
 
         // then
         assertThat(saveParent.getCode()).isEqualTo(200);
@@ -124,12 +124,12 @@ class CategoryServiceTest {
         assertThat(saveParent.getParent()).isNull();
 
         // verify
-        verify(mockCategoryRepository, times(1)).save(parent);
-        verify(mockCategoryRepository, atLeastOnce()).save(parent);
-        verifyNoMoreInteractions(mockCategoryRepository);
+        verify(categoryRepository, times(1)).save(parent);
+        verify(categoryRepository, atLeastOnce()).save(parent);
+        verifyNoMoreInteractions(categoryRepository);
 
-        InOrder inOrder = inOrder(mockCategoryRepository);
-        inOrder.verify(mockCategoryRepository).save(parent);
+        InOrder inOrder = inOrder(categoryRepository);
+        inOrder.verify(categoryRepository).save(parent);
 
         // 자식 카테고리 등록
         // given
@@ -141,8 +141,8 @@ class CategoryServiceTest {
                 .build();
 
         // when
-        when(mockCategoryRepository.save(child)).thenReturn(child);
-        Category saveChild = mockCategoryService.createCategory(child);
+        when(categoryRepository.save(child)).thenReturn(child);
+        Category saveChild = categoryService.createCategory(child);
 
         // then
         assertThat(saveChild.getCode()).isEqualTo(201);
@@ -151,47 +151,45 @@ class CategoryServiceTest {
         assertThat(saveChild.getParent().getCode()).isEqualTo(200);
 
         // verify
-        verify(mockCategoryRepository, times(1)).save(child);
-        verify(mockCategoryRepository, atLeastOnce()).save(child);
-        verifyNoMoreInteractions(mockCategoryRepository);
+        verify(categoryRepository, times(1)).save(child);
+        verify(categoryRepository, atLeastOnce()).save(child);
+        verifyNoMoreInteractions(categoryRepository);
 
-        inOrder.verify(mockCategoryRepository).save(child);
+        inOrder.verify(categoryRepository).save(child);
     }
 
     @Test
     @DisplayName("카테고리_수정")
     void 카테고리_수정() {
-        // given
-        Category category = Category.builder()
-                .categoryId(firstCategory.getCategoryId())
-                .code(firstCategory.getCode())
-                .name(firstCategory.getName())
-                .description("모든 편의점")
-                .parent(null)
-                .build();
 
+        // given
+        when(categoryRepository.findById(category1.getCategoryId())).thenReturn(Optional.of(category1));
         // when
-        when(mockCategoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
-        Category updateCategory = mockCategoryService.updateCategory(category.getCategoryId(), category);
+        Category updatedCategory = categoryService.updateCategory(
+                category1.getCategoryId(),
+                category1.getCode(),
+                category1.getName(),
+                "모든 편의점",
+                null);
 
         // then
-        assertThat(updateCategory.getCode()).isEqualTo(100);
-        assertThat(updateCategory.getName()).isEqualTo("편의점");
-        assertThat(updateCategory.getDescription()).isEqualTo("모든 편의점");
+        assertThat(updatedCategory.getCode()).isEqualTo(100);
+        assertThat(updatedCategory.getName()).isEqualTo("편의점");
+        assertThat(updatedCategory.getDescription()).isEqualTo("모든 편의점");
 
         // verify
-        verify(mockCategoryRepository, times(1)).findById(category.getCategoryId());
-        verify(mockCategoryRepository, atLeastOnce()).findById(category.getCategoryId());
-        verifyNoMoreInteractions(mockCategoryRepository);
+        verify(categoryRepository, times(1)).findById(category1.getCategoryId());
+        verify(categoryRepository, atLeastOnce()).findById(category1.getCategoryId());
+        verifyNoMoreInteractions(categoryRepository);
 
-        InOrder inOrder = inOrder(mockCategoryRepository);
-        inOrder.verify(mockCategoryRepository).findById(category.getCategoryId());
+        InOrder inOrder = inOrder(categoryRepository);
+        inOrder.verify(categoryRepository).findById(category1.getCategoryId());
     }
 
     @Test
     @DisplayName("카테고리_삭제")
     void 카테고리_삭제() {
-        Long deleteCategoryId = mockCategoryService.deleteCategory(firstCategory.getCategoryId());
-        assertThat(deleteCategoryId).isEqualTo(firstCategory.getCategoryId());
+        Long deleteCategoryId = categoryService.deleteCategory(category1.getCategoryId());
+        assertThat(deleteCategoryId).isEqualTo(category1.getCategoryId());
     }
 }

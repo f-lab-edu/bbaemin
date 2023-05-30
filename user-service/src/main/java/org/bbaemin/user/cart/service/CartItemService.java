@@ -32,7 +32,7 @@ public class CartItemService {
                 .switchIfEmpty(Mono.error(new NoSuchElementException("cartItemId : " + cartItemId)));
     }
 
-    public Mono<ItemResponse> getItem(Long itemId) {
+    Mono<ItemResponse> getItem(Long itemId) {
         return client.get()
                 .uri(uriBuilder -> uriBuilder
                         // TODO - property

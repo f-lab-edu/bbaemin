@@ -49,7 +49,8 @@ public class OrderService {
                 .switchIfEmpty(Mono.error(new NoSuchElementException("orderItemId : " + orderItemId)));
     }
 
-    public Mono<Integer> applyCouponList(int orderAmount, List<Long> discountCouponIdList) {
+    // Coupon Service
+    Mono<Integer> applyCouponList(int orderAmount, List<Long> discountCouponIdList) {
         // publisher
         return client.post()
                 // TODO - property
@@ -60,9 +61,11 @@ public class OrderService {
                 .bodyToMono(Integer.class);
     }
 
+    // 동기 vs 비동기 : 호출한 결과의 완료 여부를 확인을 하는가 안 하는가
     @Transactional
     public Mono<Order> order(Long userId, Order order, List<Long> discountCouponIdList) {
 
+    // #1. 장바구니 조회
         Flux<CartItem> cartItemFlux = cartItemService.getCartItemListByUserId(userId);
         Flux<OrderItem> orderItemFlux = cartItemFlux
                 .map(cartItem -> OrderItem.builder()
@@ -73,16 +76,26 @@ public class OrderService {
                         .orderCount(cartItem.getOrderCount())
                         .build());
 
+    // #2. 재고 조회 및 재고 차감 처리
+        // -> 재고 부족 시 주문 불가 처리
+    // #3. 결제 -> 결제 실패 시 주문 불가 처리
+
+    // #4. 주문 생성
         // 주문금액
         Mono<Integer> orderAmount = cartItemFlux
                 .map(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount())
                 .reduce(Integer::sum);
+
+    // #4-1. 배달비 조회
         // 배달비
         Mono<Integer> deliveryFee = orderAmount
                 .flatMap(deliveryFeeService::getDeliveryFee);
+
+    // #4-2. 쿠폰 적용
         // 할인금액
         Mono<Integer> totalDiscountAmount = orderAmount
                 .flatMap(amount -> applyCouponList(amount, discountCouponIdList));
+
         // 총 금액
         Mono<Integer> paymentAmount = orderAmount
                 .zipWith(deliveryFee, Integer::sum)
@@ -104,9 +117,6 @@ public class OrderService {
                     return o;
                 })
                 .flatMap(orderRepository::save);
-
-        // TODO - TEST
-///////////////////////////////////// TEST /////////////////////////////////////
         orderMono
                 .flatMapMany(o -> orderItemFlux
                         .map(orderItem -> {
@@ -115,7 +125,6 @@ public class OrderService {
                         }))
                 .doOnNext(orderItemRepository::save)
                 .doAfterTerminate(() -> cartItemService.clear(userId));
-///////////////////////////////////////////////////////////////////////////////
         return orderMono;
     }
 

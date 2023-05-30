@@ -1,6 +1,10 @@
 package org.bbaemin.admin.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.admin.category.service.CategoryService;
+import org.bbaemin.admin.category.vo.Category;
+import org.bbaemin.admin.delivery.service.StoreService;
+import org.bbaemin.admin.delivery.vo.Store;
 import org.bbaemin.admin.item.controller.request.CreateItemRequest;
 import org.bbaemin.admin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.admin.item.service.ItemService;
@@ -26,6 +30,8 @@ import java.util.stream.Collectors;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CategoryService categoryService;
+    private final StoreService storeService;
 
     @GetMapping
     public ApiResult<List<ItemResponse>> listItem() {
@@ -59,9 +65,12 @@ public class ItemController {
 
     @PostMapping
     public ApiResult<ItemResponse> createItem(@Validated @RequestBody CreateItemRequest createItemRequest) {
+
+        Category category = categoryService.getCategory(createItemRequest.getCategoryId());
+        Store store = storeService.getStore(createItemRequest.getStoreId());
         Item item = Item.builder()
-                .itemCategory(itemService.getCategory(createItemRequest.getCategoryId()))
-                .itemStore(itemService.getStore(createItemRequest.getStoreId()))
+                .itemCategory(category)
+                .itemStore(store)
                 .name(createItemRequest.getName())
                 .description(createItemRequest.getDescription())
                 .price(createItemRequest.getPrice())
@@ -82,15 +91,15 @@ public class ItemController {
 
     @PutMapping("/{itemId}")
     public ApiResult<ItemResponse> updateItem(@PathVariable Long itemId, @Validated @RequestBody UpdateItemRequest updateItemRequest) {
-        Item item = Item.builder()
-                .itemCategory(itemService.getCategory(updateItemRequest.getCategoryId()))
-                .itemStore(itemService.getStore(updateItemRequest.getStoreId()))
-                .name(updateItemRequest.getName())
-                .description(updateItemRequest.getDescription())
-                .price(updateItemRequest.getPrice())
-                .quantity(updateItemRequest.getQuantity())
-                .build();
-        Item updated = itemService.updateItem(itemId, item);
+
+        Item updated = itemService.updateItem(itemId,
+                updateItemRequest.getName(),
+                updateItemRequest.getDescription(),
+                updateItemRequest.getPrice(),
+                updateItemRequest.getQuantity(),
+                updateItemRequest.getCategoryId(),
+                updateItemRequest.getStoreId());
+
         ItemResponse response = ItemResponse.builder()
                 .itemId(updated.getItemId())
                 .categoryName(updated.getItemCategory().getName())

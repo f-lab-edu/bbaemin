@@ -1,6 +1,8 @@
 package org.bbaemin.admin.delivery.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bbaemin.admin.category.service.CategoryService;
+import org.bbaemin.admin.category.vo.Category;
 import org.bbaemin.admin.delivery.controller.request.CreateStoreRequest;
 import org.bbaemin.admin.delivery.controller.request.UpdateStoreRequest;
 import org.bbaemin.admin.delivery.controller.response.StoreResponse;
@@ -26,10 +28,12 @@ import java.util.stream.Collectors;
 public class StoreController {
 
     private final StoreService storeService;
+    private final CategoryService categoryService;
 
     @GetMapping
     public ApiResult<List<StoreResponse>> listStore() {
-        return ApiResult.ok(storeService.listStore().stream()
+        List<Store> storeList = storeService.listStore();
+        List<StoreResponse> storeResponseList = storeList.stream()
                 .map(store -> StoreResponse.builder()
                         .categoryCode(store.getStoreCategory().getCode())
                         .name(store.getName())
@@ -39,7 +43,8 @@ public class StoreController {
                         .zipCode(store.getZipCode())
                         .phoneNumber(store.getPhoneNumber())
                         .build())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        return ApiResult.ok(storeResponseList);
     }
 
     @GetMapping("/{storeId}")
@@ -58,6 +63,8 @@ public class StoreController {
 
     @PostMapping
     public ApiResult<StoreResponse> createStore(@Validated @RequestBody CreateStoreRequest createStoreRequest) {
+
+        Category category = categoryService.getCategory(createStoreRequest.getCategoryId());
         Store store = Store.builder()
                 .name(createStoreRequest.getName())
                 .description(createStoreRequest.getDescription())
@@ -65,7 +72,7 @@ public class StoreController {
                 .address(createStoreRequest.getAddress())
                 .zipCode(createStoreRequest.getZipCode())
                 .phoneNumber(createStoreRequest.getPhoneNumber())
-                .storeCategory(storeService.getCategory(createStoreRequest.getCategoryId()))
+                .storeCategory(category)
                 .build();
         Store saved = storeService.createStore(store);
         StoreResponse storeResponse = StoreResponse.builder()
@@ -82,16 +89,16 @@ public class StoreController {
 
     @PutMapping("/{storeId}")
     public ApiResult<StoreResponse> updateStore(@PathVariable Long storeId, @Validated @RequestBody UpdateStoreRequest updateStoreRequest) {
-        Store store = Store.builder()
-                .name(updateStoreRequest.getName())
-                .description(updateStoreRequest.getDescription())
-                .owner(updateStoreRequest.getOwner())
-                .address(updateStoreRequest.getAddress())
-                .zipCode(updateStoreRequest.getZipCode())
-                .phoneNumber(updateStoreRequest.getPhoneNumber())
-                .storeCategory(storeService.getCategory(updateStoreRequest.getCategoryId()))
-                .build();
-        Store updated = storeService.updateStore(storeId, store);
+
+        Store updated = storeService.updateStore(storeId,
+                updateStoreRequest.getName(),
+                updateStoreRequest.getDescription(),
+                updateStoreRequest.getOwner(),
+                updateStoreRequest.getAddress(),
+                updateStoreRequest.getZipCode(),
+                updateStoreRequest.getPhoneNumber(),
+                updateStoreRequest.getCategoryId());
+
         StoreResponse storeResponse = StoreResponse.builder()
                 .categoryCode(updated.getStoreCategory().getCode())
                 .name(updated.getName())

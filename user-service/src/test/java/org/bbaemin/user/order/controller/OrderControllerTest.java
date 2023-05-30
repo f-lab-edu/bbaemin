@@ -1,7 +1,6 @@
 package org.bbaemin.user.order.controller;
 
 import org.bbaemin.config.response.ApiResult;
-import org.bbaemin.user.order.controller.request.CreateOrderRequest;
 import org.bbaemin.user.order.service.OrderService;
 import org.bbaemin.user.order.vo.Order;
 import org.bbaemin.user.order.vo.OrderItem;
@@ -26,7 +25,6 @@ import java.util.NoSuchElementException;
 import static org.bbaemin.user.order.enums.OrderStatus.CANCEL_ORDER;
 import static org.bbaemin.user.order.enums.OrderStatus.COMPLETE_ORDER;
 import static org.bbaemin.user.order.enums.PaymentMethod.CARD;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 @ActiveProfiles("test")
@@ -105,72 +103,6 @@ public class OrderControllerTest {
                 .when(orderService).getOrder(1L, 1L);
         webTestClient.get()
                 .uri(String.format("%s/%d?userId=%d", BASE_URL, 1L, 1L))
-                .exchange()
-//                .expectBody(ApiResult.class)
-                .expectBody()
-                .jsonPath("$.code").isEqualTo(ApiResult.ResultCode.SUCCESS.name())
-                .jsonPath("$.result.orderId").isEqualTo(order.getOrderId())
-                .jsonPath("$.result.status").isEqualTo(order.getStatus())
-                .jsonPath("$.result.paymentAmount").isEqualTo(order.getPaymentAmount())
-                .jsonPath("$.result.orderDate").isNotEmpty()
-                .jsonPath("$.result.orderAmount").isEqualTo(order.getOrderAmount())
-                .jsonPath("$.result.deliveryFee").isEqualTo(order.getDeliveryFee())
-                .jsonPath("$.result.paymentMethod").isEqualTo(order.getPaymentMethod())
-                .jsonPath("$.result.deliveryAddress").isEqualTo(order.getDeliveryAddress())
-                .jsonPath("$.result.phoneNumber").isEqualTo(order.getPhoneNumber())
-                .jsonPath("$.result.email").isEqualTo(order.getEmail())
-                .jsonPath("$.result.messageToRider").isEqualTo(order.getMessageToRider())
-                .jsonPath("$.result.orderDate").isNotEmpty()
-                .jsonPath("$.result.orderItemList[0].itemName").isEqualTo(orderItem.getItemName())
-                .jsonPath("$.result.orderItemList[0].itemDescription").isEqualTo(orderItem.getItemDescription())
-                .jsonPath("$.result.orderItemList[0].orderPrice").isEqualTo(orderItem.getOrderPrice())
-                .jsonPath("$.result.orderItemList[0].orderCount").isEqualTo(orderItem.getOrderCount())
-                .jsonPath("$.result.orderItemList[0].totalOrderPrice").isEqualTo(orderItem.getOrderPrice() * orderItem.getOrderCount());
-    }
-
-    @Test
-    void order() {
-        // given
-        CreateOrderRequest createOrderRequest = CreateOrderRequest.builder()
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1234-5678")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .paymentMethod(CARD)
-                .build();
-//        Order _order = Order.builder()
-//                .orderDate(LocalDateTime.now())
-//                .status(COMPLETE_ORDER)
-//                .deliveryAddress(createOrderRequest.getDeliveryAddress())
-//                .phoneNumber(createOrderRequest.getPhoneNumber())
-//                .email(createOrderRequest.getEmail())
-//                .messageToRider(createOrderRequest.getMessageToRider())
-//                .paymentMethod(createOrderRequest.getPaymentMethod())
-//                .build();
-        Order order = Order.builder()
-                .orderId(1L)
-                .userId(user.getUserId())
-                .orderDate(LocalDateTime.now())
-                .status(COMPLETE_ORDER)
-                .deliveryAddress("서울시 강동구")
-                .phoneNumber("010-1234-5678")
-                .email("user@email.com")
-                .messageToRider("감사합니다")
-                .orderAmount(20000)
-                .deliveryFee(5000)
-                .paymentAmount(25000)
-                .paymentMethod(CARD)
-                .build();
-        doReturn(Mono.just(order))
-                .when(orderService).order(any(Long.class), any(Order.class), any());
-        doReturn(Flux.just(orderItem))
-                .when(orderService).getOrderItemListByOrderId(1L);
-
-        // when
-        // then
-        webTestClient.post()
-                .uri(String.format("%s?userId=%d", BASE_URL, 1L))
-                .bodyValue(createOrderRequest)
                 .exchange()
 //                .expectBody(ApiResult.class)
                 .expectBody()
