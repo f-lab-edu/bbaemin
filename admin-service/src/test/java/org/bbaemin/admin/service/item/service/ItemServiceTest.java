@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,40 +37,38 @@ class ItemServiceTest {
     @Mock
     private ItemRepository itemRepository;
     @Mock
-    private CategoryService mockCategoryService;
+    private CategoryService categoryService;
     @Mock
-    private StoreService mockStoreService;
+    private StoreService storeService;
     @InjectMocks
     private ItemService itemService;
 
     private Item item;
-    private Category firstItemCategory;
-    private Category secondItemCategory;
-    private Category firstStoreCategory;
-    private Store firstStoreEntity;
-    private Store secondStoreEntity;
+    private Category itemCategory1;
+    private Category itemCategory2;
+    private Category storeCategory;
+    private Store store1;
+    private Store store2;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
         // 카테고리 등록
-        firstItemCategory = Category.builder()
+        itemCategory1 = Category.builder()
                 .categoryId(1L)
                 .code(300)
                 .name("과일")
                 .description("과일")
                 .parent(null)
                 .build();
-
-        secondItemCategory = Category.builder()
+        itemCategory2 = Category.builder()
                 .categoryId(2L)
                 .code(400)
                 .name("과자")
                 .description("과자")
                 .parent(null)
                 .build();
-
-        firstStoreCategory = Category.builder()
+        storeCategory = Category.builder()
                 .categoryId(3L)
                 .code(200)
                 .name("편의점")
@@ -79,9 +77,9 @@ class ItemServiceTest {
                 .build();
 
         // 매장 등록
-        firstStoreEntity = Store.builder()
+        store1 = Store.builder()
                 .storeId(1L)
-                .storeCategory(firstStoreCategory)
+                .storeCategory(storeCategory)
                 .name("B마트 인천점")
                 .description("B마트 인천점")
                 .owner("점주")
@@ -90,9 +88,9 @@ class ItemServiceTest {
                 .phoneNumber("010-1234-5678")
                 .build();
 
-        secondStoreEntity = Store.builder()
+        store2 = Store.builder()
                 .storeId(2L)
-                .storeCategory(firstStoreCategory)
+                .storeCategory(storeCategory)
                 .name("B마트 관악점")
                 .description("B마트 관악점")
                 .owner("점주")
@@ -104,8 +102,8 @@ class ItemServiceTest {
         // 아이템 등록
         item = Item.builder()
                 .itemId(1L)
-                .itemCategory(firstItemCategory)
-                .itemStore(firstStoreEntity)
+                .itemCategory(itemCategory1)
+                .itemStore(store1)
                 .name("청동사과")
                 .description("싱싱한 청동사과")
                 .price(2000)
@@ -116,17 +114,17 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템_리스트_조회")
     void 아이템_리스트_조회() {
-        List<Item> itemList = new ArrayList<>();
-        itemList.add(item);
+
+        // given
+        when(itemRepository.findAll()).thenReturn(Arrays.asList(item));
         // when
-        when(itemRepository.findAll()).thenReturn(itemList);
-        List<Item> findItemList = itemService.listItem();
+        List<Item> itemList = itemService.listItem();
 
         // then
-        assertThat(findItemList.get(0).getItemCategory().getName()).isEqualTo("과일");
-        assertThat(findItemList.get(0).getItemStore().getName()).isEqualTo("B마트 인천점");
-        assertThat(findItemList.get(0).getName()).isEqualTo("청동사과");
-        assertThat(findItemList.get(0).getPrice()).isEqualTo(2000);
+        assertThat(itemList.get(0).getItemCategory().getName()).isEqualTo("과일");
+        assertThat(itemList.get(0).getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(itemList.get(0).getName()).isEqualTo("청동사과");
+        assertThat(itemList.get(0).getPrice()).isEqualTo(2000);
 
         // verify
         verify(itemRepository, times(1)).findAll();
@@ -140,15 +138,17 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템_상세_조회")
     void 아이템_상세_조회() {
+
+        // given
+        when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
         // when
-        when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
-        Item getItem = itemService.getItem(item.getItemId());
+        Item getById = itemService.getItem(item.getItemId());
 
         // then
-        assertThat(getItem.getItemCategory().getName()).isEqualTo("과일");
-        assertThat(getItem.getItemStore().getName()).isEqualTo("B마트 인천점");
-        assertThat(getItem.getName()).isEqualTo("청동사과");
-        assertThat(getItem.getPrice()).isEqualTo(2000);
+        assertThat(getById.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(getById.getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(getById.getName()).isEqualTo("청동사과");
+        assertThat(getById.getPrice()).isEqualTo(2000);
 
         // verify
         verify(itemRepository, times(1)).findByItemId(item.getItemId());
@@ -162,27 +162,25 @@ class ItemServiceTest {
     @Test
     @DisplayName("아이템_등록")
     void 아이템_등록() {
+
         Item item = Item.builder()
-                .itemCategory(firstItemCategory)
-                .itemStore(firstStoreEntity)
+                .itemCategory(itemCategory1)
+                .itemStore(store1)
                 .name("복숭아")
                 .description("복숭아")
                 .price(3000)
                 .quantity(999)
                 .build();
-
-        // when
-        when(mockStoreService.getStore(firstStoreEntity.getStoreId())).thenReturn(firstStoreEntity);
-        when(mockCategoryService.getCategory(firstItemCategory.getCategoryId())).thenReturn(firstItemCategory);
         when(itemRepository.save(item)).thenReturn(item);
-        Item saveItem = itemService.createItem(item);
+        // when
+        Item saved = itemService.createItem(item);
 
         // then
-        assertThat(saveItem.getItemCategory().getName()).isEqualTo("과일");
-        assertThat(saveItem.getItemStore().getName()).isEqualTo("B마트 인천점");
-        assertThat(saveItem.getName()).isEqualTo("복숭아");
-        assertThat(saveItem.getDescription()).isEqualTo("복숭아");
-        assertThat(saveItem.getPrice()).isEqualTo(3000);
+        assertThat(saved.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(saved.getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(saved.getName()).isEqualTo("복숭아");
+        assertThat(saved.getDescription()).isEqualTo("복숭아");
+        assertThat(saved.getPrice()).isEqualTo(3000);
 
         // verify
         verify(itemRepository, times(1)).save(item);
@@ -200,13 +198,13 @@ class ItemServiceTest {
         // given
         when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.of(item));
         // when
-        Item updateItem = itemService.updateItem(item.getItemId(), "메론", "메론", 5000, 999, firstItemCategory.getCategoryId(), firstStoreEntity.getStoreId());
+        Item updatedItem1 = itemService.updateItem(item.getItemId(), "메론", "메론", 5000, 999, itemCategory1.getCategoryId(), store1.getStoreId());
 
         // then
-        assertThat(updateItem.getItemCategory().getName()).isEqualTo("과일");
-        assertThat(updateItem.getItemStore().getName()).isEqualTo("B마트 인천점");
-        assertThat(updateItem.getName()).isEqualTo("메론");
-        assertThat(updateItem.getDescription()).isEqualTo("메론");
+        assertThat(updatedItem1.getItemCategory().getName()).isEqualTo("과일");
+        assertThat(updatedItem1.getItemStore().getName()).isEqualTo("B마트 인천점");
+        assertThat(updatedItem1.getName()).isEqualTo("메론");
+        assertThat(updatedItem1.getDescription()).isEqualTo("메론");
 
         // verify
         verify(itemRepository, times(1)).findByItemId(item.getItemId());
@@ -217,24 +215,24 @@ class ItemServiceTest {
         inOrder.verify(itemRepository).findByItemId(item.getItemId());
 
         // given
-        when(mockCategoryService.getCategory(secondItemCategory.getCategoryId())).thenReturn(secondItemCategory);
-        when(mockStoreService.getStore(secondStoreEntity.getStoreId())).thenReturn(secondStoreEntity);
+        when(categoryService.getCategory(itemCategory2.getCategoryId())).thenReturn(itemCategory2);
+        when(storeService.getStore(store2.getStoreId())).thenReturn(store2);
         when(itemRepository.findByItemId(item.getItemId())).thenReturn(Optional.ofNullable(item));
         // when
-        Item secondUpdateItem = itemService.updateItem(item.getItemId(), "칙촉", "칙촉", 2500, 999, secondItemCategory.getCategoryId(), secondStoreEntity.getStoreId());
+        Item updatedItem2 = itemService.updateItem(item.getItemId(), "칙촉", "칙촉", 2500, 999, itemCategory2.getCategoryId(), store2.getStoreId());
 
         // then
-        assertThat(secondUpdateItem.getItemCategory().getName()).isEqualTo("과자");
-        assertThat(secondUpdateItem.getItemStore().getName()).isEqualTo("B마트 관악점");
-        assertThat(secondUpdateItem.getName()).isEqualTo("칙촉");
-        assertThat(secondUpdateItem.getPrice()).isEqualTo(2500);
-        assertThat(secondUpdateItem.getQuantity()).isEqualTo(999);
+        assertThat(updatedItem2.getItemCategory().getName()).isEqualTo("과자");
+        assertThat(updatedItem2.getItemStore().getName()).isEqualTo("B마트 관악점");
+        assertThat(updatedItem2.getName()).isEqualTo("칙촉");
+        assertThat(updatedItem2.getPrice()).isEqualTo(2500);
+        assertThat(updatedItem2.getQuantity()).isEqualTo(999);
     }
 
     @Test
     @DisplayName("아이템_삭제")
     void 아이템_삭제() {
-        Long deleteItemId = itemService.deleteItem(item.getItemId());
-        assertThat(deleteItemId).isEqualTo(item.getItemId());
+        Long deletedItemId = itemService.deleteItem(item.getItemId());
+        assertThat(deletedItemId).isEqualTo(item.getItemId());
     }
 }

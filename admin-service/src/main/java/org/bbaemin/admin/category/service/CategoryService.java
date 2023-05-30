@@ -1,8 +1,8 @@
 package org.bbaemin.admin.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bbaemin.admin.category.vo.Category;
 import org.bbaemin.admin.category.repository.CategoryRepository;
+import org.bbaemin.admin.category.vo.Category;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -30,10 +30,6 @@ public class CategoryService {
 
     @Transactional
     public Category createCategory(Category category) {
-        if (category.getParent() != null) {
-            category.setParent(category.getParent());
-            category.getChildren().add(category);
-        }
         return categoryRepository.save(category);
     }
 

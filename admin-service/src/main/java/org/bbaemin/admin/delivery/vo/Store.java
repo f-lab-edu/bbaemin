@@ -68,7 +68,7 @@ public class Store {
         this.phoneNumber = phoneNumber;
         if (!Objects.isNull(storeCategory)) {
             this.storeCategory = storeCategory;
-            storeCategory.getStoreList().add(this);
+            storeCategory.addStore(this);
         }
         this.itemList = itemList;
     }
@@ -100,6 +100,13 @@ public class Store {
     public void setStoreCategory(Category storeCategory) {
         this.storeCategory = storeCategory;
         // 매장-카테고리 연관관계 설정
-        storeCategory.getStoreList().add(this);
+        storeCategory.addStore(this);
+    }
+
+    public void addItem(Item item) {
+        if (this.itemList == null) {
+            this.itemList = new ArrayList<>();
+        }
+        this.itemList.add(item);
     }
 }

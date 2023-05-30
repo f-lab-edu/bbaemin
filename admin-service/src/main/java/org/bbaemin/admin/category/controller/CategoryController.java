@@ -58,8 +58,7 @@ public class CategoryController {
                 .name(createCategoryRequest.getName())
                 .description(createCategoryRequest.getDescription())
                 .parent(createCategoryRequest.getParentId() != null ?
-                        categoryService.getCategory(createCategoryRequest.getParentId()) :
-                        null)
+                        categoryService.getCategory(createCategoryRequest.getParentId()) : null)
                 .build();
         Category saved = categoryService.createCategory(category);
         CategoryResponse categoryResponse = CategoryResponse.builder()

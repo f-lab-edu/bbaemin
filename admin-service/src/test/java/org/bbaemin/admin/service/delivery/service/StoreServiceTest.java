@@ -1,10 +1,10 @@
 package org.bbaemin.admin.service.delivery.service;
 
-import org.bbaemin.admin.category.vo.Category;
 import org.bbaemin.admin.category.service.CategoryService;
+import org.bbaemin.admin.category.vo.Category;
+import org.bbaemin.admin.delivery.repository.StoreRepository;
 import org.bbaemin.admin.delivery.service.StoreService;
 import org.bbaemin.admin.delivery.vo.Store;
-import org.bbaemin.admin.delivery.repository.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("매장 관련 Service Test")
@@ -74,19 +78,16 @@ class StoreServiceTest {
     void 매장_리스트_조회_테스트() {
 
         // given
-        List<Store> storeList = new ArrayList<>();
-        storeList.add(store);
-        when(storeRepository.findAll()).thenReturn(storeList);
-
+        when(storeRepository.findAll()).thenReturn(Arrays.asList(store));
         // when
-        List<Store> findStoreList = storeService.listStore();
+        List<Store> storeList = storeService.listStore();
 
         // then
-        assertThat(findStoreList.size()).isEqualTo(1);
-        assertThat(findStoreList.get(0).getStoreCategory().getCode()).isEqualTo(100);
-        assertThat(findStoreList.get(0).getStoreCategory().getName()).isEqualTo("편의점");
-        assertThat(findStoreList.get(0).getName()).isEqualTo("B마트 인천점");
-        assertThat(findStoreList.get(0).getOwner()).isEqualTo("점주");
+        assertThat(storeList.size()).isEqualTo(1);
+        assertThat(storeList.get(0).getStoreCategory().getCode()).isEqualTo(100);
+        assertThat(storeList.get(0).getStoreCategory().getName()).isEqualTo("편의점");
+        assertThat(storeList.get(0).getName()).isEqualTo("B마트 인천점");
+        assertThat(storeList.get(0).getOwner()).isEqualTo("점주");
 
         // verify
         verify(storeRepository, times(1)).findAll();

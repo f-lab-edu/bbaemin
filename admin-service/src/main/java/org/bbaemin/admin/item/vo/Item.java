@@ -59,12 +59,12 @@ public class Item {
         if (!Objects.isNull(itemStore)) {
             this.itemStore = itemStore;
             // 아이템-매장 연관관계 설정
-            itemStore.getItemList().add(this);
+            itemStore.addItem(this);
         }
         if (!Objects.isNull(itemCategory)) {
             this.itemCategory = itemCategory;
             // 아이템-카테고리 연관관계 설정
-            itemCategory.getItemList().add(this);
+            itemCategory.addItem(this);
         }
     }
 
@@ -90,11 +90,11 @@ public class Item {
 
     public void setItemStore(Store itemStore) {
         this.itemStore = itemStore;
-        itemStore.getItemList().add(this);
+        itemStore.addItem(this);
     }
 
     public void setItemCategory(Category itemCategory) {
         this.itemCategory = itemCategory;
-        itemCategory.getItemList().add(this);
+        itemCategory.addItem(this);
     }
 }

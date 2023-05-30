@@ -1,13 +1,11 @@
 package org.bbaemin.admin.category.vo;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bbaemin.admin.delivery.vo.Store;
 import org.bbaemin.admin.item.vo.Item;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -65,7 +63,7 @@ public class Category {
         this.description = description;
         if (!Objects.isNull(parent)) {
             this.parent = parent;
-            parent.getChildren().add(this);
+            parent.addChildren(this);
         }
         this.children = children;
         this.storeList = storeList;
@@ -86,6 +84,27 @@ public class Category {
 
     public void setParent(Category parent) {
         this.parent = parent;
-        parent.getChildren().add(this);
+        parent.addChildren(this);
+    }
+
+    public void addChildren(Category category) {
+        if (this.children == null) {
+            this.children = new ArrayList<>();
+        }
+        this.children.add(category);
+    }
+
+    public void addStore(Store store) {
+        if (this.storeList == null) {
+            this.storeList = new ArrayList<>();
+        }
+        this.storeList.add(store);
+    }
+
+    public void addItem(Item item) {
+        if (this.itemList == null) {
+            this.itemList = new ArrayList<>();
+        }
+        this.itemList.add(item);
     }
 }

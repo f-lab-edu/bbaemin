@@ -1,8 +1,8 @@
 package org.bbaemin.admin.service.category.service;
 
+import org.bbaemin.admin.category.repository.CategoryRepository;
 import org.bbaemin.admin.category.service.CategoryService;
 import org.bbaemin.admin.category.vo.Category;
-import org.bbaemin.admin.category.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +12,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("카테고리 관련 Service Test")
@@ -52,25 +57,22 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리_리스트_조회")
     void 카테고리_리스트_조회() {
-        // given
-        List<Category> categoryList = new ArrayList<>();
-        categoryList.add(category1);
-        categoryList.add(category2);
 
+        // given
+        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category1, category2));
         // when
-        when(categoryRepository.findAll()).thenReturn(categoryList);
-        List<Category> findCategoryList = categoryService.listCategory();
+        List<Category> categoryList = categoryService.listCategory();
 
         // then
-        assertThat(findCategoryList.get(0).getCode()).isEqualTo(100);
-        assertThat(findCategoryList.get(0).getName()).isEqualTo("편의점");
-        assertThat(findCategoryList.get(0).getDescription()).isEqualTo("최상위 편의점");
-        assertThat(findCategoryList.get(0).getParent()).isNull();
+        assertThat(categoryList.get(0).getCode()).isEqualTo(100);
+        assertThat(categoryList.get(0).getName()).isEqualTo("편의점");
+        assertThat(categoryList.get(0).getDescription()).isEqualTo("최상위 편의점");
+        assertThat(categoryList.get(0).getParent()).isNull();
 
-        assertThat(findCategoryList.get(1).getCode()).isEqualTo(101);
-        assertThat(findCategoryList.get(1).getName()).isEqualTo("인천 계양편의점");
-        assertThat(findCategoryList.get(1).getDescription()).isEqualTo("인천 계양편의점");
-        assertThat(findCategoryList.get(1).getParent().getCode()).isEqualTo(category1.getCode());
+        assertThat(categoryList.get(1).getCode()).isEqualTo(101);
+        assertThat(categoryList.get(1).getName()).isEqualTo("인천 계양편의점");
+        assertThat(categoryList.get(1).getDescription()).isEqualTo("인천 계양편의점");
+        assertThat(categoryList.get(1).getParent().getCode()).isEqualTo(category1.getCode());
 
         // verify
         verify(categoryRepository, times(1)).findAll();
@@ -84,8 +86,10 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리_상세_조회")
     void 카테고리_상세_조회() {
+
+        // given
+        when(categoryRepository.findById(category1.getCategoryId())).thenReturn(Optional.of(category1));
         // when
-        when(categoryRepository.findById(category1.getCategoryId())).thenReturn(Optional.ofNullable(category1));
         Category getCategory = categoryService.getCategory(category1.getCategoryId());
 
         // then
@@ -105,6 +109,7 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리_등록")
     void 카테고리_등록() {
+
         // 부모 카테고리 등록
         // given
         Category parent = Category.builder()
@@ -113,15 +118,14 @@ class CategoryServiceTest {
                 .description("육류")
                 .parent(null)
                 .build();
-
-        // when
         when(categoryRepository.save(parent)).thenReturn(parent);
-        Category saveParent = categoryService.createCategory(parent);
+        // when
+        Category savedParent = categoryService.createCategory(parent);
 
         // then
-        assertThat(saveParent.getCode()).isEqualTo(200);
-        assertThat(saveParent.getName()).isEqualTo("육류");
-        assertThat(saveParent.getParent()).isNull();
+        assertThat(savedParent.getCode()).isEqualTo(200);
+        assertThat(savedParent.getName()).isEqualTo("육류");
+        assertThat(savedParent.getParent()).isNull();
 
         // verify
         verify(categoryRepository, times(1)).save(parent);
@@ -139,16 +143,15 @@ class CategoryServiceTest {
                 .description("돼지고기")
                 .parent(parent)
                 .build();
-
-        // when
         when(categoryRepository.save(child)).thenReturn(child);
-        Category saveChild = categoryService.createCategory(child);
+        // when
+        Category savedChild = categoryService.createCategory(child);
 
         // then
-        assertThat(saveChild.getCode()).isEqualTo(201);
-        assertThat(saveChild.getName()).isEqualTo("돼지고기");
-        assertThat(saveChild.getDescription()).isEqualTo("돼지고기");
-        assertThat(saveChild.getParent().getCode()).isEqualTo(200);
+        assertThat(savedChild.getCode()).isEqualTo(201);
+        assertThat(savedChild.getName()).isEqualTo("돼지고기");
+        assertThat(savedChild.getDescription()).isEqualTo("돼지고기");
+        assertThat(savedChild.getParent().getCode()).isEqualTo(200);
 
         // verify
         verify(categoryRepository, times(1)).save(child);
@@ -189,7 +192,7 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리_삭제")
     void 카테고리_삭제() {
-        Long deleteCategoryId = categoryService.deleteCategory(category1.getCategoryId());
-        assertThat(deleteCategoryId).isEqualTo(category1.getCategoryId());
+        Long deletedCategoryId = categoryService.deleteCategory(category1.getCategoryId());
+        assertThat(deletedCategoryId).isEqualTo(category1.getCategoryId());
     }
 }
