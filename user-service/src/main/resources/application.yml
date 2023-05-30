@@ -1,6 +1,5 @@
 server:
   port: 8081
-
 spring:
   application:
     name: user-service
@@ -14,3 +13,7 @@ spring:
 logging:
   level:
     org.springframework.r2dbc: debug
+
+service:
+  admin: http://localhost:8080
+  user: http://localhost:8081

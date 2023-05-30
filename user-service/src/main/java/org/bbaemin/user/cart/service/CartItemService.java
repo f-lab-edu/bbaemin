@@ -5,19 +5,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.bbaemin.dto.response.ItemResponse;
 import org.bbaemin.user.cart.repository.CartItemRepository;
 import org.bbaemin.user.cart.vo.CartItem;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static org.bbaemin.enums.ServicePath.ITEM_SERVICE;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartItemService {
+
+    @Value("${service.admin}")
+    private String admin;
 
     private final CartItemRepository cartItemRepository;
 
@@ -34,10 +41,14 @@ public class CartItemService {
 
     Mono<ItemResponse> getItem(Long itemId) {
         return client.get()
-                .uri(uriBuilder -> uriBuilder
-                        // TODO - property
-                        .host("http://localhost:8080")
-                        .path("/api/v1/items/{itemId}").build(itemId))
+                .uri(uriBuilder -> {
+                    URI uri = uriBuilder.path(admin)
+                            .path(ITEM_SERVICE.getPath())
+                            .path("/{itemId}")
+                            .build(itemId);
+                    log.info("uri : {}", uri);
+                    return uri;
+                })
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(ItemResponse.class);
