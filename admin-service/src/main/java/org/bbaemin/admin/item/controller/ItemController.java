@@ -10,13 +10,15 @@ import org.bbaemin.admin.item.controller.request.UpdateItemRequest;
 import org.bbaemin.admin.item.service.ItemService;
 import org.bbaemin.admin.item.vo.Item;
 import org.bbaemin.config.response.ApiResult;
+import org.bbaemin.dto.request.DeductItemRequest;
+import org.bbaemin.dto.request.RestoreItemRequest;
 import org.bbaemin.dto.response.ItemResponse;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,7 +91,7 @@ public class ItemController {
         return ApiResult.created(response);
     }
 
-    @PutMapping("/{itemId}")
+    @PatchMapping("/{itemId}")
     public ApiResult<ItemResponse> updateItem(@PathVariable Long itemId, @Validated @RequestBody UpdateItemRequest updateItemRequest) {
 
         Item updated = itemService.updateItem(itemId,
@@ -115,5 +117,35 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     public ApiResult<Long> deleteItem(@PathVariable Long itemId) {
         return ApiResult.ok(itemService.deleteItem(itemId));
+    }
+
+    @PatchMapping("/{itemId}/deduct")
+    public ApiResult<ItemResponse> deductItem(@PathVariable Long itemId, @Validated @RequestBody DeductItemRequest deductItemRequest) {
+        Item updated = itemService.deductItem(itemId, deductItemRequest.getOrderCount());
+        ItemResponse response = ItemResponse.builder()
+                .itemId(updated.getItemId())
+                .categoryName(updated.getItemCategory().getName())
+                .storeName(updated.getItemStore().getName())
+                .name(updated.getName())
+                .description(updated.getDescription())
+                .price(updated.getPrice())
+                .quantity(updated.getQuantity())
+                .build();
+        return ApiResult.ok(response);
+    }
+
+    @PatchMapping("/{itemId}/restore")
+    public ApiResult<ItemResponse> restoreItem(@PathVariable Long itemId, @Validated @RequestBody RestoreItemRequest restoreItemRequest) {
+        Item updated = itemService.restoreItem(itemId, restoreItemRequest.getOrderCount());
+        ItemResponse response = ItemResponse.builder()
+                .itemId(updated.getItemId())
+                .categoryName(updated.getItemCategory().getName())
+                .storeName(updated.getItemStore().getName())
+                .name(updated.getName())
+                .description(updated.getDescription())
+                .price(updated.getPrice())
+                .quantity(updated.getQuantity())
+                .build();
+        return ApiResult.ok(response);
     }
 }

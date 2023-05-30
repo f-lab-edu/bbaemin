@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.bbaemin.user.order.enums.OrderStatus.COMPLETE_ORDER;
+import static org.bbaemin.user.order.enums.OrderStatus.PROCESSING_ORDER;
 
 @Slf4j
 @RequestMapping("/api/v1/orders")
@@ -87,7 +87,7 @@ public class OrderController {
                 userId,
                 Order.builder()
                         .orderDate(LocalDateTime.now())
-                        .status(COMPLETE_ORDER)
+                        .status(PROCESSING_ORDER)
                         .deliveryAddress(createOrderRequest.getDeliveryAddress())
                         .phoneNumber(createOrderRequest.getPhoneNumber())
                         .email(createOrderRequest.getEmail())
@@ -159,31 +159,5 @@ public class OrderController {
                             .build();
                 })
                 .map(ApiResult::ok);
-//        return orderService.cancelOrder(userId, orderId)
-//                .flatMap(_order -> Mono.zip(Mono.just(_order), orderItemListMono)
-//                        .map(tuple -> {
-//                            Order order = tuple.getT1();
-//                            List<OrderItem> orderItemList = tuple.getT2();
-//                            return OrderResponse.builder()
-//                                    .orderId(order.getOrderId())
-//                                    .status(order.getStatus())
-//                                    .paymentAmount(order.getPaymentAmount())
-//                                    .orderDate(order.getOrderDate())
-//                                    .orderAmount(order.getOrderAmount())
-//                                    .deliveryFee(order.getDeliveryFee())
-//                                    .paymentMethod(order.getPaymentMethod())
-//                                    .deliveryAddress(order.getDeliveryAddress())
-//                                    .phoneNumber(order.getPhoneNumber())
-//                                    .email(order.getEmail())
-//                                    .messageToRider(order.getMessageToRider())
-//                                    .orderItemList(orderItemList)
-//                                    .build();
-//                        })
-//                        .map(ApiResult::ok)
-//                // TODO - CHECK : 예외 처리
-//                // + ControllerExceptionAdvice
-//                .onErrorMap(th -> {
-//                    throw new RuntimeException(th);
-//                });
     }
 }

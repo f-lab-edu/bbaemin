@@ -7,6 +7,7 @@ import org.bbaemin.admin.delivery.service.StoreService;
 import org.bbaemin.admin.delivery.vo.Store;
 import org.bbaemin.admin.item.repository.ItemRepository;
 import org.bbaemin.admin.item.vo.Item;
+import org.bbaemin.exception.StockShortageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,29 @@ public class ItemService {
             updated.setItemStore(store);
         }
 
+        return updated;
+    }
+
+    @Transactional
+    public Item deductItem(Long itemId, int orderCount) {
+
+        Item updated = getItem(itemId);
+
+        int quantity = updated.getQuantity();
+        if (quantity < orderCount) {
+            throw new StockShortageException(String.format("itemId : {}, orderCount : {}", itemId, orderCount));
+        }
+        updated.setQuantity(quantity - orderCount);
+        return updated;
+    }
+
+    @Transactional
+    public Item restoreItem(Long itemId, int orderCount) {
+
+        Item updated = getItem(itemId);
+
+        int quantity = updated.getQuantity();
+        updated.setQuantity(quantity + orderCount);
         return updated;
     }
 

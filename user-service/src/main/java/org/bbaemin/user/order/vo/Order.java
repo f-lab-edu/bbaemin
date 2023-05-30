@@ -12,6 +12,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @Getter
@@ -56,9 +58,12 @@ public class Order {
     @Column("message_to_rider")
     private String messageToRider;          // 라이더님께
 
+    private List<OrderItem> orderItemList;
+
+    private Long paymentId;
+
     @Builder
-    public Order(Long orderId, Long userId, LocalDateTime orderDate, OrderStatus status, int orderAmount, int deliveryFee, int paymentAmount,
-                 PaymentMethod paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider) {
+    private Order(Long orderId, Long userId, LocalDateTime orderDate, OrderStatus status, int orderAmount, int deliveryFee, int paymentAmount, PaymentMethod paymentMethod, String deliveryAddress, String phoneNumber, String email, String messageToRider, List<OrderItem> orderItemList, Long paymentId) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
@@ -71,6 +76,8 @@ public class Order {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.messageToRider = messageToRider;
+        this.orderItemList = orderItemList;
+        this.paymentId = paymentId;
     }
 
     public void setUserId(Long userId) {
@@ -91,5 +98,16 @@ public class Order {
 
     public void setPaymentAmount(int paymentAmount) {
         this.paymentAmount = paymentAmount;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        if (this.orderItemList == null) {
+            this.orderItemList = new ArrayList<>();
+        }
+        this.orderItemList.add(orderItem);
+    }
+
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 }
