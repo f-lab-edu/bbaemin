@@ -1,2 +1,5 @@
 rootProject.name = 'bbaemin'
-include 'bbaemin-api'
+include 'admin-service'
+include 'user-service'
+include 'common'
+

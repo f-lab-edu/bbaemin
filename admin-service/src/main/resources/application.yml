@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: admin-service
+#  config:
+#    activate:
+#      on-profile: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bbaemin?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 1234
+#    url: ENC(cM40n/n0wRKMQQMbT3Otp0M/+KndsxYgQD/dlhOdWZ2lm/R1hhVPsrLeAYdS1P5b) # TODO
+#    username: ENC(Sa+vCLa0EA1/X7y4ZCH5dw==) # TODO
+#    password: ENC(YgT7gwhtz7NJ9sS9Xzkl/LXmBybu7h8H) # TODO
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+  pattern:
+    console: '[%d{yyyy:MM:dd HH:mm:ss}] %-5level %logger{36}:%line - %msg%n'
+
+# 암호화 관련
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: bbaeminKey
