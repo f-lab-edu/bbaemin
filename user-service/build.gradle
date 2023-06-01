@@ -7,6 +7,7 @@ dependencies {
     implementation project(path: ':common', configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'com.github.jasync-sql:jasync-r2dbc-mysql:2.0.8'
     implementation 'io.r2dbc:r2dbc-pool'
