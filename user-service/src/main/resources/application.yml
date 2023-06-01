@@ -1,5 +1,6 @@
 server:
   port: 8081
+
 spring:
   application:
     name: user-service
@@ -10,6 +11,9 @@ spring:
     pool:
       max-size: 100
       validation-query: SELECT 1
+  kafka:
+    bootstrap-servers: 192.168.219.101:9092
+
 logging:
   level:
     org.springframework.r2dbc: debug
