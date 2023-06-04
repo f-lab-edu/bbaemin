@@ -7,6 +7,7 @@ import org.bbaemin.dto.request.DeductItemRequest;
 import org.bbaemin.dto.response.ItemResponse;
 import org.bbaemin.user.cart.controller.response.CartResponse;
 import org.bbaemin.user.cart.service.CartItemService;
+import org.bbaemin.user.cart.vo.CartItem;
 import org.bbaemin.user.order.enums.OrderStatus;
 import org.bbaemin.user.order.repository.OrderItemRepository;
 import org.bbaemin.user.order.repository.OrderRepository;
@@ -119,20 +120,20 @@ public class OrderService {
     public Mono<Order> order(Long userId, Order order, List<Long> discountCouponIdList) {
 
     // #1. 장바구니 조회 (CartService와 분리되어 있다고 가정)
-//        Flux<CartItem> cartItemFlux = cartItemService.getCartItemListByUserId(userId);
-//        Flux<OrderItem> orderItemFlux = cartItemFlux
-//                .map(cartItem -> OrderItem.builder()
-//                        .itemId(cartItem.getItemId())
-//                        .itemName(cartItem.getItemName())
-//                        .itemDescription(cartItem.getItemDescription())
-//                        .orderPrice(cartItem.getOrderPrice())
-//                        .orderCount(cartItem.getOrderCount())
-//                        .build());
+        Flux<CartItem> cartItemFlux = cartItemService.getCartItemListByUserId(userId);
+        Flux<OrderItem> orderItemFlux = cartItemFlux
+                .map(cartItem -> OrderItem.builder()
+                        .itemId(cartItem.getItemId())
+                        .itemName(cartItem.getItemName())
+                        .itemDescription(cartItem.getItemDescription())
+                        .orderPrice(cartItem.getOrderPrice())
+                        .orderCount(cartItem.getOrderCount())
+                        .build());
         Mono<CartResponse> cart = this.getCart(userId);
 
     // #2. 재고 조회 및 재고 차감 처리
         // -> 재고 부족 시 주문 불가 처리
-        this.deductItem();
+//        this.deductItem();
 
 
     // #3. 금액 조회

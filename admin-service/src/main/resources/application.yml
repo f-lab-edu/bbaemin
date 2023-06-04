@@ -1,20 +1,15 @@
-server:
-  port: 8080
-
+# development
 spring:
+  config:
+    activate:
+      on-profile: dev
   application:
     name: admin-service
-#  config:
-#    activate:
-#      on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bbaemin?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 1234
-#    url: ENC(cM40n/n0wRKMQQMbT3Otp0M/+KndsxYgQD/dlhOdWZ2lm/R1hhVPsrLeAYdS1P5b) # TODO
-#    username: ENC(Sa+vCLa0EA1/X7y4ZCH5dw==) # TODO
-#    password: ENC(YgT7gwhtz7NJ9sS9Xzkl/LXmBybu7h8H) # TODO
+    url: ENC(fJXJAjSw0uePsTURnWwnRMPCdHMZBD2LiqzdP1HOWSq/082vg5E7oQaDFrWgdBSQ) # TODO
+    username: ENC(PU8oYDOA0K0NWgdoHxZisQ==) # TODO
+    password: ENC(YGlIbG5NYSzwWIL3fR778wZzS1YTy85A9) # TODO
   jpa:
     hibernate:
       ddl-auto: create
@@ -23,7 +18,16 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-
+# kafka
+kafka:
+  bootstrap-servers: 192.168.219.101:9092
+  consumer:
+    # Kafka 서버에 초기 offset이 없거나, 서버에 현재 offset이 더 이상 없는 경우 수행할 작업
+    # - 오류 등으로 인해 offset 정보가 사라졌을 때 어떻게 reset할 것인지를 명시
+    # 1) latest : 가장 최근에 생성된 메시지로 offset reset
+    # 2) earliest : 가장 오래된 메시지로 offset reset
+    # 3) none : offset 정보가 없으면 Exception 발생
+    auto-offset-reset: earliest
 logging:
   level:
     org:
@@ -33,7 +37,6 @@ logging:
             sql: trace
   pattern:
     console: '[%d{yyyy:MM:dd HH:mm:ss}] %-5level %logger{36}:%line - %msg%n'
-
 # 암호화 관련
 jasypt:
   encryptor:
