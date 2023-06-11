@@ -14,9 +14,9 @@ services:
 
   admin-app:
     container_name: admin-service
-    build:
-      context: ./admin-service
-      dockerfile: Dockerfile
+#    build:
+#      context: ./admin-service
+#      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     depends_on:
@@ -27,9 +27,9 @@ services:
 
   user-app:
     container_name: user-service
-    build:
-      context: ./user-service
-      dockerfile: Dockerfile
+#    build:
+#      context: ./user-service
+#      dockerfile: Dockerfile
     ports:
       - "9001:9001"
     depends_on:
