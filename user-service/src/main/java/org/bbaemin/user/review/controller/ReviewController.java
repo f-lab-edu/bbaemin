@@ -11,8 +11,7 @@ import org.bbaemin.user.review.kafka.message.CreateReviewMessage;
 import org.bbaemin.user.review.kafka.message.DeleteReviewMessage;
 import org.bbaemin.user.review.kafka.message.UpdateReviewMessage;
 import org.bbaemin.user.review.service.ReviewService;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
+import org.bbaemin.user.review.vo.Review;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,14 +58,13 @@ public class ReviewController {
                 .map(ApiResult::ok);
     }
 
-    // 리뷰 등록
-    @PostMapping("/orders/{orderId}/orderItems/{orderItemId}")
-    public Mono<ApiResult<ReviewResponse>> createReview(@PathVariable Long orderId, @PathVariable Long orderItemId,
-                                                        @Validated @RequestBody CreateReviewRequest createReviewRequest) {
+    // 리뷰 등록 with Kafka
+    @PostMapping("/orders/{orderId}/orderItems/{orderItemId}/with-kafka")
+    public Mono<ApiResult<ReviewResponse>> createReviewWithKafka(@PathVariable Long orderId, @PathVariable Long orderItemId,
+                                                                 @Validated @RequestBody CreateReviewRequest createReviewRequest) {
 
         CreateReviewMessage createReviewMessage = new CreateReviewMessage(orderItemId, createReviewRequest.getScore(), createReviewRequest.getContent(), createReviewRequest.getImage());
-        ListenableFuture<SendResult<String, CreateReviewMessage>> future = reviewEventProducer.createReview(createReviewMessage);
-//        future.addCallback(result -> log.info("success"), ex -> log.error("fail : {}", ex.getMessage()));
+        reviewEventProducer.createReview(createReviewMessage);
 
         ReviewResponse reviewResponse = ReviewResponse.builder()
                 .score(createReviewRequest.getScore())
@@ -76,10 +74,10 @@ public class ReviewController {
         return Mono.just(ApiResult.created(reviewResponse));
     }
 
-    // 리뷰 수정
-    @PatchMapping("/{reviewId}")
-    public Mono<ApiResult<ReviewResponse>> updateReview(@PathVariable Long reviewId,
-                                                        @Validated @RequestBody UpdateReviewRequest updateReviewRequest) {
+    // 리뷰 수정 with Kafka
+    @PatchMapping("/{reviewId}/with-kafka")
+    public Mono<ApiResult<ReviewResponse>> updateReviewWithKafka(@PathVariable Long reviewId,
+                                                                 @Validated @RequestBody UpdateReviewRequest updateReviewRequest) {
 
         UpdateReviewMessage updateReviewMessage = new UpdateReviewMessage(reviewId, updateReviewRequest.getScore(), updateReviewRequest.getContent(), updateReviewRequest.getImage());
         reviewEventProducer.updateReview(updateReviewMessage);
@@ -93,13 +91,50 @@ public class ReviewController {
                 .map(ApiResult::ok);
     }
 
-    // 리뷰 삭제
-    @DeleteMapping("/{reviewId}")
-    public Mono<ApiResult<Void>> deleteReview(@PathVariable Long reviewId) {
+    // 리뷰 삭제 with Kafka
+    @DeleteMapping("/{reviewId}/with-kafka")
+    public Mono<ApiResult<Void>> deleteReviewWithKafka(@PathVariable Long reviewId) {
 
         DeleteReviewMessage deleteReviewMessage = new DeleteReviewMessage(reviewId);
         reviewEventProducer.deleteReview(deleteReviewMessage);
 
         return Mono.just(ApiResult.ok());
+    }
+
+    // 리뷰 등록
+    @PostMapping("/orders/{orderId}/orderItems/{orderItemId}")
+    public Mono<ApiResult<ReviewResponse>> createReview(@PathVariable Long orderId, @PathVariable Long orderItemId,
+                                                        @Validated @RequestBody CreateReviewRequest createReviewRequest) {
+        return reviewService.createReview(orderItemId, Review.builder()
+                        .score(createReviewRequest.getScore())
+                        .content(createReviewRequest.getContent())
+                        .image(createReviewRequest.getImage())
+                        .build())
+                .map(review -> ReviewResponse.builder()
+                        .score(review.getScore())
+                        .content(review.getContent())
+                        .image(review.getImage())
+                        .build())
+                .map(ApiResult::ok);
+    }
+
+    // 리뷰 수정
+    @PatchMapping("/{reviewId}")
+    public Mono<ApiResult<ReviewResponse>> updateReview(@PathVariable Long reviewId,
+                                                        @Validated @RequestBody UpdateReviewRequest updateReviewRequest) {
+        return reviewService.updateReview(reviewId, updateReviewRequest.getScore(), updateReviewRequest.getContent(), updateReviewRequest.getImage())
+                .map(review -> ReviewResponse.builder()
+                        .score(review.getScore())
+                        .content(review.getContent())
+                        .image(review.getImage())
+                        .build())
+                .map(ApiResult::ok);
+    }
+
+    // 리뷰 삭제
+    @DeleteMapping("/{reviewId}")
+    public Mono<ApiResult<Void>> deleteReview(@PathVariable Long reviewId) {
+        return reviewService.deleteReview(reviewId)
+                .thenReturn(ApiResult.ok());
     }
 }

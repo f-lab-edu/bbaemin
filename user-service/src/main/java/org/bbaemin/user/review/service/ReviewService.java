@@ -33,7 +33,7 @@ public class ReviewService {
                 .switchIfEmpty(Mono.error(new NoSuchElementException("reviewId : " + reviewId)));
     }
 
-    private Mono<Review> createReview(Long orderItemId, Review review) {
+    public Mono<Review> createReview(Long orderItemId, Review review) {
         review.setOrderItemId(orderItemId);
         return reviewRepository.save(review);
     }
@@ -59,7 +59,7 @@ public class ReviewService {
         return createReview(orderItemId, review);
     }
 
-    private Mono<Review> updateReview(Long reviewId, int score, String content, String image) {
+    public Mono<Review> updateReview(Long reviewId, int score, String content, String image) {
         return getReview(reviewId)
                 .map(review -> {
                     review.setScore(score);
@@ -86,7 +86,7 @@ public class ReviewService {
         return updateReview(reviewId, updateReviewMessage.getScore(), updateReviewMessage.getContent(), updateReviewMessage.getImage());
     }
 
-    private Mono<Void> deleteReview(Long reviewId) {
+    public Mono<Void> deleteReview(Long reviewId) {
         return reviewRepository.deleteById(reviewId);
     }
 
