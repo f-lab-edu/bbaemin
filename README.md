@@ -6,15 +6,17 @@
 
 <br>
 
-### :star: 프로젝트 목표 및 중점사항
+### :pushpin: 프로젝트 목표 및 중점사항
 - 배달의 민족 'B마트' 같은 E-Commerce Backend API 구현  
 
 - 대용량 트래픽(부하의 변화)에도 장애 없이 **응답 속도**를 유지할 수 있도록 구현
    - 사용 중인 인프라가 예상 부하를 견딜 수 있는지 부하 테스트를 실시한다.
    - 응답 시간, 평균 대기 시간, CPU/메모리 사용률 등을 체크해 성능 병목 지점을 확인한다.
    - 개선 방안을 찾아 변경 전/후를 비교하고, 병목 현상을 해결한다.
+  
      - [ ] **Scale Out, Scale Up**
         - 인스턴스를 추가해 대응한다.
+     
      - [X] **Reactive System/Programming**
         - Sync/Async, Blocking/Non-Blocking 개념을 이해하고, 응답 속도 저하의 원인을 파악한다.
         - Webflux, Kafka 등 비동기를 활용하여 외부 API를 호출한다.
@@ -29,7 +31,7 @@
 
 <br>
 
-### :star: 프로젝트 구성 및 기술 스택
+### :pushpin: 프로젝트 구성 및 기술 스택
 ### bbaemin (rootProject)
 - Java 11, Spring Boot, Gradle, Kafka, JUnit5, Mysql
 - CI/CD : Github Action, Docker
@@ -55,17 +57,17 @@
 
 <br>
 
-### :star: CI/CD
+### :pushpin: CI/CD
 - main 브랜치에 Push/Pull-Request가 발생할 때마다 Github Action에서 테스트를 실시하고, 그 결과를 보고한다.
 - PR이 Merge 되면 Github Action이 각 서비스마다 설정해둔 Dockerfile을 읽어 Docker Image를 만들고 Docker Hub에 Push한다.
 - Build가 완료되면 (스크립트를 실행해) Docker Hub에 올려놓은 이미지를 Pull 받아 Docker Compose로 각 컨테이너를 띄워 배포까지 완료한다.
 
 <br>
 
-### :star: 프로젝트 구조
+### :pushpin: 프로젝트 구조
 <div align="center"><img src="doc/image/bbaemin.png"></div>
 
 <br>
 
-### :star: Wiki
+### :pushpin: Wiki
 https://github.com/f-lab-edu/bbaemin/wiki
