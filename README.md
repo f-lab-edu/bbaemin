@@ -38,22 +38,22 @@
 - Load Test & Monitoring : k6/nGrinder, Prometheus, Grafana, InfluxDB, Pinpoint, VisualVM
 - Naver Cloud Platform
 
-  #### 1. admin-service
-    - [관리자 API](https://github.com/f-lab-edu/bbaemin/wiki/Use-Case-&-API-:-Admin)
-    - 상품, 상점, 배달, 결제 관련 서비스
-    - Spring Servlet Stack
-      - Apache Tomcat, Spring MVC, JPA
+#### 1. admin-service
+- [관리자 API](https://github.com/f-lab-edu/bbaemin/wiki/Use-Case-&-API-:-Admin)
+- 상품, 상점, 배달, 결제 관련 서비스
+- Spring Servlet Stack
+  - Apache Tomcat, Spring MVC, JPA
 
-  #### 2. user-service
-    - [사용자 API](https://github.com/f-lab-edu/bbaemin/wiki/Use-Case-&-API-:-User)
-    - 장바구니, 주문, 리뷰 관련 서비스
-    - 상대적으로 admin-service보다 트래픽이 더 높고 그 변화 폭이 더 클 것으로 예상되어 Reactive Stack으로 전환
-    - Spring Reactive Stack
-      - Netty, Spring WebFlux, R2DBC
+#### 2. user-service
+- [사용자 API](https://github.com/f-lab-edu/bbaemin/wiki/Use-Case-&-API-:-User)
+- 장바구니, 주문, 리뷰 관련 서비스
+- 상대적으로 admin-service보다 트래픽이 더 높고 그 변화 폭이 더 클 것으로 예상되어 Reactive Stack으로 전환
+- Spring Reactive Stack
+  - Netty, Spring WebFlux, R2DBC
 
-  #### 3. common
-    - 각 모듈에서 공통적으로 사용하는 클래스 모음
-    - Response, Dto, Config 클래스 등
+#### 3. common
+- 각 모듈에서 공통적으로 사용하는 클래스 모음
+- Response, Dto, Config 클래스 등
 
 <br>
 
