@@ -7,7 +7,8 @@
 <br>
 
 ### :star: 프로젝트 목표 및 중점사항
-- 배달의민족의 'B마트' 같은 E-Commerce Backend API 구현
+- 배달의민족의 'B마트' 같은 E-Commerce Backend API 구현  
+
 - 대용량 트래픽(부하의 변화)에도 장애 없이 **응답 속도**를 유지할 수 있도록 구현
    - 사용 중인 인프라가 예상 부하를 견딜 수 있는지 부하 테스트를 실시한다.
    - 응답 시간, 평균 대기 시간, CPU/메모리 사용률 등을 체크해 성능 병목 지점을 확인한다.
@@ -17,9 +18,13 @@
      - [X] Reactive System/Programming
         - Sync/Async, Blocking/Non-Blocking 개념을 이해하고, 응답 속도 저하의 원인을 파악한다.
         - Webflux, Kafka 등 비동기를 활용하여 외부 API를 호출한다.
+
 - CI/CD 환경 구축 및 테스트/배포 자동화
+
 - 모니터링 환경 구축
+
 - Git Flow를 활용한 브랜치 관리
+
 - 코드 리뷰를 통한 코드의 유지보수성 및 가독성 향상
 
 <br>
