@@ -10,7 +10,6 @@
 - 배달의 민족 'B마트' 같은 E-Commerce Backend API 구현  
 
 - 대용량 트래픽(부하의 변화)에도 장애 없이 **응답 속도**를 유지할 수 있도록 구현
-
    - 사용 중인 인프라가 예상 부하를 견딜 수 있는지 부하 테스트를 실시한다.
    - 응답 시간, 평균 대기 시간, CPU/메모리 사용률 등을 체크해 성능 병목 지점을 확인한다.
    - 개선 방안을 찾아 변경 전/후를 비교하고, 병목 현상을 해결한다.
@@ -38,7 +37,7 @@
 - CI/CD : Github Action, Docker
 - Load Test & Monitoring : k6/nGrinder, Prometheus, Grafana, InfluxDB, Pinpoint, VisualVM
 - Naver Cloud Platform
-  
+
   #### 1. admin-service
     - [관리자 API](https://github.com/f-lab-edu/bbaemin/wiki/Use-Case-&-API-:-Admin)
     - 상품, 상점, 배달, 결제 관련 서비스
