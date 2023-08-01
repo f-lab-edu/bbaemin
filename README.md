@@ -33,7 +33,7 @@
 ### bbaemin (rootProject)
 - Java 11, Spring Boot, Gradle, Kafka, JUnit5, Mysql
 - CI/CD : Github Action, Docker
-- Load Test & Monitoring : k6/nGrinder, Prometheus, Grafana, InfluxDB, Pinpoint, VisualVM
+- Load Test & Monitoring : k6, Scouter
 - Naver Cloud Platform
 
 #### 1. admin-service
