@@ -8,6 +8,7 @@ import lombok.ToString;
 @Getter
 public class CartItemResponse {
 
+    private Long itemId;
     private String itemName;
     private String itemDescription;
     private int orderPrice;
@@ -15,7 +16,8 @@ public class CartItemResponse {
     private int totalOrderPrice;
 
     @Builder
-    private CartItemResponse(String itemName, String itemDescription, int orderPrice, int orderCount) {
+    private CartItemResponse(Long itemId, String itemName, String itemDescription, int orderPrice, int orderCount) {
+        this.itemId = itemId;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
         this.orderPrice = orderPrice;

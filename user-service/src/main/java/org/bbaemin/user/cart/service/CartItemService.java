@@ -2,10 +2,12 @@ package org.bbaemin.user.cart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bbaemin.config.response.ApiResult;
 import org.bbaemin.dto.response.ItemResponse;
 import org.bbaemin.user.cart.repository.CartItemRepository;
 import org.bbaemin.user.cart.vo.CartItem;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -39,7 +41,7 @@ public class CartItemService {
                 .switchIfEmpty(Mono.error(new NoSuchElementException("cartItemId : " + cartItemId)));
     }
 
-    Mono<ItemResponse> getItem(Long itemId) {
+    Mono<ApiResult<ItemResponse>> getItem(Long itemId) {
         return client.get()
                 .uri(uriBuilder -> {
                     URI uri = uriBuilder.path(admin)
@@ -51,13 +53,14 @@ public class CartItemService {
                 })
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ItemResponse.class);
+                .bodyToMono(new ParameterizedTypeReference<>() {});
     }
 
     public Mono<CartItem> addItem(Long userId, Long itemId) {
         return cartItemRepository.findByUserIdAndItemId(userId, itemId)
-                .switchIfEmpty(getItem(itemId).map(
-                        item -> CartItem.builder()
+                .switchIfEmpty(getItem(itemId)
+                        .map(ApiResult::getResult)
+                        .map(item -> CartItem.builder()
                                 .itemId(itemId)
                                 .itemName(item.getName())
                                 .itemDescription(item.getDescription())

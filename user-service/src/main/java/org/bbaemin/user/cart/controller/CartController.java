@@ -42,7 +42,7 @@ public class CartController {
         Mono<Integer> orderAmount = cartItemFlux
                 .map(cartItem -> cartItem.getOrderPrice() * cartItem.getOrderCount())
                 .reduce(0, Integer::sum);
-        Mono<Integer> deliveryFee = orderAmount.flatMap(deliveryFeeService::getDeliveryFee);
+        Mono<Integer> deliveryFee = orderAmount.flatMap(deliveryFeeService::getDeliveryFee).map(ApiResult::getResult);
         return Mono.zip(cartItemList, orderAmount, deliveryFee)
                 .map(tuple -> CartResponse.builder()
                         .cartItemList(tuple.getT1())
